@@ -1,8 +1,8 @@
 
 # Objektovo orientované programovanie
-## Návrh programu I 2023/24
+## Návrh programu I 2024/25
 
-### Osnova prednášky
+### Osnova hodiny
 - Čo vieme?
 - Objektový návrh programu
 - Príklad
