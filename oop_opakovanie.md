@@ -536,9 +536,9 @@ class <meno> {
 
 
 # Objektovo orientované programovanie
-## Úvod do dedičnosti 2023/24
+## Úvod do dedičnosti 2024/25
 
-### Osnova prednášky
+### Osnova hodiny
 - Čo rieši dedičnosť?
 - Príklad.
 - Dedičnosť – základný princíp.
