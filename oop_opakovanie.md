@@ -109,8 +109,8 @@ class <meno> {
 - Navrhnite a implementujte podobnú úlohu, ako napríklad lekársku ordináciu, malú školu a pod.
 
 ### Kontrolné otázky
-- Vysvetlite, ako vznikajú objekty triedy, pojem konštruktor a princípy práce s ním v C++.
-- Vysvetlite, ako zanikajú objekty triedy, pojem destruktor a princípy práce s ním v C++.
-- Vysvetlite rozdiel medzi statickou a dynamickou deklaráciou objektov v C++.
+- Vysvetlite, ako vznikajú objekty triedy, pojem konštruktor a princípy práce s ním v C++ / C#.
+- Vysvetlite, ako zanikajú objekty triedy, pojem destruktor a princípy práce s ním v C++ / C#.
+- Vysvetlite rozdiel medzi statickou a dynamickou deklaráciou objektov v C++ / C#.
 - Ako sa dá postupovať, ak chceme v zadaní programu nájsť triedy, ich metódy a dátové členy?
 - Kedy a prečo potrebujeme použiť viac konštruktorov jednej triedy?
