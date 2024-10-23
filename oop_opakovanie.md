@@ -174,6 +174,147 @@
 ---
 
 # Objektovo orientované programovanie
+## Triedy a objekty (objektová orientácia) 2024/25
+
+### Osnova hodiny
+- Objektový prístup (prečo potrebujeme objekty).
+- Triedy, objekty,...
+- Príklad.
+
+### Prečo potrebujeme objekty?
+
+#### Udržateľnosť softvéru (maintenance)
+- Štúdia Lientz a Swanson (1980).
+- 487 rôznych systémov.
+- Koľko úsilia to vyžaduje?
+
+#### Kedy to začalo?
+- Jazyk Simula 67 (Ole-Johan Dahl a Kristen Nygaard, Norwegian Computing Center, 1960+)
+  - triedy a inštancie (objekty)
+  - automatické zanikanie objektov (garbage collection)
+- Jazyk Smalltalk (Xerox PARC, Alan Kay a ďalší, 1970+)
+  - pojem „objektovo-orientované programovanie“
+  - použitie objektov a správ, ktoré si objekty posielajú a spracovávajú
+
+### Objektová orientácia…
+- Objektové techniky pomáhajú písať lepšie udržateľný softvér.
+- Metóda a jazyk.
+- Implementácia a prostredie.
+- Knižnice.
+
+### Metóda a jazyk
+- Nejde len o programovací jazyk a spôsob jeho použitia.
+- Ide aj o spôsob uvažovania a vyjadrovania...
+- …a taktiež o záznamy v textovej alebo grafickej forme.
+
+### Model domény
+- Podpora vývoja.
+- Vlastnosti a efektivita nástrojov pre vývoj.
+- Nástroje pre podporu nasadzovania nových verzií.
+- Nástroje pre podporu dokumentovania.
+
+### Knižnice
+- Objektové technológie veľmi spoliehajú na opakovanú použiteľnosť.
+- Podpora vývoja formou využitia už implementovaných riešení (knižníc).
+- Podpora vytvárania a správy nových vlastných knižníc.
+
+### Máme byť dogmatickí?
+- Objektovo orientovaný prístup sa dnes chápe ako základný nástroj pre vývoj softvéru. Avšak…
+  - Existujú rôzne programovacie jazyky s rôznou mierou podpory techník objektového programovania (OOP).
+  - Nie každý potrebuje všetky vlastnosti, ktoré OOP ponúka.
+  - Objektová orientácia môže byť len jedným z faktorov úspešného vývoja, preto je potrebné uvažovať komplexnejšie.
+
+### Metóda a jazyk – Triedy
+- Triedy ako moduly.
+- Triedy ako typy.
+- Zasielanie správ (message passing, feature-based computation).
+- Skrývanie informácií.
+- Statická kontrola typov.
+- Dedičnosť, redefinícia, polymorfizmus a dynamická väzba.
+- Generickosť.
+- Správa pamäte a garbage collection.
+
+### Trieda
+#### Triedy
+- Objektovo orientovaný prístup je postavený na pojme trieda.
+- Triedu môžeme chápať ako časť softvéru, ktorá popisuje abstraktný dátový typ a jeho implementáciu.
+- Abstraktným dátovým typom rozumieme objekty so spoločným správaním reprezentovaným zoznamom operácií, ktoré objekty vykonávajú.
+
+### Triedy ako moduly
+- OOP je najmä o štruktúre (architektúre) softvéru, kde je dôležitá modularita.
+- Triedy nepopisujú len typy objektov, ale musia byť zároveň modulárne jednotky.
+- V čisto objektovo orientovaných programoch by nemali byť iné samostatné jednotky ako triedy (napr. funkcie).
+
+### Triedy ako typy
+- V čisto objektovo orientovaných jazykoch a programoch by nemali byť iné typy ako triedy.
+- Platí to aj pre systémové typy ako INT alebo DOUBLE.
+
+### Zasielanie správ
+- Message passing (feature call), feature-based computation je výpočtový mechanizmus.
+- Objektu ako inštancii triedy je zaslaná správa daného mena a s potrebnými parametrami.
+- Napr. `aPerson->ChangeLastName(“Smith”)`.
+- Ten, kto zasiela správu (požaduje vykonanie operácie s určitými argumentmi), je KLIENT triedy.
+
+### Skrývanie informácií
+- Pre klienta sú dôležité iba tie operácie (metódy), ktoré popisujú vonkajšie správanie objektov triedy.
+- Detaily implementácie by mali zostať skryté (dáta + pomocné operácie).
+- Ak klient potrebuje získať informácie o stave (dátach) objektu, dostane sa k nim len prostredníctvom zaslania správy (volaním metódy, nie premennej).
+
+### Statická väzba a kontrola typov
+- Každá entita v programe (napr. premenná daného mena) musí mať definovaný typ.
+- Požiadavka na objekt (zaslanie správy) musí zodpovedať operácii (metóde), ktorú trieda poskytuje.
+
+### Generickosť
+- Potreba existencie tried, ktoré vedia pracovať s typom, ktorý nie je vopred známy.
+- Napr. zoznamy, do ktorých možno ukladať objekty rôznych tried (typov).
+
+### Dedičnosť a redefinícia
+- Dedičnosť znamená založenie novej triedy na základe už existujúcej triedy.
+- Základom je rozšírenie pôvodnej triedy o nové vlastnosti.
+- Dedičnosť taktiež umožňuje zmeniť niektoré vlastnosti pôvodnej triedy.
+
+### Polymorfizmus a dynamická väzba
+- Potreba, aby ten istý objekt vystupoval v rôznych kontextoch v rôznych rolách.
+- Rolou rozumieme rôzne správanie, ktoré sa môže meniť v čase.
+
+### Správa pamäte a garbage collection
+- V rozsiahlych programoch vzniká a zaniká mnoho objektov, a to v rôznych a nie vždy jednoduchých situáciách.
+- Je problém manuálne sledovať životný cyklus objektov.
+- V moderných jazykoch je zanikanie objektov potrebné automatizovať.
+
+### Príklad
+#### Deklarácia
+- Konštruktor inicializuje objekt (plní pamäť dátami, ktoré objekt používa).
+- Destruktor odstraňuje dáta objektu (uvoľňuje pamäť, ktorú objekt zaberá).
+
+#### Použitie
+- Použitie kľúčového slova `new` zabezpečí vznik objektu (alokuje pamäť pre dáta („plochú“ časť) objektu).
+
+#### Výsledok
+- Definícia (implementácia).
+
+### Úlohy na cvičenie
+- Implementujte príklad z prednášky a do triedy `KeyValues` pridajte metódu `KeyValue* RemoveObject(int k)`, ktorá odstráni objekt s daným kľúčom a vráti ukazovateľ na neho.
+- Implementujte triedu `Faktura`, ktorá bude obsahovať číslo, objekt triedy `Osoba` (s menom a adresou) a pole objektov `PolozkaFaktury` (s názvom a cenou). Navrhnite konštruktor a destruktor a ďalšie potrebné metódy. Faktura bude mať metódu (funkciu), ktorá vypočíta a vráti celkovú cenu.
+
+### Kontrolné otázky
+- Aké sú hlavné príčiny potreby zmien softvéru?
+- Aké sú hlavné faktory ovplyvňujúce objektovú orientáciu?
+- Vysvetlite, čo rozumieme pojmom objektovo orientovaná metóda (prístup) a jazyk.
+- Vysvetlite, čo rozumieme podporou objektovo orientovanej implementácie.
+- Vysvetlite, čo rozumieme podporou opakovanej použiteľnosti.
+- Vysvetlite pojmy trieda a objekt a použite správnu terminológiu.
+- Zdôraznite vlastnosti triedy z pohľadu modularity.
+- Vysvetlite princíp zapuzdrenia v OOP.
+- Vysvetlite princíp zasielania správ.
+- Vysvetlite princípy deklarácie a definície jednoduchej triedy v C++.
+
+### Odporúčaná literatúra
+- Bertrand Meyer. *Object-Oriented Software Construction*. Prentice Hall 1997. [17-36]
+
+---
+
+# Objektovo orientované programovanie
 ## Návrh programu I 2024/25
 
 ### Osnova hodiny
