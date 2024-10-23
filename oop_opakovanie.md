@@ -668,4 +668,141 @@ A
 - Čo je Liskov princíp substitúcie a ako sa prejavuje v dedičnosti?
 - V akom poradí sa volajú a vykonávajú konštruktory pri použití dedičnosti?
 
+---
+
+# Objektovo orientované programovanie
+## Dedičnosť – zmena správania 2024/25
+
+### Osnova hodiny
+- Rozšírenie správania.
+- Zmena správania.
+- Príklad.
+
+### Rozšírenie správania
+
+#### Keď rozširujeme správanie...
+- Môžeme bezpečne použiť to, čo už máme.
+- Nehrozí žiadny problém s pochopením, ako sa objekt správa.
+- Objekt vystupuje sám za seba...
+  - ...alebo za niektorého zo svojich predkov.
+
+### Paradox špecializácie a rozšírenia
+- Vzťah dedičnosti je vzťahom **všeobecný - špeciálny**.
+- Potomok je teda špeciálnym prípadom predka.
+- Paradoxne však, pri rozšírení dochádza k tomu, že potomok vie viac, ako ktorýkoľvek z jeho predkov.
+
+### ...a teda
+- Čím bohatšie správanie uvažujeme, tým menej tried ho poskytuje.
+- V dedičnej hierarchii je najmenšie spoločné správanie definované v spoločnom predkovi.
+- Koncové triedy tejto hierarchie majú najbohatšie správanie (každá trochu iné).
+
+### Nesprávny príklad
+- Potreba rozšírenia sama o sebe nie je dostatočná pre použitie dedičnosti.
+- Napr. vzťah bodu a kružnice, mohli by sme potrebovať rozšíriť bod o prácu s polomerom (nové správanie).
+- Je to dostatočné, aby sme sa rozhodli použiť dedičnosť?
+
+#### Nie!!!
+- Nie je splnená podmienka špecializácie (kružnica nie je špeciálnym prípadom bodu).
+
+### Zmena správania
+
+#### Zmena správania
+- Ak je správanie deklarované v predkovi, môžeme ho v potomkovi deklarovať znova.
+- Existuje potom viac metód rovnakého mena.
+- Deklarované správanie potom musíme v potomkovi implementovať (aby bolo vykonateľné).
+- Deklarované správanie nemusí byť implementované v predkovi.
+
+### Pretíženie ako rozšírenie správania
+
+#### Pretíženie
+- Pretížením rozumieme situáciu, keď daná metóda má rovnaké meno, ale má:
+  - iné parametre,
+  - iné typy parametrov,
+  - iný typ návratovej hodnoty.
+- Pretíženie však nie je zmena správania, aj keď má metóda rovnaké meno.
+
+#### Typy pretíženia
+- Názov metódy zostáva rovnaký.
+- Iný počet parametrov.
+- Iné dátové typy parametrov.
+- Iná návratová hodnota (nie v C++).
+- Možno kombinovať.
+
+### Prekrytie
+- Prekrytím rozumieme situáciu, keď metóda potomka má rovnakú deklaráciu ako metóda predka (rovnakú signatúru).
+- Potomok dedí aj metódu predka. Má teda dve metódy s rovnakou deklaráciou.
+
+#### Kedy použiť prekrytie?
+- Typickým príkladom použitia pretíženia sú konštruktory.
+- Typickým príkladom použitia prekrytia je skutočná zmena správania potomka.
+  - Príkladom môže byť metóda na výber peňazí z rôznych typov účtov v banke.
+
+### Príklad
+
+#### Deklarácia predka
+
+### Prekrytie
+- Deklarujeme triedu `CreditAccount`.
+- Prekryjeme metódu `CanWithdraw`.
+  - Má rovnakú signatúru, ale inú definíciu.
+  - Dôsledok: V triede `CreditAccount` bude inštančná metóda `CanWithdraw` dvakrát!!!
+
+#### Deklarácia potomka
+
+#### Definícia
+
+#### Definícia (pripomenutie)
+
+#### Použitie
+
+### Výsledok?
+
+### Sme hotoví?
+- Nie!!!
+- Ako vyberieme z účtu (ak môžeme), keď nemáme prístup k členskej premennej `balance`?
+- Aké máme možnosti?
+
+#### Vlastná metóda?
+
+### Máme problém...
+
+#### Aké teda máme možnosti?
+- Public prístup k dátovej položke?
+- Porušenie zapuzdrenia?
+- Alebo inak?
+
+### Nový predok
+
+#### Funguje, ale...
+- Máme rovnaký kód dvakrát.
+- Porušujeme zapuzdrenie.
+- Pri zastúpení predka potomkom sa použijú rôzne metódy.
+
+### Výsledok
+
+#### Porušenie zapuzdrenia
+- Pri zmene správania môže vzniknúť potreba pracovať so súkromnou časťou predka.
+- Ide samozrejme o porušenie zapuzdrenia a toho si musíme byť vedomí...
+  - ...ale každé rozumné pravidlo má nejaké výnimky.
+
+#### Dá sa zavolať metóda predka?
+- Je to rovnaké ako volanie statickej metódy.
+  - Z potomka voláme originálnu metódu.
+  - `Account::CanWithdraw(a);`
+
+### Úlohy na cvičenie
+- Implementujte príklady z prednášky. Zamerajte sa na prekrytie, vyskúšajte použitie „protected“.
+- Navrhnite a implementujte jednoduchú dedičnú hierarchiu geometrických objektov, ktoré budú mať spoločné metódy „Obsah“ a „Obvod“. Využite prekrytie a rozoberte správanie pri použití substitučného princípu.
+
+### Kontrolné otázky
+- Čo rozumieme paradoxom špecializácie a rozšírenia?
+- Uveďte správne a nesprávne príklady vzťahu „generalizácia - špecializácia“.
+- Čo rozumieme v dedičnosti zmenou správania?
+- Čo rozumieme pretížením? Ide o rozšírenie alebo zmenu správania?
+- Uveďte rôzne typy pretíženia.
+- Čo rozumieme prekrytím? Ide o rozšírenie alebo zmenu správania?
+- Aký princíp porušujeme, keď používame „protected“ a prečo?
+- Aký problém prináša potreba zmeny správania v dedičnosti?
+- Popíšte, ako sa prakticky prejavuje rôzna miera prístupu k položkám triedy.
+- Ako sa použitie „protected“ prejaví vo vzťahu predka a potomka?
 
