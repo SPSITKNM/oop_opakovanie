@@ -532,5 +532,140 @@ class <meno> {
 - Ako môžeme v C++ dôsledne odlišovať prácu s členskými položkami tried a inštancií?
 - Potrebuje trieda v roli objektu konštruktor resp. destruktor a prečo?
 
-### Odporúčaná literatúra
-- Bertrand Meyer. *Object-Oriented Software Construction*. Prentice Hall 1997. [101-120]
+---
+
+
+# Objektovo orientované programovanie
+## Úvod do dedičnosti 2023/24
+
+### Osnova prednášky
+- Čo rieši dedičnosť?
+- Príklad.
+- Dedičnosť – základný princíp.
+
+### Čo rieši dedičnosť?
+
+#### Čo sa rieši?
+- Znovu-použiteľnosť
+  - Nechceme znova opisovať (kopírovať) kód, ktorý sme už raz napísali a odladili.
+- Rozšíriteľnosť
+  - Chceme rozšíriť (pozmeniť) kód, ktorý sme už...
+
+### Úloha triedy?
+- Znovu-použiteľnosť a rozšíriteľnosť v kontexte používania tried môžeme chápať ako:
+  - Kombinovanie s inými triedami, skladanie
+  - Rozšírenie o nové správanie
+  - Pozmenenie existujúceho správania
+
+### Skladanie vs dedičnosť
+- Skladaním dosiahneme, že objekt jednej triedy je zložený z objektov inej triedy.
+  - Ide o vzťah „MÁ“.
+- Dedičnosťou dosiahneme, že nová trieda je rozšírením alebo špeciálnym prípadom existujúcej triedy (alebo viacerých tried).
+  - Ide o vzťah „JE“.
+
+### Príklad
+
+#### Čo je na triede `Account` nesprávne?
+- Účet s partnerom je rozšírením účtu bez partnera.
+- Účet s partnerom **JE** účet.
+- Môžeme využiť dedičnosť. Ako?
+
+### Deklarácia predka
+
+### Deklarácia potomka
+
+#### Implementácia konštruktorov
+- Potomok `PartnerAccount` použije na inicializáciu členských položiek konštruktor rodiča `Account`, ktorému odovzdá potrebné inicializačné hodnoty.
+
+### Použitie (zastupiteľnosť)
+
+#### Banka s účtami dvoch typov
+
+- Malo by to fungovať? A prečo?
+
+### Dedičnosť – základný princíp
+
+### Terminológia
+- Predok – potomek, priamy predok – potomek
+- Rodič – dcéra (syn)
+- Nadriadená (super, báza) trieda – podradená (sub) trieda
+
+### Vzťahy v dedičnosti
+```
+A
+|__ B
+    |__ C
+```
+- `A` je báza triedy `B`, A je rodič `B`, A je predok `C`
+- `B` je báza triedy `C`, trieda B dedí z triedy A, B je rodič C
+- `C` dedí z B aj A, C je dcérska trieda triedy B, C je potomek A a priamy potomek B.
+
+### Príklady
+- Vozidlo – bicykel, motorka, osobné auto
+- Osoba – užívateľ, správca
+- Kolekcia – zoznam, množina
+
+#### Nesprávne?
+- Auto – Škoda
+  - Škoda je **ZNAČKA** osobného auta.
+- Strom – smrek
+  - Smrek je **DRUH** ihličnatého stromu.
+
+### Generalizácia - špecializácia
+- Nezamieňať vzťah „je inštanciou“ a „dediť z“.
+  - „je inštanciou“ je vzťah medzi triedou a objektom
+  - „dediť z“ je vzťah medzi triedami.
+- Vzťah dedičnosti definuje vzťah **VŠEOBECNÝ** – **ŠPECIALIZOVANÝ**
+  - Potomek by teda mal reprezentovať špeciálny prípad predka...
+  - ... a predok by mal reprezentovať zobecnenie svojich potomkov.
+
+### Inak povedané...
+- Predok definuje spoločné správanie všetkých svojich potomkov.
+- Potomkovia môžu toto správanie rozšíriť alebo pozmeniť.
+- Potomkovia sa nemôžu tohto správania zbaviť.
+- A teda:
+  - Dedí sa všetko bez výnimky!!!
+  - Dedí sa aj miera skrytia informácií...
+
+### Vzťah skladania a dedičnosti
+- Skladanie – „MÁ“ vs dedičnosť „JE“.
+- Dedičnosť môžeme chápať ako dôsledok skladania.
+  - Inštancia triedy potomka obsahuje všetko, čo má inštancia triedy predka.
+
+### Hierarchia
+- Pri použití dedičnosti vznikajú hierarchie tried.
+- V našom prípade pracujeme s jednoduchou dedičnosťou.
+  - Každý potomek má práve jedného priameho predka.
+  - Predok môže mať viac priamych potomkov.
+- V prípade jednoduchej dedičnosti je touto hierarchiou strom.
+- Nezamieňať hierarchiu objektov (kompozícia) a hierarchiu tried (dedičnosť).
+
+### Liskov princíp substitúcie
+- Barbara Liskov 1987. Data abstraction and hierarchy.
+- Bertrand Meyer. Invarianty správania.
+- Potomek môže vždy nahradiť predka...
+  - ... a to preto, že majú spoločné správanie.
+  - Naopak to neplatí...
+
+### Vznik potomka
+1. Volanie konštruktora objektu.
+2. Volanie konštruktora priameho predka.
+3. Vykonanie konštruktora priameho predka.
+4. Vykonanie konštruktora objektu.
+
+### Úlohy na cvičenie
+- Implementujte príklad z prednášky a vytvorte banku s mnohými klientmi a účtami. Zamerajte sa na pochopenie princípu zastupiteľnosti a na to, ako fungujú konštruktory v dedičnosti.
+- Navrhnite a implementujte ďalšie jednoduché príklady dedičnosti s rozšírením spoločného stavu a správania, ako napríklad Auto, Osobné auto, Nákladné auto.
+
+### Kontrolné otázky
+- Ktoré dva kľúčové požiadavky riešime pomocou dedičnosti?
+- Aké návrhové požiadavky máme na použitie tried (čo s nimi môžeme robiť)?
+- Aký je rozdiel medzi dedičnosťou a skladaním? Čo majú spoločné?
+- V akých rolách vystupujú triedy v dedičnosti? Použite správnu terminológiu.
+- Vysvetlite, v akom vzťahu je trieda, z ktorej sa dedí, s triedou, ktorá dedí.
+- Čo všetko sa dedí, čo nie a prečo?
+- Čo rozumieme jednoduchou dedičnosťou a ako s tým súvisí hierarchia tried v dedičnosti?
+- Čo je Liskov princíp substitúcie a ako sa prejavuje v dedičnosti?
+- V akom poradí sa volajú a vykonávajú konštruktory pri použití dedičnosti?
+
+
