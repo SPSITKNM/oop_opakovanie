@@ -156,15 +156,148 @@ public:
 
 ### Deklarácia triedy
 
+
+# KeyValue Class
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class KeyValue
+{
+private:
+    int key;
+    double value;
+    KeyValue *next;
+
+public:
+    KeyValue(int k, double v);
+    ~KeyValue();
+    int GetKey();
+    double GetValue();
+    KeyValue* GetNext();
+    KeyValue* CreateNext(int k, double v);
+};
+```
+
+Tento súbor obsahuje triedu `KeyValue`, ktorá má:
+- **Súkromné členy:**
+  - `int key;`
+  - `double value;`
+  - `KeyValue *next;`
+- **Verejné metódy:**
+  - Konštruktor `KeyValue(int k, double v);`
+  - Destruktor `~KeyValue();`
+  - Metóda `GetKey()`, ktorá vracia hodnotu kľúča.
+  - Metóda `GetValue()`, ktorá vracia hodnotu premennej `value`.
+  - Metóda `GetNext()`, ktorá vracia ukazovateľ na ďalší objekt.
+  - Metóda `CreateNext(int k, double v)`, ktorá vytvorí ďalší objekt `KeyValue`.
+
 ### Implementácia (definícia) triedy
+
+# KeyValue Class Implementation
+
+```cpp
+KeyValue::KeyValue(int k, double v)
+{
+    this->key = k;
+    this->value = v;
+    this->next = nullptr;
+}
+
+KeyValue::~KeyValue()
+{
+    if (this->next != nullptr)
+    {
+        delete this->next;
+        this->next = nullptr;
+    }
+}
+
+KeyValue* KeyValue::GetNext()
+{
+    return this->next;
+}
+
+KeyValue* KeyValue::CreateNext(int k, double v)
+{
+    this->next = new KeyValue(k, v);
+    return this->next;
+}
+```
 
 ### Použitie triedy 1
 
+# Main Function Example
+
+```cpp
+int main()
+{
+    KeyValue *kv1 = new KeyValue(1, 1.5);
+    cout << kv1->CreateNext(2, 2.5)->GetKey() << endl;
+
+    KeyValue *kv2 = kv1->GetNext();
+    cout << kv2->GetNext() << endl;
+
+    delete kv1;
+    //delete kv2;
+
+    cout << kv1->GetKey() << endl;
+    cout << kv2->GetKey() << endl;
+
+    getchar();
+    return 0;
+}
+```
+
 ### Použitie triedy 2
 
-### Výsledok
+# Main Function Example with KeyValue Class
+
+```cpp
+int main()
+{
+    KeyValue *kv1 = new KeyValue(1, 1.5);
+    cout << kv1->CreateNext(2, 2.5)->GetKey() << endl;
+
+    KeyValue *kv2 = kv1->GetNext();
+    cout << kv2->GetNext() << endl;
+
+    //delete kv2;  // Zakomentované, lebo pamäť uvoľňuje delete kv1
+    delete kv1;
+
+    cout << kv1->GetKey() << endl;
+    cout << kv2->GetKey() << endl;
+
+    getchar();
+    return 0;
+}
+```
 
 ### Použitie triedy 3
+
+# Main Function with Nullptr
+
+```cpp
+int main()
+{
+    KeyValue *kv1 = new KeyValue(1, 1.5);
+    cout << kv1->CreateNext(2, 2.5)->GetKey() << endl;
+
+    KeyValue *kv2 = kv1->GetNext();
+    cout << kv2->GetNext() << endl;
+
+    delete kv1;
+    kv1 = nullptr;
+    kv2 = nullptr;
+
+    //cout << kv1->GetKey() << endl;
+    //cout << kv2->GetKey() << endl;
+
+    getchar();
+    return 0;
+}
+```
 
 ### Konštruktor a destruktor
 - Konštruktor inicializuje dáta objektu hodnotami parametrov v konštruktore (naplní pamäť dátami).
