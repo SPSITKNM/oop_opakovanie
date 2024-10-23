@@ -1,7 +1,9 @@
 
-# Modularita 2024/25
+# Objektovo orientované programovanie
 
-## Modul?
+## Modularita 2024/25
+
+### Modul?
 
 ### Osnova hodiny
 - Vývoj programovania
@@ -308,10 +310,7 @@
 - Vysvetlite princíp zapuzdrenia v OOP.
 - Vysvetlite princíp zasielania správ.
 - Vysvetlite princípy deklarácie a definície jednoduchej triedy v C++.
-
-### Odporúčaná literatúra
-- Bertrand Meyer. *Object-Oriented Software Construction*. Prentice Hall 1997. [17-36]
-
+- 
 ---
 
 # Objektovo orientované programovanie
