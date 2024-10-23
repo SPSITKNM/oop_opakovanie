@@ -299,6 +299,57 @@ int main()
 }
 ```
 
+# Main Function in C#
+
+```csharp
+using System;
+
+class KeyValue
+{
+    public int Key { get; private set; }
+    public double Value { get; private set; }
+    public KeyValue Next { get; private set; }
+
+    public KeyValue(int key, double value)
+    {
+        this.Key = key;
+        this.Value = value;
+        this.Next = null;
+    }
+
+    public KeyValue CreateNext(int key, double value)
+    {
+        this.Next = new KeyValue(key, value);
+        return this.Next;
+    }
+
+    public KeyValue GetNext()
+    {
+        return this.Next;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        KeyValue kv1 = new KeyValue(1, 1.5);
+        Console.WriteLine(kv1.CreateNext(2, 2.5).Key);
+
+        KeyValue kv2 = kv1.GetNext();
+        Console.WriteLine(kv2.GetNext());
+
+        kv1 = null;
+        kv2 = null;
+
+        //Console.WriteLine(kv1.Key);
+        //Console.WriteLine(kv2.Key);
+
+        Console.ReadKey();
+    }
+}
+```
+
 ### Konštruktor a destruktor
 - Konštruktor inicializuje dáta objektu hodnotami parametrov v konštruktore (naplní pamäť dátami).
 - Destruktor odstráni z pamäte dáta objektu (čistí pamäť).
