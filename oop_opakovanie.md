@@ -299,7 +299,7 @@ int main()
 }
 ```
 
-# Main Function in C#
+# Implementácia v jazyku C#
 
 ```csharp
 using System;
