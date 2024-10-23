@@ -428,3 +428,109 @@ class <meno> {
 - Vysvetlite rozdiel medzi statickou a dynamickou deklaráciou objektov v C++ / C#.
 - Ako sa dá postupovať, ak chceme v zadaní programu nájsť triedy, ich metódy a dátové členy?
 - Kedy a prečo potrebujeme použiť viac konštruktorov jednej triedy?
+
+--- 
+
+# Objektovo orientované programovanie
+## Objektová dekompozícia a trieda ako objekt 2024/25
+
+### Osnova hodiny
+- Čo je lepšie? Funkcie alebo objekty?
+- Môže byť trieda zároveň objektom?
+- Príklad.
+
+### Funkcie alebo objekty?
+
+#### Funkcie vs objekty
+- Je lepšie založiť štruktúru programu na funkciách alebo dátach?
+- Na návrh systému môžeme nahliadať dvoma spôsobmi:
+  - Ako na sadu funkcií (odpovedá na otázku, **ČO** systém bude robiť).
+  - Ako na sadu objektov, ktoré spolupracujú (odpovedá na otázku, **KTO** bude zabezpečovať funkčnosť).
+
+#### Problémy
+- Rozšíriteľnosť
+- Opakovaná použiteľnosť
+- Kombinovateľnosť
+
+### Príklad zadania
+- Majme malú banku s obmedzeným počtom klientov a účtov. V banke môžu klienti a účty pribúdať.
+- Každý účet má jedného vlastníka a môže mať jedného partnera, obaja sú klienti banky a majú meno a kód. Na účty je možné vkladať a vyberať z nich, je možné zistiť stav na účte. Ak na účte nie je dostatok peňazí, nie je možné vybrať.
+- Vklady na účtoch sú úročené buď základnou alebo špeciálnou úrokovou sadzbou. Raz za čas banka všetkým účtom pripíše úrok zodpovedajúci úrokovej sadzbe.
+- Účet resp. klienta je možné v banke vyhľadať podľa čísla resp. kódu.
+
+### Funkcie alebo objekty?
+- Zhora nadol alebo naopak?
+- Prečo objekty?
+
+### Triedy ako objekty? Prečo?
+
+#### Trieda ako objekt
+- Objektovo orientovaný prístup všeobecne vychádza z predpokladu, že „všetko je objekt“ (teda aj typy sú objekty).
+- Môže byť trieda objektom? A za akých podmienok?
+- Objekty majú svoj stav a správanie...
+
+#### Stav a správanie triedy
+- Stav je reprezentovaný dátami.
+- Správanie je reprezentované metódami.
+- Musí byť splnené zapuzdrenie a skrytie informácií.
+- Triede sa musí dať zaslať správa (zavolať jej metódu).
+
+### Príklad
+
+#### Deklarácia a definícia
+#### Použitie
+
+### Ako to funguje...
+- Dáta a metódy deklarované ako „static“ patria triede.
+- Prístup k nim však majú aj objekty (inštancie) triedy.
+- Je potrebné rozlišovať medzi triednymi a inštančnými premennými a metódami.
+
+### Vhodné konvencie
+- V kontexte triedy sa pri prístupe k dátam alebo metódam nemusí uvádzať adresát správy.
+- Pre zabránenie nedorozumeniam je vhodné:
+  - pre prístup k inštančným dátam/metódam používať formu `OBJECT_NAME->METHOD_NAME`
+  - pre prístup k triednym dátam/metódam používať formu `CLASS_NAME::METHOD_NAME`
+
+### Adresát správy
+- Adresátom správy je buď:
+  - objekt (inštancia) tejto triedy v prípade inštančnej premennej alebo metódy,
+  - alebo sama trieda v prípade triednej (static) premennej alebo metódy.
+
+### Kde je rozdiel?
+
+#### Trieda bez objektov
+
+### Konštruktor? Destruktor?
+- Trieda existuje po celý čas behu programu.
+- Ak má trieda triedne (static) premenné, musíme ich inicializovať zvlášť.
+- Konštruktor ani destruktor pre triedu ako objekt neexistuje.
+
+### Kto o kom vie?
+- Prostredníctvom konštruktora triedy vytvárame objekty (inštancie), ale trieda o nich nič nevie.
+- Z triednej metódy nie je možné pristupovať k členským položkám objektu.
+- Objekty (inštancie) triedy majú prístup k členským (static) položkám triedy (pri použití nemusí byť jasné, s akou položkou pracujeme).
+
+### Čo je správne volanie?
+
+### Kedy použiť triedu ako objekt?
+- Vytvorenie knižnice funkcií (napr. matematika).
+- Potrebujeme, aby objekty (inštancie) zdieľali spoločné dáta.
+  - Napr. evidencia počtu objektov (inštancií) triedy.
+
+### Upravte triedu pre počítanie objektov
+#### Deklarácia a definícia
+
+### Úlohy na cvičenie
+- Implementujte príklady z prednášky a doplňte do tried `Client` a `Account` počítanie existujúcich objektov.
+- Navrhnite a implementujte ďalšie príklady členských položiek tried. Napríklad rovnaká úroková sadzba pre všetky účty, ktorým nebola sadzba zadaná v konštruktore a ktorú je možné prostredníctvom metódy triedy zmeniť.
+
+### Otázky
+- Aký je rozdiel medzi funkčnou a objektovou dekompozíciou programu?
+- Prečo preferujeme objektovú dekompozíciu a aké sú hlavné problémy funkčnej dekompozície?
+- Za akých podmienok môžeme považovať triedu za objekt a ako to implementovať v C++?
+- Vysvetlite rozdiel medzi členskými položkami triedy a inštancie a popíšte ich dostupnosť.
+- Ako môžeme v C++ dôsledne odlišovať prácu s členskými položkami tried a inštancií?
+- Potrebuje trieda v roli objektu konštruktor resp. destruktor a prečo?
+
+### Odporúčaná literatúra
+- Bertrand Meyer. *Object-Oriented Software Construction*. Prentice Hall 1997. [101-120]
