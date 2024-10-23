@@ -1,7 +1,7 @@
 
 # Modularita 2024/25
 
-### Modul?
+## Modul?
 
 ### Osnova hodiny
 - Vývoj programovania
