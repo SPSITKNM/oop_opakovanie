@@ -157,7 +157,7 @@ public:
 ### Deklarácia triedy
 
 
-# KeyValue Class implementácia v C++
+### KeyValue Class implementácia v C++
 
 ```cpp
 #include <iostream>
@@ -195,7 +195,7 @@ Tento súbor obsahuje triedu `KeyValue`, ktorá má:
 
 ### Implementácia (definícia) triedy
 
-# KeyValue Class implementáciav C++
+### KeyValue Class implementáciav C++
 
 ```cpp
 KeyValue::KeyValue(int k, double v)
@@ -228,7 +228,7 @@ KeyValue* KeyValue::CreateNext(int k, double v)
 
 ### Použitie triedy 1
 
-# Main Function príklad implementácia v C++
+### Main Function príklad implementácia v C++
 
 ```cpp
 int main()
@@ -252,7 +252,7 @@ int main()
 
 ### Použitie triedy 2
 
-# Main Function príklad s KeyValue Class implementácia v C++
+### Main Function príklad s KeyValue Class implementácia v C++
 
 ```cpp
 int main()
@@ -276,7 +276,7 @@ int main()
 
 ### Použitie triedy 3
 
-# Main Function s Nullptr implementácia v C++
+### Main Function s Nullptr implementácia v C++
 
 ```cpp
 int main()
@@ -299,7 +299,7 @@ int main()
 }
 ```
 
-# Implementácia v jazyku C#
+### Implementácia v jazyku C#
 
 ```csharp
 using System;
