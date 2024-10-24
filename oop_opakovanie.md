@@ -1217,7 +1217,111 @@ class Program {
 
 ### Kde je rozdiel?
 
+### StaticValue Class definícia v C++
+
+```cpp
+class StaticValue {
+private:
+    static int value;
+    StaticValue();
+
+public:
+    static void IncValue();
+    static int GetValue();
+};
+```
+
+
+### StaticValue Class definícia v C#
+
+```csharp
+class StaticValue {
+    private static int value;
+
+    // Constructor
+    private StaticValue() { }
+
+    public static void IncValue() {
+        value += 1;
+    }
+
+    public static int GetValue() {
+        return value;
+    }
+}
+```
+
 #### Trieda bez objektov
+
+### Implementácia v jazyku C++ 
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class StaticValue {
+public:
+    static int value;
+    
+    static int GetValue() {
+        return value;
+    }
+    
+    static void IncValue() {
+        value++;
+    }
+};
+
+int StaticValue::value = 0;
+
+int main() {
+    cout << StaticValue::GetValue() << endl;
+    StaticValue::IncValue();
+    cout << StaticValue::GetValue() << endl;
+
+    StaticValue *sv = new StaticValue();
+    cout << sv->GetValue() << endl;
+
+    getchar();
+    return 0;
+}
+```
+
+### Implementácia v jazyku C# 
+
+```csharp
+using System;
+
+class StaticValue
+{
+    public static int value = 0;
+
+    public static int GetValue()
+    {
+        return value;
+    }
+
+    public static void IncValue()
+    {
+        value++;
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine(StaticValue.GetValue());
+        StaticValue.IncValue();
+        Console.WriteLine(StaticValue.GetValue());
+
+        StaticValue sv = new StaticValue();
+        Console.WriteLine(sv.GetValue());
+
+        Console.ReadLine();
+    }
+}
+```
 
 ### Konštruktor? Destruktor?
 - Trieda existuje po celý čas behu programu.
@@ -1231,13 +1335,209 @@ class Program {
 
 ### Čo je správne volanie?
 
+### Implementácia v jazyku C++
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class StaticValue {
+public:
+    static int value;
+
+    static int GetValue() {
+        return value;
+    }
+
+    static void IncValue() {
+        value++;
+    }
+};
+
+int StaticValue::value = 0;
+
+int main() {
+    cout << StaticValue::GetValue() << endl;
+    StaticValue::IncValue();
+    cout << StaticValue::GetValue() << endl;
+
+    StaticValue *sv = new StaticValue();
+    cout << sv->GetValue() << endl;
+
+    getchar();
+    return 0;
+}
+```
+
+### Implementácia v jazyku C# 
+
+```csharp
+using System;
+
+class StaticValue
+{
+    public static int value = 0;
+
+    public static int GetValue()
+    {
+        return value;
+    }
+
+    public static void IncValue()
+    {
+        value++;
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine(StaticValue.GetValue());
+        StaticValue.IncValue();
+        Console.WriteLine(StaticValue.GetValue());
+
+        StaticValue sv = new StaticValue();
+        Console.WriteLine(sv.GetValue());
+
+        Console.ReadLine();
+    }
+}
+```
+
+
 ### Kedy použiť triedu ako objekt?
 - Vytvorenie knižnice funkcií (napr. matematika).
 - Potrebujeme, aby objekty (inštancie) zdieľali spoločné dáta.
   - Napr. evidencia počtu objektov (inštancií) triedy.
 
 ### Upravte triedu pre počítanie objektov
+
+
+### Implementácia v jazyku C++
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Client {
+private:
+    int code;
+    string name;
+
+public:
+    Client(int c, string n) : code(c), name(n) {}
+
+    int GetCode() {
+        return code;
+    }
+
+    string GetName() {
+        return name;
+    }
+};
+```
+
+### Implementácia v jazyku C# 
+
+```csharp
+using System;
+
+class Client {
+    private int code;
+    private string name;
+
+    public Client(int c, string n) {
+        code = c;
+        name = n;
+    }
+
+    public int GetCode() {
+        return code;
+    }
+
+    public string GetName() {
+        return name;
+    }
+}
+```
+
+
 #### Deklarácia a definícia
+
+
+### Implementácia v jazyku C++
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Client {
+private:
+    static int objectsCount;
+    int code;
+    string name;
+
+public:
+    static int GetObjectsCount() {
+        return objectsCount;
+    }
+
+    Client(int c, string n) : code(c), name(n) {
+        objectsCount++;
+    }
+
+    ~Client() {
+        objectsCount--;
+    }
+
+    int GetCode() {
+        return code;
+    }
+
+    string GetName() {
+        return name;
+    }
+};
+
+int Client::objectsCount = 0;
+```
+
+### Implementácia v jazyku C# 
+
+```csharp
+using System;
+
+class Client {
+    private static int objectsCount = 0;
+    private int code;
+    private string name;
+
+    public static int GetObjectsCount() {
+        return objectsCount;
+    }
+
+    public Client(int c, string n) {
+        code = c;
+        name = n;
+        objectsCount++;
+    }
+
+    ~Client() {
+        objectsCount--;
+    }
+
+    public int GetCode() {
+        return code;
+    }
+
+    public string GetName() {
+        return name;
+    }
+}
+```
 
 ### Úlohy na cvičenie
 - Implementujte príklady z prednášky a doplňte do tried `Client` a `Account` počítanie existujúcich objektov.
@@ -1246,9 +1546,9 @@ class Program {
 ### Otázky
 - Aký je rozdiel medzi funkčnou a objektovou dekompozíciou programu?
 - Prečo preferujeme objektovú dekompozíciu a aké sú hlavné problémy funkčnej dekompozície?
-- Za akých podmienok môžeme považovať triedu za objekt a ako to implementovať v C++?
+- Za akých podmienok môžeme považovať triedu za objekt a ako to implementovať v C++ / C#?
 - Vysvetlite rozdiel medzi členskými položkami triedy a inštancie a popíšte ich dostupnosť.
-- Ako môžeme v C++ dôsledne odlišovať prácu s členskými položkami tried a inštancií?
+- Ako môžeme v C++ / C# dôsledne odlišovať prácu s členskými položkami tried a inštancií?
 - Potrebuje trieda v roli objektu konštruktor resp. destruktor a prečo?
 
 ---
