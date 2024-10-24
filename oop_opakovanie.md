@@ -5,7 +5,7 @@
 
 ### Modul?
 
-### KeyValue Class
+### KeyValue Class implementácia v C++
 
 ```cpp
 class KeyValue
@@ -157,7 +157,7 @@ public:
 ### Deklarácia triedy
 
 
-# KeyValue Class
+# KeyValue Class implementácia v C++
 
 ```cpp
 #include <iostream>
@@ -195,7 +195,7 @@ Tento súbor obsahuje triedu `KeyValue`, ktorá má:
 
 ### Implementácia (definícia) triedy
 
-# KeyValue Class implementácia
+# KeyValue Class implementáciav C++
 
 ```cpp
 KeyValue::KeyValue(int k, double v)
@@ -228,7 +228,7 @@ KeyValue* KeyValue::CreateNext(int k, double v)
 
 ### Použitie triedy 1
 
-# Main Function príklad
+# Main Function príklad implementácia v C++
 
 ```cpp
 int main()
@@ -252,7 +252,7 @@ int main()
 
 ### Použitie triedy 2
 
-# Main Function príklad s KeyValue Class
+# Main Function príklad s KeyValue Class implementácia v C++
 
 ```cpp
 int main()
@@ -276,7 +276,7 @@ int main()
 
 ### Použitie triedy 3
 
-# Main Function s Nullptr
+# Main Function s Nullptr implementácia v C++
 
 ```cpp
 int main()
