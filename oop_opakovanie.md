@@ -1123,7 +1123,81 @@ class Bank {
 ### Príklad
 
 #### Deklarácia a definícia
+
+### StaticValue Class príklad v C++
+
+```cpp
+class StaticValue {
+private:
+    static int value;
+
+public:
+    static void IncValue();
+    static int GetValue();
+};
+
+int StaticValue::value = 0;
+
+void StaticValue::IncValue() {
+    StaticValue::value += 1;
+}
+
+int StaticValue::GetValue() {
+    return StaticValue::value;
+}
+```
+
+### StaticValue Class príklad v C#
+
+```csharp
+class StaticValue {
+    private static int value = 0;
+
+    public static void IncValue() {
+        value += 1;
+    }
+
+    public static int GetValue() {
+        return value;
+    }
+}
+```
+
 #### Použitie
+
+### StaticValue použitie príklad v C++
+
+```cpp
+int main() {
+    cout << StaticValue::GetValue() << endl;
+    StaticValue::IncValue();
+    cout << StaticValue::GetValue() << endl;
+
+    StaticValue* sv = new StaticValue();
+    cout << sv->GetValue() << endl;
+
+    getchar();
+    return 0;
+}
+```
+# StaticValue použitie príklad v C#
+
+```csharp
+using System;
+
+class Program {
+    static void Main() {
+        Console.WriteLine(StaticValue.GetValue());
+        StaticValue.IncValue();
+        Console.WriteLine(StaticValue.GetValue());
+
+        StaticValue sv = new StaticValue();
+        Console.WriteLine(sv.GetValue());
+
+        Console.ReadKey();
+    }
+}
+```
 
 ### Ako to funguje...
 - Dáta a metódy deklarované ako „static“ patria triede.
