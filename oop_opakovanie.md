@@ -488,7 +488,7 @@ class Program
 #### Deklarácia
 
 
-# KeyValue Class Example implementácia v jazyku C++
+### KeyValue Class Example implementácia v jazyku C++
 
 ```cpp
 #include <iostream>
