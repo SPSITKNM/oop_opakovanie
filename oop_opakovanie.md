@@ -506,8 +506,8 @@ public:
 };
 ```
 
-- Konštruktor inicializuje objekt (plní pamäť dátami, ktoré objekt používa).
-- Destruktor odstraňuje dáta objektu (uvoľňuje pamäť, ktorú objekt zaberá).
+- Konštruktor inicializuje objekt (plní pamäť dátami, ktoré objekt používa)
+- Destruktor odstraňuje dáta objektu (uvoľňuje pamäť, ktorú objekt zaberá)
 
 #### Použitie
 - Použitie kľúčového slova `new` zabezpečí vznik objektu (alokuje pamäť pre dáta („plochú“ časť) objektu).
