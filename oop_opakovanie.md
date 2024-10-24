@@ -1180,7 +1180,7 @@ int main() {
     return 0;
 }
 ```
-# StaticValue použitie príklad v C#
+### StaticValue použitie príklad v C#
 
 ```csharp
 using System;
