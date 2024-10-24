@@ -486,6 +486,26 @@ class Program
 
 ### Príklad
 #### Deklarácia
+
+
+# KeyValue Class Example implementácia v jazyku C++
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class KeyValue {
+private:
+    int key;
+    double value;
+
+public:
+    KeyValue(int k, double v);
+    int GetKey();
+    double GetValue();
+};
+```
+
 - Konštruktor inicializuje objekt (plní pamäť dátami, ktoré objekt používa).
 - Destruktor odstraňuje dáta objektu (uvoľňuje pamäť, ktorú objekt zaberá).
 
