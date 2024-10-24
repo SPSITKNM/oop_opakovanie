@@ -487,8 +487,8 @@ class Program
 ### Príklad
 #### Deklarácia
 
-
 ### KeyValue Class Example implementácia v jazyku C++
+- Konštruktor inicializuje objekt (plní pamäť dátami, ktoré objekt používa)
 
 ```cpp
 #include <iostream>
@@ -506,14 +506,224 @@ public:
 };
 ```
 
-- Konštruktor inicializuje objekt (plní pamäť dátami, ktoré objekt používa)
+# KeyValues Class implementácia v jazyku C++
 - Destruktor odstraňuje dáta objektu (uvoľňuje pamäť, ktorú objekt zaberá)
+  
+```cpp
+class KeyValues {
+private:
+    KeyValue** keyValues;
+    int count;
+
+public:
+    KeyValues(int n);
+    ~KeyValues();
+    KeyValue* CreateObject(int k, double v);
+    KeyValue* SearchObject(int key);
+    int Count();
+};
+```
+
+
+# KeyValues Class implementácia v jazyku C#
+
+```csharp
+class KeyValue {
+    private int key;
+    private double value;
+
+    public KeyValue(int k, double v) {
+        key = k;
+        value = v;
+    }
+
+    public int GetKey() {
+        return key;
+    }
+
+    public double GetValue() {
+        return value;
+    }
+}
+
+class KeyValues {
+    private KeyValue[] keyValues;
+    private int count;
+
+    public KeyValues(int n) {
+        keyValues = new KeyValue[n];
+        count = 0;
+    }
+
+    ~KeyValues() {
+        // Destructor implementation (in C#, cleanup typically handled by GC)
+    }
+
+    public KeyValue CreateObject(int k, double v) {
+        if (count < keyValues.Length) {
+            keyValues[count] = new KeyValue(k, v);
+            return keyValues[count++];
+        }
+        return null;
+    }
+
+    public KeyValue SearchObject(int key) {
+        foreach (KeyValue kv in keyValues) {
+            if (kv != null && kv.GetKey() == key) {
+                return kv;
+            }
+        }
+        return null;
+    }
+
+    public int Count() {
+        return count;
+    }
+}
+```
 
 #### Použitie
 - Použitie kľúčového slova `new` zabezpečí vznik objektu (alokuje pamäť pre dáta („plochú“ časť) objektu).
 
+# Main Function implementácia v C++
+
+```cpp
+int main() {
+    int N = 5;
+    KeyValues* myKeyValues = new KeyValues(N);
+
+    KeyValue* myKeyValue = myKeyValues->CreateObject(0, 0.5);
+    cout << myKeyValue->GetValue() << endl;
+
+    for (int i = 1; i < N; i++) {
+        myKeyValues->CreateObject(i, i + 0.5);
+    }
+    cout << myKeyValues->SearchObject(4)->GetValue() << endl;
+
+    delete myKeyValues;
+
+    // cout << myKeyValue->GetKey() << endl;
+
+    getchar();
+    return 0;
+}
+```
+
+# Main Function implementácia v C#
+
+```csharp
+using System;
+
+class Program {
+    static void Main() {
+        int N = 5;
+        KeyValues myKeyValues = new KeyValues(N);
+
+        KeyValue myKeyValue = myKeyValues.CreateObject(0, 0.5);
+        Console.WriteLine(myKeyValue.GetValue());
+
+        for (int i = 1; i < N; i++) {
+            myKeyValues.CreateObject(i, i + 0.5);
+        }
+        Console.WriteLine(myKeyValues.SearchObject(4).GetValue());
+
+        // In C#, explicit deletion is not required (handled by garbage collector).
+        // No need for: delete myKeyValues;
+
+        // Console.WriteLine(myKeyValue.GetKey());
+
+        Console.ReadKey();
+    }
+}
+```
+
 #### Výsledok
 - Definícia (implementácia).
+
+```csharp
+0.5
+4.5
+```
+
+#### Definícia ( implementácia ) 
+
+
+# KeyValues Class Method definicia v jazyku C++
+
+```cpp
+KeyValues::KeyValues(int n) {
+    this->keyValues = new KeyValue*[n];
+    this->count = 0;
+}
+
+KeyValues::~KeyValues() {
+    for (int i = 0; i < this->count; i++) {
+        delete this->keyValues[i];
+    }
+    delete[] this->keyValues;
+}
+
+int KeyValues::Count() {
+    return this->count;
+}
+
+KeyValue* KeyValues::CreateObject(int k, double v) {
+    KeyValue* newObject = new KeyValue(k, v);
+    this->keyValues[this->count] = newObject;
+    this->count += 1;
+    return newObject;
+}
+
+KeyValue* KeyValues::SearchObject(int k) {
+    for (int i = 0; i < this->count; i++) {
+        if (this->keyValues[i]->GetKey() == k) {
+            return this->keyValues[i];
+        }
+    }
+    return nullptr;
+}
+```
+
+
+# KeyValues Class Method definícia v jazyku C#
+
+```csharp
+class KeyValues {
+    private KeyValue[] keyValues;
+    private int count;
+
+    public KeyValues(int n) {
+        this.keyValues = new KeyValue[n];
+        this.count = 0;
+    }
+
+    ~KeyValues() {
+        // Destructor in C# is rarely needed (handled by garbage collector)
+        // However, if manual cleanup is needed, implement IDisposable and use Dispose pattern.
+    }
+
+    public int Count() {
+        return this.count;
+    }
+
+    public KeyValue CreateObject(int k, double v) {
+        KeyValue newObject = new KeyValue(k, v);
+        this.keyValues[this.count] = newObject;
+        this.count += 1;
+        return newObject;
+    }
+
+    public KeyValue SearchObject(int k) {
+        for (int i = 0; i < this.count; i++) {
+            if (this.keyValues[i].GetKey() == k) {
+                return this.keyValues[i];
+            }
+        }
+        return null;
+    }
+}
+```
+
 
 ### Úlohy na cvičenie
 - Implementujte príklad z prednášky a do triedy `KeyValues` pridajte metódu `KeyValue* RemoveObject(int k)`, ktorá odstráni objekt s daným kľúčom a vráti ukazovateľ na neho.
@@ -529,7 +739,7 @@ public:
 - Zdôraznite vlastnosti triedy z pohľadu modularity.
 - Vysvetlite princíp zapuzdrenia v OOP.
 - Vysvetlite princíp zasielania správ.
-- Vysvetlite princípy deklarácie a definície jednoduchej triedy v C++.
+- Vysvetlite princípy deklarácie a definície jednoduchej triedy v C++ / C#.
 - 
 ---
 
