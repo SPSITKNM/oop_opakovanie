@@ -506,7 +506,7 @@ public:
 };
 ```
 
-# KeyValues Class implementácia v jazyku C++
+### KeyValues Class implementácia v jazyku C++
 - Destruktor odstraňuje dáta objektu (uvoľňuje pamäť, ktorú objekt zaberá)
   
 ```cpp
@@ -525,7 +525,7 @@ public:
 ```
 
 
-# KeyValues Class implementácia v jazyku C#
+### KeyValues Class implementácia v jazyku C#
 
 ```csharp
 class KeyValue {
@@ -585,7 +585,7 @@ class KeyValues {
 #### Použitie
 - Použitie kľúčového slova `new` zabezpečí vznik objektu (alokuje pamäť pre dáta („plochú“ časť) objektu).
 
-# Main Function implementácia v C++
+### Main Function implementácia v C++
 
 ```cpp
 int main() {
@@ -609,7 +609,7 @@ int main() {
 }
 ```
 
-# Main Function implementácia v C#
+### Main Function implementácia v C#
 
 ```csharp
 using System;
@@ -685,7 +685,7 @@ KeyValue* KeyValues::SearchObject(int k) {
 ```
 
 
-# KeyValues Class Method definícia v jazyku C#
+### KeyValues Class Method definícia v jazyku C#
 
 ```csharp
 class KeyValues {
@@ -756,6 +756,8 @@ class KeyValues {
 #### Trieda
 - Trieda je popisom objektov so spoločnými vlastnosťami.
 
+### Class Template v jazyku C++
+
 ```cpp
 class <meno> {
     private:
@@ -764,7 +766,17 @@ class <meno> {
         <verejné členské položky>
 };
 ```
+### Class Template v jazyku C#
 
+```csharp
+class <Name> {
+    // Private member variables
+    private <private members>;
+
+    // Public member methods and properties
+    public <public members>;
+}
+```
 - Členskými položkami môžu byť premenné (dáta) a metódy (funkcie).
 
 #### Objekt
@@ -833,8 +845,211 @@ class <meno> {
 - Možno vyhľadať klienta podľa kódu a účet podľa čísla.
 
 ### Príklad
-
 ### Deklarácia
+
+### Client Class príklad implementácie v C++
+
+```cpp
+class Client {
+private:
+    int code;
+    string name;
+
+public:
+    Client(int c, string n);
+    int GetCode();
+    string GetName();
+};
+```
+
+### Client Class príklad implementácie v C#
+
+```csharp
+class Client {
+    private int code;
+    private string name;
+
+    public Client(int c, string n) {
+        this.code = c;
+        this.name = n;
+    }
+
+    public int GetCode() {
+        return code;
+    }
+
+    public string GetName() {
+        return name;
+    }
+}
+```
+
+
+### Account and Bank Classes v jazyku C++
+
+```cpp
+class Account {
+private:
+    int number;
+    double balance;
+    double interestRate;
+    Client* owner;
+    Client* partner;
+
+public:
+    Account(int n, Client* c);
+    Account(int n, Client* c, double ir);
+    Account(int n, Client* c, Client* p);
+    Account(int n, Client* c, Client* p, double ir);
+
+    int GetNumber();
+    double GetBalance();
+    double GetInterestRate();
+    Client* GetOwner();
+    Client* GetPartner();
+    bool CanWithdraw(double a);
+
+    void Deposit(double a);
+    bool Withdraw(double a);
+    void AddInterest();
+};
+
+class Bank {
+private:
+    Client** clients;
+    int clientsCount;
+    Account** accounts;
+    int accountsCount;
+
+public:
+    Bank(int c, int a);
+    ~Bank();
+
+    Client* GetClient(int c);
+    Account* GetAccount(int n);
+
+    Client* CreateClient(int c, string n);
+    Account* CreateAccount(int n, Client* c);
+    Account* CreateAccount(int n, Client* c, double ir);
+    Account* CreateAccount(int n, Client* c, Client* p);
+    Account* CreateAccount(int n, Client* c, Client* p, double ir);
+
+    void AddInterest();
+};
+```
+
+
+### Account and Bank Classes v jazyku C#
+
+```csharp
+class Account {
+    private int number;
+    private double balance;
+    private double interestRate;
+    private Client owner;
+    private Client partner;
+
+    public Account(int n, Client c) {
+        this.number = n;
+        this.owner = c;
+    }
+
+    public Account(int n, Client c, double ir) {
+        this.number = n;
+        this.owner = c;
+        this.interestRate = ir;
+    }
+
+    public Account(int n, Client c, Client p) {
+        this.number = n;
+        this.owner = c;
+        this.partner = p;
+    }
+
+    public Account(int n, Client c, Client p, double ir) {
+        this.number = n;
+        this.owner = c;
+        this.partner = p;
+        this.interestRate = ir;
+    }
+
+    public int GetNumber() { return number; }
+    public double GetBalance() { return balance; }
+    public double GetInterestRate() { return interestRate; }
+    public Client GetOwner() { return owner; }
+    public Client GetPartner() { return partner; }
+    public bool CanWithdraw(double a) { return balance >= a; }
+
+    public void Deposit(double a) { balance += a; }
+    public bool Withdraw(double a) {
+        if (CanWithdraw(a)) {
+            balance -= a;
+            return true;
+        }
+        return false;
+    }
+    public void AddInterest() { balance += balance * interestRate; }
+}
+
+class Bank {
+    private Client[] clients;
+    private int clientsCount;
+    private Account[] accounts;
+    private int accountsCount;
+
+    public Bank(int c, int a) {
+        clients = new Client[c];
+        accounts = new Account[a];
+        clientsCount = 0;
+        accountsCount = 0;
+    }
+
+    ~Bank() {
+        // Destructor logic not needed in C#
+    }
+
+    public Client GetClient(int c) { return clients[c]; }
+    public Account GetAccount(int n) { return accounts[n]; }
+
+    public Client CreateClient(int c, string n) {
+        Client newClient = new Client(c, n);
+        clients[clientsCount++] = newClient;
+        return newClient;
+    }
+
+    public Account CreateAccount(int n, Client c) {
+        Account newAccount = new Account(n, c);
+        accounts[accountsCount++] = newAccount;
+        return newAccount;
+    }
+
+    public Account CreateAccount(int n, Client c, double ir) {
+        Account newAccount = new Account(n, c, ir);
+        accounts[accountsCount++] = newAccount;
+        return newAccount;
+    }
+
+    public Account CreateAccount(int n, Client c, Client p) {
+        Account newAccount = new Account(n, c, p);
+        accounts[accountsCount++] = newAccount;
+        return newAccount;
+    }
+
+    public Account CreateAccount(int n, Client c, Client p, double ir) {
+        Account newAccount = new Account(n, c, p, ir);
+        accounts[accountsCount++] = newAccount;
+        return newAccount;
+    }
+
+    public void AddInterest() {
+        foreach (var account in accounts) {
+            if (account != null) {
+                account.AddInterest();
+            }
+        }
+    }
+}
+```
 
 #### Tri typy metód
 - **Konštruktory a destruktor:** Konštruktory inicializujú stav objektu po jeho vzniku, destruktor uvoľňuje dynamicky pridelenú pamäť pred zánikom objektu. Ak nie sú uvedené, vytvoria sa tieto metódy automaticky (bez algoritmu).
