@@ -2270,6 +2270,114 @@ A
 
 #### Deklarácia predka
 
+
+### Account Class s Withdraw a Deposit Methods v C++ a C#
+
+### C++ Account Class
+
+```cpp
+class Account
+{
+private:
+    int number;
+    double balance;
+    double interestRate;
+
+    Client *owner;
+
+public:
+    Account(int n, Client *o);
+    Account(int n, Client *o, double ir);
+
+    int GetNumber();
+    double GetBalance();
+    double GetInterestRate();
+    Client *GetOwner();
+    bool CanWithdraw(double a);
+
+    void Deposit(double a);
+    bool Withdraw(double a);
+    void AddInterest();
+};
+```
+
+### C# Account Class
+
+```csharp
+public class Account
+{
+    private int number;
+    private double balance;
+    private double interestRate;
+
+    private Client owner;
+
+    // Constructors
+    public Account(int n, Client o)
+    {
+        number = n;
+        owner = o;
+        balance = 0;
+        interestRate = 0;
+    }
+
+    public Account(int n, Client o, double ir)
+    {
+        number = n;
+        owner = o;
+        interestRate = ir;
+        balance = 0;
+    }
+
+    // Methods
+    public int GetNumber()
+    {
+        return number;
+    }
+
+    public double GetBalance()
+    {
+        return balance;
+    }
+
+    public double GetInterestRate()
+    {
+        return interestRate;
+    }
+
+    public Client GetOwner()
+    {
+        return owner;
+    }
+
+    public bool CanWithdraw(double amount)
+    {
+        return balance >= amount;
+    }
+
+    public void Deposit(double amount)
+    {
+        balance += amount;
+    }
+
+    public bool Withdraw(double amount)
+    {
+        if (CanWithdraw(amount))
+        {
+            balance -= amount;
+            return true;
+        }
+        return false;
+    }
+
+    public void AddInterest()
+    {
+        balance += balance * interestRate;
+    }
+}
+```
+
+
 ### Prekrytie
 - Deklarujeme triedu `CreditAccount`.
 - Prekryjeme metódu `CanWithdraw`.
@@ -2278,13 +2386,183 @@ A
 
 #### Deklarácia potomka
 
+### CreditAccount Class in C++ and C#
+
+### C++ CreditAccount Class
+
+```cpp
+class CreditAccount : public Account
+{
+private:
+    double credit;
+
+public:
+    CreditAccount(int n, Client *o, double c);
+    CreditAccount(int n, Client *o, double ir, double c);
+
+    bool CanWithdraw(double a);
+};
+```
+
+### C# CreditAccount Class
+
+```csharp
+public class CreditAccount : Account
+{
+    private double credit;
+
+    // Constructors
+    public CreditAccount(int n, Client o, double c) : base(n, o)
+    {
+        this.credit = c;
+    }
+
+    public CreditAccount(int n, Client o, double ir, double c) : base(n, o, ir)
+    {
+        this.credit = c;
+    }
+
+    // Method
+    public override bool CanWithdraw(double amount)
+    {
+        return balance + credit >= amount;
+    }
+}
+```
+
+
 #### Definícia
+
+### CanWithdraw Method v Account a CreditAccount Classes v C++ a C#
+
+### C++ CanWithdraw Method
+
+```cpp
+// In Account class
+bool Account::CanWithdraw(double a)
+{
+    return (this->balance >= a);
+}
+
+// In CreditAccount class
+bool CreditAccount::CanWithdraw(double a)
+{
+    return (this->GetBalance() + this->credit >= a);
+}
+```
+
+### C# CanWithdraw Method
+
+```csharp
+// In Account class
+public virtual bool CanWithdraw(double amount)
+{
+    return balance >= amount;
+}
+
+// In CreditAccount class
+public override bool CanWithdraw(double amount)
+{
+    return balance + credit >= amount;
+}
+```
 
 #### Definícia (pripomenutie)
 
+### Withdraw Method v Account Class v C++ a C#
+
+### C++ Withdraw Method
+
+```cpp
+bool Account::Withdraw(double a)
+{
+    bool success = false;
+    if (this->CanWithdraw(a))
+    {
+        this->balance -= a;
+        success = true;
+    }
+    return success;
+}
+```
+
+### C# Withdraw Method
+
+```csharp
+public bool Withdraw(double amount)
+{
+    bool success = false;
+    if (CanWithdraw(amount))
+    {
+        balance -= amount;
+        success = true;
+    }
+    return success;
+}
+```
+
 #### Použitie
 
+
+### Main Function s CreditAccount v C++ a C#
+
+### C++ Main Function
+
+```cpp
+int main()
+{
+    Client *o = new Client(0, "Smith");
+
+    CreditAccount *ca = new CreditAccount(1, o, 1000);
+    cout << ca->CanWithdraw(1000) << endl;
+
+    Account *a = ca;
+    cout << a->CanWithdraw(1000) << endl;
+
+    cout << ca->Withdraw(1000) << endl;
+
+    a = nullptr;
+    delete ca;
+
+    getchar();
+    return 0;
+}
+```
+
+### C# Main Function
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Client o = new Client(0, "Smith");
+
+        CreditAccount ca = new CreditAccount(1, o, 1000);
+        Console.WriteLine(ca.CanWithdraw(1000));
+
+        Account a = ca;
+        Console.WriteLine(a.CanWithdraw(1000));
+
+        Console.WriteLine(ca.Withdraw(1000));
+
+        a = null;
+        ca = null;
+
+        Console.ReadKey();
+    }
+}
+```
+
 ### Výsledok?
+
+```csharp
+1
+0
+0
+```
 
 ### Sme hotoví?
 - Nie!!!
@@ -2292,6 +2570,62 @@ A
 - Aké máme možnosti?
 
 #### Vlastná metóda?
+
+
+### CreditAccount Class s Withdraw Method v C++ a C#
+
+### C++ CreditAccount Class
+
+```cpp
+class CreditAccount : public Account
+{
+private:
+    double credit;
+
+public:
+    CreditAccount(int n, Client *o, double c);
+    CreditAccount(int n, Client *o, double ir, double c);
+
+    bool CanWithdraw(double a);
+    bool Withdraw(double a);
+};
+```
+
+### C# CreditAccount Class
+
+```csharp
+public class CreditAccount : Account
+{
+    private double credit;
+
+    // Constructors
+    public CreditAccount(int n, Client o, double c) : base(n, o)
+    {
+        this.credit = c;
+    }
+
+    public CreditAccount(int n, Client o, double ir, double c) : base(n, o, ir)
+    {
+        this.credit = c;
+    }
+
+    // Method
+    public override bool CanWithdraw(double amount)
+    {
+        return balance + credit >= amount;
+    }
+
+    public override bool Withdraw(double amount)
+    {
+        if (CanWithdraw(amount))
+        {
+            balance -= amount;
+            return true;
+        }
+        return false;
+    }
+}
+```
 
 ### Máme problém...
 
@@ -2302,12 +2636,114 @@ A
 
 ### Nový predok
 
+### Porovnanie Account Class v C++ a C#
+
+### C++ Account Class (Private Balance)
+
+```cpp
+class Account
+{
+private:
+    int number;
+    double balance;
+    double interestRate;
+
+    Client *owner;
+
+public:
+    Account(int n, Client *o);
+    Account(int n, Client *o, double ir);
+
+    int GetNumber();
+    double GetBalance();
+    double GetInterestRate();
+    Client *GetOwner();
+    bool CanWithdraw(double a);
+
+    void Deposit(double a);
+    bool Withdraw(double a);
+    void AddInterest();
+};
+```
+
+## C++ Account Class (Protected Balance)
+
+```cpp
+class Account
+{
+private:
+    int number;
+    double interestRate;
+
+protected:
+    double balance;
+
+public:
+    Account(int n, Client *o);
+    Account(int n, Client *o, double ir);
+
+    int GetNumber();
+    double GetBalance();
+    double GetInterestRate();
+    Client *GetOwner();
+    bool CanWithdraw(double a);
+
+    void Deposit(double a);
+    bool Withdraw(double a);
+    void AddInterest();
+};
+```
+
+C# Porovnanie 
+
+Zmena viditeľnosti premennej balance z private na protected umožňuje triedam, ktoré dedia z triedy Account, priamy prístup k premenným balance. To môže byť užitočné pre podtriedy ako CreditAccount, kde je úprava zostatku častejšia.
+
 #### Funguje, ale...
+
+
+# Withdraw Method in CreditAccount Class in C++ and C#
+
+## C++ Withdraw Method v CreditAccount
+
+```cpp
+bool CreditAccount::Withdraw(double a)
+{
+    bool success = false;
+    if (this->CanWithdraw(a))
+    {
+        this->balance -= a;
+        success = true;
+    }
+    return success;
+}
+```
+
+## C# Withdraw Method v CreditAccount
+
+```csharp
+public override bool Withdraw(double amount)
+{
+    bool success = false;
+    if (CanWithdraw(amount))
+    {
+        balance -= amount;
+        success = true;
+    }
+    return success;
+}
+```
+
 - Máme rovnaký kód dvakrát.
 - Porušujeme zapuzdrenie.
 - Pri zastúpení predka potomkom sa použijú rôzne metódy.
 
 ### Výsledok
+
+```csharp
+1
+0
+1
+```
 
 #### Porušenie zapuzdrenia
 - Pri zmene správania môže vzniknúť potreba pracovať so súkromnou časťou predka.
