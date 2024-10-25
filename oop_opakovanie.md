@@ -1584,6 +1584,140 @@ class Client {
 
 ### Príklad
 
+
+# Account Class in C++ and C#
+
+### Implementácia v jazyku C++
+
+```cpp
+class Account
+{
+private:
+    int number;
+    double balance;
+    double interestRate;
+
+    Client *owner;
+    Client *partner;
+
+public:
+    Account(int n, Client *o);
+    Account(int n, Client *o, double ir);
+    Account(int n, Client *o, Client *p);
+    Account(int n, Client *o, Client *p, double ir);
+
+    int GetNumber();
+    double GetBalance();
+    double GetInterestRate();
+    Client *GetOwner();
+    Client *GetPartner();
+    bool CanWithdraw(double a);
+
+    void Deposit(double a);
+    bool Withdraw(double a);
+    void AddInterest();
+};
+```
+
+### Implementácia v jazyku C# 
+
+```csharp
+public class Account
+{
+    private int number;
+    private double balance;
+    private double interestRate;
+
+    private Client owner;
+    private Client partner;
+
+    // Constructors
+    public Account(int n, Client o)
+    {
+        number = n;
+        owner = o;
+        balance = 0;
+        interestRate = 0;
+    }
+
+    public Account(int n, Client o, double ir)
+    {
+        number = n;
+        owner = o;
+        interestRate = ir;
+        balance = 0;
+    }
+
+    public Account(int n, Client o, Client p)
+    {
+        number = n;
+        owner = o;
+        partner = p;
+        balance = 0;
+        interestRate = 0;
+    }
+
+    public Account(int n, Client o, Client p, double ir)
+    {
+        number = n;
+        owner = o;
+        partner = p;
+        interestRate = ir;
+        balance = 0;
+    }
+
+    // Methods
+    public int GetNumber()
+    {
+        return number;
+    }
+
+    public double GetBalance()
+    {
+        return balance;
+    }
+
+    public double GetInterestRate()
+    {
+        return interestRate;
+    }
+
+    public Client GetOwner()
+    {
+        return owner;
+    }
+
+    public Client GetPartner()
+    {
+        return partner;
+    }
+
+    public bool CanWithdraw(double amount)
+    {
+        return balance >= amount;
+    }
+
+    public void Deposit(double amount)
+    {
+        balance += amount;
+    }
+
+    public bool Withdraw(double amount)
+    {
+        if (CanWithdraw(amount))
+        {
+            balance -= amount;
+            return true;
+        }
+        return false;
+    }
+
+    public void AddInterest()
+    {
+        balance += balance * interestRate;
+    }
+}
+```
 #### Čo je na triede `Account` nesprávne?
 - Účet s partnerom je rozšírením účtu bez partnera.
 - Účet s partnerom **JE** účet.
@@ -1591,15 +1725,391 @@ class Client {
 
 ### Deklarácia predka
 
+### Implementácia v jazyku c++
+
+```cpp
+class Account
+{
+private:
+    int number;
+    double balance;
+    double interestRate;
+
+    Client *owner;
+
+public:
+    Account(int n, Client *o);
+    Account(int n, Client *o, double ir);
+
+    int GetNumber();
+    double GetBalance();
+    double GetInterestRate();
+    Client *GetOwner();
+    bool CanWithdraw(double a);
+
+    void Deposit(double a);
+    bool Withdraw(double a);
+    void AddInterest();
+};
+```
+
+### Implementácia v jazyku C# 
+
+```csharp
+public class Account
+{
+    private int number;
+    private double balance;
+    private double interestRate;
+
+    private Client owner;
+
+    // Constructors
+    public Account(int n, Client o)
+    {
+        number = n;
+        owner = o;
+        balance = 0;
+        interestRate = 0;
+    }
+
+    public Account(int n, Client o, double ir)
+    {
+        number = n;
+        owner = o;
+        interestRate = ir;
+        balance = 0;
+    }
+
+    // Methods
+    public int GetNumber()
+    {
+        return number;
+    }
+
+    public double GetBalance()
+    {
+        return balance;
+    }
+
+    public double GetInterestRate()
+    {
+        return interestRate;
+    }
+
+    public Client GetOwner()
+    {
+        return owner;
+    }
+
+    public bool CanWithdraw(double amount)
+    {
+        return balance >= amount;
+    }
+
+    public void Deposit(double amount)
+    {
+        balance += amount;
+    }
+
+    public bool Withdraw(double amount)
+    {
+        if (CanWithdraw(amount))
+        {
+            balance -= amount;
+            return true;
+        }
+        return false;
+    }
+
+    public void AddInterest()
+    {
+        balance += balance * interestRate;
+    }
+}
+```
+
 ### Deklarácia potomka
+
+### PartnerAccount Class in C++ and C#
+
+### Implementácia v jazyku C# 
+
+```cpp
+class PartnerAccount : public Account
+{
+private:
+    Client *partner;
+
+public:
+    PartnerAccount(int n, Client *o, Client *p);
+    PartnerAccount(int n, Client *o, Client *p, double ir);
+
+    Client *GetPartner();
+};
+```
+
+### Implementácia v jazyku C# 
+
+```csharp
+public class PartnerAccount : Account
+{
+    private Client partner;
+
+    // Constructors
+    public PartnerAccount(int n, Client o, Client p)
+        : base(n, o)
+    {
+        partner = p;
+    }
+
+    public PartnerAccount(int n, Client o, Client p, double ir)
+        : base(n, o, ir)
+    {
+        partner = p;
+    }
+
+    // Method
+    public Client GetPartner()
+    {
+        return partner;
+    }
+}
+```
 
 #### Implementácia konštruktorov
 - Potomok `PartnerAccount` použije na inicializáciu členských položiek konštruktor rodiča `Account`, ktorému odovzdá potrebné inicializačné hodnoty.
 
+
+### Account a PartnerAccount Constructors Implementácia v jazyku C# a C++
+
+### C++ konštruktory
+
+```cpp
+// Account constructor with just number and owner
+Account::Account(int n, Client *o)
+{
+    this->number = n;
+    this->owner = o;
+    this->balance = 0;
+    this->interestRate = 0;
+}
+
+// Account constructor with number, owner, and interest rate
+Account::Account(int n, Client *o, double ir)
+{
+    this->number = n;
+    this->owner = o;
+    this->balance = 0;
+    this->interestRate = ir;
+}
+
+// PartnerAccount constructor with number, owner, and partner
+PartnerAccount::PartnerAccount(int n, Client *o, Client *p) : Account(n, o)
+{
+    this->partner = p;
+}
+
+// PartnerAccount constructor with number, owner, partner, and interest rate
+PartnerAccount::PartnerAccount(int n, Client *o, Client *p, double ir) : Account(n, o, ir)
+{
+    this->partner = p;
+}
+```
+
+### C# konštruktory
+
+```csharp
+// Account constructor with just number and owner
+public Account(int n, Client o)
+{
+    this.number = n;
+    this.owner = o;
+    this.balance = 0;
+    this.interestRate = 0;
+}
+
+// Account constructor with number, owner, and interest rate
+public Account(int n, Client o, double ir)
+{
+    this.number = n;
+    this.owner = o;
+    this.balance = 0;
+    this.interestRate = ir;
+}
+
+// PartnerAccount constructor with number, owner, and partner
+public PartnerAccount(int n, Client o, Client p) : base(n, o)
+{
+    this.partner = p;
+}
+
+// PartnerAccount constructor with number, owner, partner, and interest rate
+public PartnerAccount(int n, Client o, Client p, double ir) : base(n, o, ir)
+{
+    this.partner = p;
+}
+```
+
 ### Použitie (zastupiteľnosť)
+
+### Main Function v C++ and C#
+
+### C++ Main Function
+
+```cpp
+int main()
+{
+    Account *a;
+    PartnerAccount *pa;
+    pa = new PartnerAccount(0, new Client(0, "Smith"), new Client(1, "Jones"));
+    a = pa;
+
+    cout << a->GetOwner()->GetName() << endl;
+    // cout << a->GetPartner()->GetName() << endl;
+
+    cout << pa->GetPartner()->GetName();
+
+    getchar();
+    return 0;
+}
+```
+
+### C# Main Function
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Account a;
+        PartnerAccount pa;
+        pa = new PartnerAccount(0, new Client(0, "Smith"), new Client(1, "Jones"));
+        a = pa;
+
+        Console.WriteLine(a.GetOwner().GetName());
+        // Console.WriteLine(a.GetPartner().GetName()); // This won't work because the Account class does not have GetPartner()
+
+        Console.WriteLine(pa.GetPartner().GetName());
+
+        Console.ReadKey();
+    }
+}
+```
+```csharp
+Smith
+Jones 
+```
 
 #### Banka s účtami dvoch typov
 
+### C++ Bank Class implementácia v jazyku C++
+
+```cpp
+class Bank
+{
+private:
+    Client **clients;
+    int clientsCount;
+
+    Account **accounts;
+    int accountsCount;
+
+public:
+    Bank(int c, int a);
+    ~Bank();
+
+    Client* GetClient(int c);
+    Account* GetAccount(int n);
+
+    Client* CreateClient(int c, std::string n);
+    Account* CreateAccount(int n, Client *o);
+    Account* CreateAccount(int n, Client *o, double ir);
+    PartnerAccount* CreateAccount(int n, Client *o, Client *p);
+    PartnerAccount* CreateAccount(int n, Client *o, Client *p, double ir);
+
+    void AddInterest();
+};
+```
+
+### Bank Class implementácia v jazyku C#
+
+```csharp
+public class Bank
+{
+    private Client[] clients;
+    private int clientsCount;
+
+    private Account[] accounts;
+    private int accountsCount;
+
+    public Bank(int c, int a)
+    {
+        clients = new Client[c];
+        accounts = new Account[a];
+        clientsCount = 0;
+        accountsCount = 0;
+    }
+
+    public Client GetClient(int c)
+    {
+        return clients[c];
+    }
+
+    public Account GetAccount(int n)
+    {
+        return accounts[n];
+    }
+
+    public Client CreateClient(int c, string n)
+    {
+        Client newClient = new Client(c, n);
+        clients[clientsCount++] = newClient;
+        return newClient;
+    }
+
+    public Account CreateAccount(int n, Client o)
+    {
+        Account newAccount = new Account(n, o);
+        accounts[accountsCount++] = newAccount;
+        return newAccount;
+    }
+
+    public Account CreateAccount(int n, Client o, double ir)
+    {
+        Account newAccount = new Account(n, o, ir);
+        accounts[accountsCount++] = newAccount;
+        return newAccount;
+    }
+
+    public PartnerAccount CreateAccount(int n, Client o, Client p)
+    {
+        PartnerAccount newAccount = new PartnerAccount(n, o, p);
+        accounts[accountsCount++] = newAccount;
+        return newAccount;
+    }
+
+    public PartnerAccount CreateAccount(int n, Client o, Client p, double ir)
+    {
+        PartnerAccount newAccount = new PartnerAccount(n, o, p, ir);
+        accounts[accountsCount++] = newAccount;
+        return newAccount;
+    }
+
+    public void AddInterest()
+    {
+        foreach (var account in accounts)
+        {
+            if (account != null)
+            {
+                account.AddInterest();
+            }
+        }
+    }
+}
+```
 - Malo by to fungovať? A prečo?
 
 ### Dedičnosť – základný princíp
