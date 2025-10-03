@@ -1,7 +1,7 @@
 
 # Objektovo orientované programovanie
 
-## Modularita 2024/25
+## Modularita 2025/26
 
 ### Modul?
 
