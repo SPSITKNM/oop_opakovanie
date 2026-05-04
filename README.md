@@ -6,9 +6,9 @@
 
 <div align="center">
 
-[![GitHub Pages](https://img.shields.io/badge/🌐_Web_stránka-spsitknm.github.io/oop_opakovanie-8b5cf6?style=for-the-badge&labelColor=0f172a)](https://spsitknm.github.io/oop_opakovanie)
-[![PRO predmet](https://img.shields.io/badge/PRO_predmet-spsitknm.github.io/SPSITKNM-6366f1?style=for-the-badge&labelColor=0f172a)](https://spsitknm.github.io/SPSITKNM)
-[![Hub](https://img.shields.io/badge/🏠_Hub-spsitknm.github.io-475569?style=for-the-badge&labelColor=0f172a)](https://spsitknm.github.io)
+[![Web stránka + Checklist](https://img.shields.io/badge/Interaktívny_Checklist-spsitknm.github.io/oop_opakovanie-8b5cf6?style=for-the-badge&logo=github&logoColor=white&labelColor=0f172a)](https://spsitknm.github.io/oop_opakovanie)
+[![PRO predmet](https://img.shields.io/badge/PRO_predmet-spsitknm.github.io/SPSITKNM-6366f1?style=for-the-badge&logo=github&logoColor=white&labelColor=0f172a)](https://spsitknm.github.io/SPSITKNM)
+[![Hub](https://img.shields.io/badge/Hub-spsitknm.github.io-475569?style=for-the-badge&logo=github&logoColor=white&labelColor=0f172a)](https://spsitknm.github.io)
 
 ![C#](https://img.shields.io/badge/C%23-239120?style=flat-square&logo=c-sharp&logoColor=white)
 ![C++](https://img.shields.io/badge/C++-00599C?style=flat-square&logo=cplusplus&logoColor=white)
@@ -18,39 +18,47 @@
 
 ---
 
-## 🎯 Účel repozitára
+Súhrn **OOP termínov a zručností** pre úspešné absolvovanie predmetu **PRO** na SPSITKNM.
 
-Tento repozitár obsahuje súhrn **OOP termínov a zručností**, ktoré musíš ovládať pre úspešné absolvovanie predmetu **PRO** na SPSITKNM.
-
-> 💡 Pre interaktívne zobrazenie obsahu navštív [spsitknm.github.io/oop_opakovanie](https://spsitknm.github.io/oop_opakovanie)
+> **Interaktívny checklist s pokrokom** — navštív [spsitknm.github.io/oop_opakovanie](https://spsitknm.github.io/oop_opakovanie) a sleduj, ktoré témy ovládaš.
 
 ---
 
-## 📚 Obsah opakovania
+## Obsah — [oop_opakovanie.md](oop_opakovanie.md)
 
-→ [oop_opakovanie.md](oop_opakovanie.md)
-
-Dokument pokrýva kľúčové koncepty:
-
-| Téma | Čo sa pýtajú |
-|------|-------------|
-| **Triedy & Objekty** | Definícia, inštanciácia, konštruktory |
-| **Enkapsulacia** | Private/public/protected, gettery, settery |
-| **Dedičnosť** | Base/derived class, `override`, `virtual` |
-| **Polymorfizmus** | Runtime dispatch, abstraktné triedy, interface |
-| **Big O notácia** | O(1), O(n), O(n²), O(log n) — príklady |
-| **Pamäťový model** | Stack vs Heap, garbage collector, lifetime |
-| **Dátové typy** | Value vs reference types, boxing/unboxing |
+| Téma | Čo musíš vedieť |
+|------|-----------------|
+| **Triedy a Objekty** | Definícia triedy, inštanciácia, konštruktor, destruktor |
+| **Enkapsulacia** | `private` / `public` / `protected`, gettery, settery, vlastnosti |
+| **Dedičnosť** | Base class, derived class, kľúčové slovo `base`, reťazenie konštruktorov |
+| **Virtual a Override** | Kedy použiť `virtual`, ako funguje `override`, late binding |
+| **Polymorfizmus** | Runtime dispatch, substitučný princíp, upcasting/downcasting |
+| **Abstraktné triedy** | `abstract class`, nemožno inštanciovať, povinné override metódy |
+| **Interfejsy** | `interface`, implementácia, rozdiel vs abstraktná trieda, viacnásobná impl. |
+| **Big O notácia** | O(1), O(n), O(n²), O(log n), O(n log n) — príklady a porovnanie |
+| **Pamäťový model** | Stack vs Heap, garbage collector, lifetime, IDisposable |
+| **Dátové typy** | Value types vs reference types, boxing, unboxing, nullable |
+| **Statické členy** | `static` field, `static` metóda, singleton pattern |
+| **Výnimky** | `try` / `catch` / `finally`, vlastné exception triedy, `throw` |
 
 ---
 
-## 🔗 Súvisiace materiály
+## Zdroje
 
-| Repo | Odkaz |
-|------|-------|
-| 📝 Hlavné skripty PRO | [SPSITKNM/SPSITKNM](https://github.com/SPSITKNM/SPSITKNM) |
-| 🎓 Komisionálna skúška | [komisionalna_skuska.md](https://github.com/SPSITKNM/SPSITKNM/blob/main/komisionalna_skuska.md) |
-| ⚙️ Algoritmizácia | [algoritmizacia.md](https://github.com/SPSITKNM/SPSITKNM/blob/main/algoritmizacia.md) |
+| Súbor | Obsah |
+|-------|-------|
+| [oop_opakovanie.md](oop_opakovanie.md) | Kompletný súhrn všetkých OOP konceptov s príkladmi v C# a C++ |
+
+---
+
+## Súvisiace materiály v PRO repozitári
+
+| Repozitár | Odkaz |
+|-----------|-------|
+| Hlavné skripty PRO | [SPSITKNM/SPSITKNM](https://github.com/SPSITKNM/SPSITKNM) |
+| Komisionálna skúška | [komisionalna_skuska.md](https://github.com/SPSITKNM/SPSITKNM/blob/main/komisionalna_skuska.md) |
+| Algoritmizácia | [algoritmizacia.md](https://github.com/SPSITKNM/SPSITKNM/blob/main/algoritmizacia.md) |
+| Poznámky z hodín | [poznamky.md](https://github.com/SPSITKNM/SPSITKNM/blob/main/poznamky.md) |
 
 ---
 
