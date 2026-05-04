@@ -1,181 +1,544 @@
 <!DOCTYPE html>
-<html lang="sk">
+<html lang="sk" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OOP Opakovanie | SPSITKNM</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OOP Opakovanie · SPSITKNM</title>
+  <meta name="description" content="Interaktívne opakovanie OOP konceptov pre skúšku z PRO predmetu. Checklist, pokrok a live obsah." />
+  <meta name="theme-color" content="#050a14" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://spsitknm.github.io/design-system.css" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
-  <style>
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    :root {
-      --bg:#030712; --surface:rgba(15,23,42,0.65);
-      --border:rgba(139,92,246,0.18); --ba:rgba(139,92,246,0.55);
-      --accent:#8b5cf6; --a2:#7c3aed; --glow:rgba(139,92,246,0.4);
-      --em:#10b981;
-      --text:#f1f5f9; --muted:#94a3b8; --faint:#475569;
-      --mono:'Fira Code',monospace; --sans:'Inter',system-ui,sans-serif;
-    }
-    html{scroll-behavior:smooth;}
-    body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden;}
-    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px;}
+<style>
+/* ── OOP accent = violet ────────────────────────────────── */
+:root {
+  --accent:     #8b5cf6;
+  --accent-d:   #7c3aed;
+  --accent-rgb: 139,92,246;
+}
 
-    .bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:radial-gradient(ellipse 80% 50% at 50% -5%,rgba(139,92,246,0.08),transparent);}
-    .orb{position:absolute;border-radius:50%;filter:blur(130px);opacity:0.22;}
-    .o1{width:500px;height:500px;background:radial-gradient(circle,#7c3aed,transparent);top:-150px;left:-100px;animation:ob 22s ease-in-out infinite;}
-    .o2{width:350px;height:350px;background:radial-gradient(circle,#0891b2,transparent);bottom:0;right:-80px;animation:ob 18s ease-in-out infinite reverse;}
-    .grid-ov{position:absolute;inset:0;background-image:linear-gradient(rgba(139,92,246,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,0.025) 1px,transparent 1px);background-size:60px 60px;}
-    @keyframes ob{0%,100%{transform:translate(0,0)}50%{transform:translate(50px,-70px)}}
+.bg-mesh{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 65% 50% at 5% 5%,rgba(139,92,246,.14) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 95% 85%,rgba(124,58,237,.09) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 35% at 50% 115%,rgba(99,102,241,.10) 0%,transparent 60%),
+    var(--bg);
+}
+[data-theme="light"] .bg-mesh{background:var(--bg)}
+main{position:relative;z-index:1}
 
-    nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(3,7,18,0.8);backdrop-filter:blur(24px);border-bottom:1px solid rgba(139,92,246,0.1);}
-    .nav-l{display:flex;align-items:center;gap:1rem;}
-    .back{display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--muted);text-decoration:none;transition:color 0.2s;padding:0.3rem 0.7rem;border-radius:6px;border:1px solid var(--border);}
-    .back:hover{color:var(--text);border-color:var(--ba);}
-    .nav-sep{color:var(--faint);}
-    .nav-subj{font-family:var(--mono);font-size:0.8rem;color:var(--accent);font-weight:500;}
-    .nav-r{display:flex;gap:0.65rem;}
-    .btn{padding:0.4rem 1rem;border-radius:7px;font-size:0.8rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.35rem;transition:all 0.2s;}
-    .btn-g{background:transparent;border:1px solid var(--border);color:var(--muted);}
-    .btn-g:hover{border-color:var(--ba);color:var(--text);background:rgba(139,92,246,0.08);}
-    .btn-p{background:var(--accent);color:#fff;box-shadow:0 0 20px var(--glow);}
-    .btn-p:hover{background:var(--a2);box-shadow:0 0 35px var(--glow);transform:translateY(-1px);}
+[data-theme="light"] .icon-btn .sun-icon{display:none}
+[data-theme="dark"]  .icon-btn .moon-icon{display:none}
 
-    main{position:relative;z-index:10;padding-top:60px;}
+/* ── Checklist panel ────────────────────────────────────── */
+.checklist-panel{
+  background:var(--bg-s1);border:1px solid var(--b1);border-radius:var(--r-xl);overflow:hidden;
+  margin-bottom:3rem;
+}
+.checklist-panel-header{
+  display:flex;align-items:center;gap:1.5rem;
+  padding:1.5rem 2rem;border-bottom:1px solid var(--b1);background:var(--bg-s2);
+  flex-wrap:wrap;
+}
+.checklist-panel-title{font-weight:800;font-size:1.1rem;color:var(--t1);flex:1}
+.progress-wrap{display:flex;align-items:center;gap:1.25rem}
+.progress-ring-wrap{position:relative;width:80px;height:80px;flex-shrink:0}
+.progress-ring{width:80px;height:80px;transform:rotate(-90deg)}
+.progress-ring-bg{fill:none;stroke:var(--b2);stroke-width:3.5}
+.progress-ring-fill{
+  fill:none;stroke:var(--violet);stroke-width:3.5;stroke-linecap:round;
+  stroke-dasharray:188.5;stroke-dashoffset:188.5;
+  transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1);
+}
+.progress-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.progress-pct{font-size:1.05rem;font-weight:900;color:var(--t1);line-height:1}
+.progress-sublabel{font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+.progress-info{display:flex;flex-direction:column;gap:.25rem}
+.progress-count{font-size:1.5rem;font-weight:900;color:var(--t1);line-height:1}
+.progress-count span{color:var(--t3);font-size:.88rem;font-weight:400}
+.progress-text{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+.checklist-body{padding:1.25rem 1.5rem}
+.checklist-actions{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.75rem 1.5rem;border-top:1px solid var(--b1);
+  background:var(--bg-s2);flex-wrap:wrap;
+}
 
-    .hero{padding:5rem 2rem 4rem;max-width:900px;margin:0 auto;text-align:center;}
-    .hero-tag{display:inline-flex;align-items:center;gap:0.45rem;padding:0.3rem 0.85rem;border-radius:100px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);font-family:var(--mono);font-size:0.7rem;color:var(--accent);margin-bottom:1.25rem;letter-spacing:0.06em;}
-    .pdot{width:6px;height:6px;border-radius:50%;background:var(--em);animation:pdot 2s ease-in-out infinite;}
-    @keyframes pdot{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.6)}50%{box-shadow:0 0 0 5px rgba(16,185,129,0)}}
-    .hero-h{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:900;letter-spacing:-0.03em;line-height:1.05;margin-bottom:0.75rem;}
-    .grad{background:linear-gradient(135deg,#a78bfa,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-    .hero-desc{font-size:1.05rem;color:var(--muted);line-height:1.75;max-width:560px;margin:0 auto;}
+/* ── Checklist items ────────────────────────────────────── */
+.check-list{display:flex;flex-direction:column;gap:.5rem}
+.check-item{
+  display:flex;align-items:center;gap:.85rem;
+  padding:.75rem 1rem;border-radius:var(--r-md);
+  background:var(--bg-s2);border:1px solid var(--b1);
+  cursor:pointer;transition:all var(--t-fast);user-select:none;
+}
+.check-item:hover{border-color:var(--b2);background:var(--bg-s3)}
+.check-item.done{border-color:rgba(139,92,246,.25);background:rgba(139,92,246,.05)}
+.check-box{
+  width:20px;height:20px;border-radius:6px;border:2px solid var(--b2);background:var(--bg-s1);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:all var(--t-fast);color:transparent;
+}
+.check-item.done .check-box{background:var(--violet);border-color:var(--violet);color:#fff}
+.check-label{font-size:.88rem;font-weight:500;color:var(--t2);transition:color var(--t-fast);flex:1}
+.check-item.done .check-label{color:var(--t1)}
+.check-tag{font-size:.65rem;font-weight:700;padding:2px .5rem;border-radius:9999px;background:rgba(139,92,246,.10);color:var(--violet);border:1px solid rgba(139,92,246,.2);flex-shrink:0}
 
-    .div{height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,0.3),transparent);margin:0 2rem;}
+/* ── Markdown content card ──────────────────────────────── */
+.content-card{
+  background:var(--bg-s1);border:1px solid var(--b1);border-radius:var(--r-xl);overflow:hidden;
+}
+.content-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.5rem;border-bottom:1px solid var(--b1);background:var(--bg-s2);
+  flex-wrap:wrap;gap:.75rem;
+}
+.content-title{font-weight:700;font-size:.95rem;color:var(--t1);display:flex;align-items:center;gap:.5rem}
+.content-actions{display:flex;align-items:center;gap:.5rem}
+.icon-sm-btn{display:flex;align-items:center;gap:.35rem;padding:.3rem .6rem;border-radius:var(--r-sm);font-size:.72rem;font-weight:600;color:var(--t3);background:transparent;border:1px solid transparent;cursor:pointer;transition:all var(--t-fast)}
+.icon-sm-btn:hover{color:var(--t1);border-color:var(--b1);background:var(--bg-s1)}
+.content-body{padding:2rem}
+.skel-line{height:14px;border-radius:4px;margin-bottom:.85rem}
+.skel-line.w-full{width:100%}
+.skel-line.w-3q{width:75%}
+.skel-line.w-1h{width:50%}
 
-    .content-wrap{max-width:900px;margin:0 auto;padding:4rem 2rem;}
-    .content-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2.5rem;backdrop-filter:blur(20px);transition:border-color 0.3s;}
-    .content-card:hover{border-color:var(--ba);}
-
-    .md-c{color:var(--muted);line-height:1.8;font-size:0.92rem;}
-    .md-c h1,.md-c h2,.md-c h3{color:var(--text);margin:1.2rem 0 0.6rem;}
-    .md-c h1{font-size:1.5rem;background:linear-gradient(135deg,#a78bfa,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-    .md-c h2{font-size:1.2rem;} .md-c h3{font-size:1.05rem;}
-    .md-c p{margin-bottom:0.75rem;}
-    .md-c ul,.md-c ol{margin-left:1.5rem;margin-bottom:0.75rem;}
-    .md-c li{margin-bottom:0.35rem;}
-    .md-c strong{color:var(--text);}
-    .md-c a{color:var(--accent);text-decoration:none;}
-    .md-c a:hover{text-decoration:underline;}
-    .md-c code{font-family:var(--mono);font-size:0.8rem;background:rgba(139,92,246,0.1);padding:0.1em 0.35em;border-radius:3px;color:#c4b5fd;}
-    .md-c pre{background:#0d1117;border:1px solid rgba(139,92,246,0.15);border-radius:10px;padding:1rem;overflow-x:auto;margin:0.75rem 0;}
-    .md-c pre code{background:none;padding:0;color:#f0f6fc;}
-    .md-c blockquote{border-left:3px solid var(--accent);padding-left:1rem;margin:0.75rem 0;color:var(--faint);}
-    .md-c table{width:100%;border-collapse:collapse;font-size:0.85rem;margin:0.75rem 0;}
-    .md-c th{background:rgba(139,92,246,0.1);padding:0.5rem 0.75rem;text-align:left;color:var(--text);border:1px solid var(--border);}
-    .md-c td{padding:0.5rem 0.75rem;border:1px solid var(--border);}
-    .md-c hr{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
-
-    .skel{background:linear-gradient(90deg,rgba(139,92,246,0.07) 25%,rgba(139,92,246,0.14) 50%,rgba(139,92,246,0.07) 75%);background-size:200% 100%;animation:shim 1.5s infinite;border-radius:5px;height:13px;margin-bottom:10px;}
-    @keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
-    .skel:nth-child(1){width:70%}.skel:nth-child(2){width:100%}.skel:nth-child(3){width:55%}.skel:nth-child(4){width:85%}.skel:nth-child(5){width:40%}.skel:nth-child(6){width:95%}
-
-    .sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
-    .sec-title{font-size:1.15rem;font-weight:700;}
-
-    footer{border-top:1px solid rgba(139,92,246,0.1);padding:2.5rem 2rem;max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
-    .fb{font-family:var(--mono);font-size:0.78rem;color:var(--faint);}
-    .fb b{color:var(--accent);}
-    .fl{display:flex;gap:1.5rem;}
-    .fl a{font-size:0.78rem;color:var(--faint);text-decoration:none;transition:color 0.2s;}
-    .fl a:hover{color:var(--text);}
-
-    .rv{opacity:0;transform:translateY(22px);transition:opacity 0.55s ease,transform 0.55s ease;}
-    .rv.in{opacity:1;transform:translateY(0);}
-
-    @media(max-width:768px){nav{padding:0 1rem;}.nav-subj{display:none;}.content-wrap{padding:2.5rem 1.25rem;}}
-  </style>
+/* Print */
+@media print{
+  .nav,.back-top,.hamburger,.nav-drawer,.checklist-panel,.content-header .content-actions,
+  .section-header .btn{display:none!important}
+  body{background:#fff!important;color:#000!important}
+  .content-card{border:none!important;border-radius:0!important}
+  .content-body{padding:0!important}
+  .bg-mesh{display:none!important}
+  .md-content a::after{content:" (" attr(href) ")";font-size:.8em;color:#555}
+}
+</style>
 </head>
 <body>
 
-<div class="bg">
-  <div class="orb o1"></div>
-  <div class="orb o2"></div>
-  <div class="grid-ov"></div>
-</div>
+<!-- ── Nav ──────────────────────────────────────────────── -->
+<nav class="nav" role="navigation" aria-label="Hlavná navigácia">
+  <div class="container nav-inner">
+    <div style="display:flex;align-items:center;gap:1rem">
+      <a href="https://spsitknm.github.io" class="nav-link" style="font-weight:700;color:var(--t2)" aria-label="Späť na Hub">
+        <i data-lucide="arrow-left" width="14" height="14" aria-hidden="true"></i>
+        Hub
+      </a>
+      <span style="color:var(--b2);font-size:.82rem">/</span>
+      <a href="https://spsitknm.github.io/SPSITKNM" class="nav-link" style="color:var(--t3);font-size:.82rem">PRO</a>
+      <span style="color:var(--b2);font-size:.82rem">/</span>
+      <span style="font-weight:700;color:var(--violet);font-size:.82rem">OOP</span>
+    </div>
 
-<nav>
-  <div class="nav-l">
-    <a href="https://spsitknm.github.io" class="back">← Hub</a>
-    <span class="nav-sep">/</span>
-    <span class="nav-subj">OOP — Opakovanie</span>
-  </div>
-  <div class="nav-r">
-    <a href="https://github.com/SPSITKNM/oop_opakovanie/blob/main/oop_opakovanie.md" target="_blank" class="btn btn-p">GitHub →</a>
+    <nav class="nav-links" aria-label="Sekcie">
+      <a href="#checklist" class="nav-link">Checklist</a>
+      <a href="#obsah" class="nav-link">Obsah</a>
+      <a href="https://discord.gg/eSQDsna4d7" class="nav-link" target="_blank" rel="noopener">
+        <i data-lucide="message-square" width="14" height="14" aria-hidden="true"></i>
+        Discord
+      </a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="icon-btn" id="print-btn" aria-label="Tlačiť / Uložiť PDF">
+        <i data-lucide="printer" width="16" height="16" aria-hidden="true"></i>
+      </button>
+      <button class="icon-btn" id="theme-toggle" aria-label="Prepnúť tému">
+        <i data-lucide="sun" width="16" height="16" class="sun-icon" aria-hidden="true"></i>
+        <i data-lucide="moon" width="16" height="16" class="moon-icon" aria-hidden="true"></i>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="nav-drawer">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
 </nav>
 
+<div class="nav-drawer" id="nav-drawer" aria-label="Mobilná navigácia">
+  <a href="https://spsitknm.github.io" class="nav-link"><i data-lucide="home" width="18" height="18" aria-hidden="true"></i>Hub — Výučbový Hub</a>
+  <a href="https://spsitknm.github.io/SPSITKNM" class="nav-link"><i data-lucide="keyboard" width="18" height="18" aria-hidden="true"></i>PRO — Programovanie</a>
+  <a href="#checklist" class="nav-link"><i data-lucide="check-square" width="18" height="18" aria-hidden="true"></i>Checklist</a>
+  <a href="#obsah" class="nav-link"><i data-lucide="file-text" width="18" height="18" aria-hidden="true"></i>Obsah opakovania</a>
+</div>
+
+<div class="bg-mesh" aria-hidden="true"></div>
 <main>
 
-  <div class="hero">
-    <div class="hero-tag">
-      <span class="pdot"></span>
-      🔁 &nbsp;OOP Opakovanie &nbsp;·&nbsp; PRO predmet &nbsp;·&nbsp; 4. ročník
+<!-- ── Hero ─────────────────────────────────────────────── -->
+<section class="hero" style="padding-bottom:3rem">
+  <div class="container">
+    <div class="hero-eyebrow reveal">
+      <i data-lucide="rotate-ccw" width="14" height="14" aria-hidden="true"></i>
+      OOP Opakovanie · Príprava na skúšku · PRO predmet
     </div>
-    <h1 class="hero-h">
-      Príprava na<br>
-      <span class="grad">skúšku.</span>
+
+    <h1 class="hero-title reveal" style="font-size:clamp(2.5rem,7vw,5.5rem)">
+      OOP
+      <span style="background:linear-gradient(135deg,#e8f0fe,var(--violet),#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Opakovanie</span>
     </h1>
-    <p class="hero-desc">
-      Kľúčové OOP termíny, koncepty a zručnosti, ktoré musíš ovládať
-      pre úspešné absolvovanie predmetu PRO a komisionálne skúšanie.
+
+    <p class="hero-desc reveal">
+      Interaktívny prehľad OOP konceptov s checklistom a sledovaním pokroku. Označ témy, ktoré ovládaš — pokrok sa uloží do prehliadača.
     </p>
-  </div>
 
-  <div class="div"></div>
-
-  <div class="content-wrap">
-    <div class="sec-hd">
-      <div class="sec-title">📚 Obsah opakovania</div>
-      <a href="https://github.com/SPSITKNM/oop_opakovanie/blob/main/oop_opakovanie.md" target="_blank" class="btn btn-g" style="font-size:0.72rem">Otvoriť na GitHub →</a>
+    <div class="hero-actions reveal">
+      <a href="#checklist" class="btn btn-primary btn-lg">
+        <i data-lucide="check-square" width="18" height="18" aria-hidden="true"></i>
+        Spustiť checklist
+      </a>
+      <a href="#obsah" class="btn btn-secondary btn-lg">
+        <i data-lucide="file-text" width="18" height="18" aria-hidden="true"></i>
+        Čítať obsah
+      </a>
     </div>
-    <div class="content-card rv">
-      <div id="oop-content">
-        <div class="skel"></div><div class="skel"></div><div class="skel"></div>
-        <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+  </div>
+</section>
+
+<!-- ── Checklist ─────────────────────────────────────────── -->
+<section class="section-sm" id="checklist" aria-labelledby="checklist-heading">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">
+        <i data-lucide="check-square" width="12" height="12" aria-hidden="true"></i>
+        Sledovanie pokroku
+      </div>
+      <h2 class="section-title" id="checklist-heading">Checklist tém</h2>
+      <p class="section-desc">Klikni na tému a označ ju ako zvládnutú. Pokrok sa uloží lokálne v prehliadači.</p>
+    </div>
+
+    <div class="checklist-panel reveal" role="region" aria-labelledby="checklist-heading">
+      <div class="checklist-panel-header">
+        <div class="checklist-panel-title">
+          <i data-lucide="rotate-ccw" width="18" height="18" style="color:var(--violet);display:inline;vertical-align:middle;margin-right:.4rem" aria-hidden="true"></i>
+          OOP Koncepty — skúška z PRO
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-ring-wrap" role="img" aria-label="Pokrok v percentách" aria-describedby="progress-pct">
+            <svg class="progress-ring" viewBox="0 0 60 60" aria-hidden="true">
+              <circle class="progress-ring-bg" cx="30" cy="30" r="26"/>
+              <circle class="progress-ring-fill" id="progress-ring-fill" cx="30" cy="30" r="26"/>
+            </svg>
+            <div class="progress-ring-center">
+              <span class="progress-pct" id="progress-pct">0%</span>
+              <span class="progress-sublabel">pokrok</span>
+            </div>
+          </div>
+          <div class="progress-info">
+            <div class="progress-count"><span id="checked-count">0</span> <span>/ <span id="total-count">12</span></span></div>
+            <div class="progress-text">tém zvládnutých</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="checklist-body">
+        <div class="check-list" id="check-list" role="group" aria-label="Zoznam OOP tém">
+
+          <div class="check-item" data-id="class" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="check-box" aria-hidden="true"><i data-lucide="check" width="12" height="12"></i></div>
+            <span class="check-label">Triedy &amp; Objekty — definícia, inštanciácia, konštruktory</span>
+            <span class="check-tag">základ</span>
+          </div>
+
+          <div class="check-item" data-id="encap" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="check-box" aria-hidden="true"><i data-lucide="check" width="12" height="12"></i></div>
+            <span class="check-label">Enkapsulacia — private, public, protected, gettery &amp; settery</span>
+            <span class="check-tag">základ</span>
+          </div>
+
+          <div class="check-item" data-id="inherit" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="check-box" aria-hidden="true"><i data-lucide="check" width="12" height="12"></i></div>
+            <span class="check-label">Dedičnosť — base/derived class, kľúčové slovo <code>base</code> a <code>override</code></span>
+            <span class="check-tag">stredné</span>
+          </div>
+
+          <div class="check-item" data-id="virtual" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="check-box" aria-hidden="true"><i data-lucide="check" width="12" height="12"></i></div>
+            <span class="check-label">Virtual &amp; Override — kedy a prečo použiť <code>virtual</code></span>
+            <span class="check-tag">stredné</span>
+          </div>
+
+          <div class="check-item" data-id="poly" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="check-box" aria-hidden="true"><i data-lucide="check" width="12" height="12"></i></div>
+            <span class="check-label">Polymorfizmus — runtime dispatch, substitúcia</span>
+            <span class="check-tag">stredné</span>
+          </div>
+
+          <div class="check-item" data-id="abstract" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="check-box" aria-hidden="true"><i data-lucide="check" width="12" height="12"></i></div>
+            <span class="check-label">Abstraktné triedy — nemožno inštanciovať, <code>abstract</code></span>
+            <span class="check-tag">stredné</span>
+          </div>
+
+          <div class="check-item" data-id="iface" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="check-box" aria-hidden="true"><i data-lucide="check" width="12" height="12"></i></div>
+            <span class="check-label">Interfejsy (interface) — definícia, implementácia, rozdiel vs abstraktná trieda</span>
+            <span class="check-tag">pokročilé</span>
+          </div>
+
+          <div class="check-item" data-id="bigo" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="check-box" aria-hidden="true"><i data-lucide="check" width="12" height="12"></i></div>
+            <span class="check-label">Big O notácia — O(1), O(n), O(n²), O(log n), O(n log n) — príklady</span>
+            <span class="check-tag">algoritmy</span>
+          </div>
+
+          <div class="check-item" data-id="memory" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="check-box" aria-hidden="true"><i data-lucide="check" width="12" height="12"></i></div>
+            <span class="check-label">Pamäťový model — Stack vs Heap, garbage collector, lifetime</span>
+            <span class="check-tag">pokročilé</span>
+          </div>
+
+          <div class="check-item" data-id="types" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="check-box" aria-hidden="true"><i data-lucide="check" width="12" height="12"></i></div>
+            <span class="check-label">Dátové typy — value vs reference types, boxing &amp; unboxing</span>
+            <span class="check-tag">základ</span>
+          </div>
+
+          <div class="check-item" data-id="static" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="check-box" aria-hidden="true"><i data-lucide="check" width="12" height="12"></i></div>
+            <span class="check-label">Statické členy — <code>static</code> field, <code>static</code> metóda, singleton</span>
+            <span class="check-tag">stredné</span>
+          </div>
+
+          <div class="check-item" data-id="exceptions" role="checkbox" aria-checked="false" tabindex="0">
+            <div class="check-box" aria-hidden="true"><i data-lucide="check" width="12" height="12"></i></div>
+            <span class="check-label">Výnimky — try / catch / finally, vlastné exception triedy</span>
+            <span class="check-tag">pokročilé</span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="checklist-actions">
+        <button class="btn btn-secondary btn-sm" id="reset-btn" aria-label="Resetovať checklist">
+          <i data-lucide="rotate-ccw" width="14" height="14" aria-hidden="true"></i>
+          Resetovať
+        </button>
+        <span style="font-size:.72rem;color:var(--t3);margin-left:.5rem">Pokrok sa ukladá automaticky do prehliadača.</span>
+        <a href="https://github.com/SPSITKNM/oop_opakovanie/blob/main/oop_opakovanie.md" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" style="margin-left:auto" aria-label="Zdrojový súbor na GitHube">
+          <i data-lucide="github" width="14" height="14" aria-hidden="true"></i>
+          GitHub
+        </a>
+        <button class="btn btn-ghost btn-sm" id="print-btn2" aria-label="Tlačiť">
+          <i data-lucide="printer" width="14" height="14" aria-hidden="true"></i>
+          Tlač
+        </button>
       </div>
     </div>
   </div>
+</section>
+
+<!-- ── Obsah (live render) ───────────────────────────────── -->
+<section class="section-sm" id="obsah" aria-labelledby="obsah-heading">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">
+        <i data-lucide="file-text" width="12" height="12" aria-hidden="true"></i>
+        Live z GitHub
+      </div>
+      <h2 class="section-title" id="obsah-heading">Obsah opakovania</h2>
+      <p class="section-desc">Automaticky načítaný z <code style="font-size:.82rem">oop_opakovanie.md</code> priamo z GitHubu.</p>
+    </div>
+
+    <div class="content-card reveal" aria-live="polite" aria-busy="true" id="content-region">
+      <div class="content-header">
+        <div class="content-title">
+          <i data-lucide="rotate-ccw" width="16" height="16" aria-hidden="true"></i>
+          oop_opakovanie.md
+        </div>
+        <div class="content-actions">
+          <span style="font-size:.72rem;color:var(--t3)" id="load-time"></span>
+          <a href="https://github.com/SPSITKNM/oop_opakovanie/blob/main/oop_opakovanie.md" class="icon-sm-btn" target="_blank" rel="noopener" aria-label="Otvoriť na GitHube">
+            <i data-lucide="github" width="13" height="13" aria-hidden="true"></i>
+            GitHub
+          </a>
+          <button class="icon-sm-btn" id="print-btn3" aria-label="Tlačiť obsah">
+            <i data-lucide="printer" width="13" height="13" aria-hidden="true"></i>
+            Tlač
+          </button>
+        </div>
+      </div>
+      <div class="content-body">
+        <div id="oop-skeleton">
+          <div class="skeleton skel-line w-3q" style="height:28px;margin-bottom:1.5rem"></div>
+          <div class="skeleton skel-line w-full"></div>
+          <div class="skeleton skel-line w-full"></div>
+          <div class="skeleton skel-line w-3q"></div>
+          <div class="skeleton skel-line w-1h" style="margin-top:1.5rem;height:20px;margin-bottom:1rem"></div>
+          <div class="skeleton skel-line w-full"></div>
+          <div class="skeleton skel-line w-full"></div>
+          <div class="skeleton skel-line w-3q"></div>
+          <div class="skeleton skel-line w-1h" style="margin-top:1.5rem;height:20px;margin-bottom:1rem"></div>
+          <div class="skeleton skel-line w-full"></div>
+          <div class="skeleton skel-line w-full"></div>
+        </div>
+        <div id="oop-content" class="md-content" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</section>
 
 </main>
 
-<footer>
-  <div class="fb"><b>OOP Opakovanie</b> · SPSITKNM · Tomaš Mucha</div>
-  <div class="fl">
-    <a href="https://spsitknm.github.io">← Hub</a>
-    <a href="https://spsitknm.github.io/SPSITKNM">PRO predmet</a>
-    <a href="https://github.com/SPSITKNM/oop_opakovanie" target="_blank">GitHub</a>
+<!-- ── Footer ────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>
+      <div class="footer-brand">OOP — <span style="color:var(--violet)">Opakovanie</span></div>
+      <div class="footer-meta">Tomaš Mucha · SPSITKNM · 2024–2025</div>
+    </div>
+    <div class="footer-links">
+      <a href="https://spsitknm.github.io" class="footer-icon-link" aria-label="Hub">
+        <i data-lucide="home" width="16" height="16" aria-hidden="true"></i>
+      </a>
+      <a href="https://github.com/SPSITKNM/oop_opakovanie" class="footer-icon-link" target="_blank" rel="noopener" aria-label="GitHub">
+        <i data-lucide="github" width="16" height="16" aria-hidden="true"></i>
+      </a>
+      <a href="https://discord.gg/eSQDsna4d7" class="footer-icon-link" target="_blank" rel="noopener" aria-label="Discord">
+        <i data-lucide="message-square" width="16" height="16" aria-hidden="true"></i>
+      </a>
+    </div>
   </div>
 </footer>
 
-<script>
-const obs = new IntersectionObserver(es => es.forEach(e => {
-  if(e.isIntersecting){e.target.classList.add('in'); obs.unobserve(e.target);}
-}), {threshold:0.06});
-document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+<button class="back-top" id="back-top" aria-label="Späť nahor">
+  <i data-lucide="chevron-up" width="20" height="20" aria-hidden="true"></i>
+</button>
 
-async function loadOOP() {
-  try {
-    const r = await fetch('https://raw.githubusercontent.com/SPSITKNM/oop_opakovanie/main/oop_opakovanie.md');
-    if(!r.ok) throw new Error();
-    const md = await r.text();
-    document.getElementById('oop-content').innerHTML = '<div class="md-c">' + marked.parse(md) + '</div>';
-  } catch {
-    document.getElementById('oop-content').innerHTML =
-      '<p style="color:var(--muted);font-size:0.9rem">Obsah sa nepodarilo načítať. ' +
-      '<a href="https://github.com/SPSITKNM/oop_opakovanie/blob/main/oop_opakovanie.md" target="_blank" style="color:var(--accent)">Otvoriť na GitHub →</a></p>';
-  }
+<script>
+lucide.createIcons({ attrs: { 'stroke-width': '1.75' } });
+
+// Theme
+const html = document.documentElement;
+html.dataset.theme = localStorage.getItem('spsitknm-theme') || 'dark';
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  html.dataset.theme = next;
+  localStorage.setItem('spsitknm-theme', next);
+});
+
+// Print buttons
+['print-btn','print-btn2','print-btn3'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('click', () => window.print());
+});
+
+// Hamburger
+const ham = document.getElementById('hamburger');
+const drawer = document.getElementById('nav-drawer');
+ham.addEventListener('click', () => {
+  const open = ham.classList.toggle('open');
+  drawer.classList.toggle('open', open);
+  ham.setAttribute('aria-expanded', String(open));
+  document.body.style.overflow = open ? 'hidden' : '';
+});
+
+// Reveal
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.05 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// Back to top
+const btn = document.getElementById('back-top');
+window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 400));
+btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+// ── Checklist
+const STORAGE_KEY = 'oop-checklist-v2';
+const CIRCUMFERENCE = 188.5; // 2 * π * 30 ≈ 188.5
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
 }
-loadOOP();
+function saveState(state) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function updateProgress() {
+  const items = document.querySelectorAll('.check-item');
+  const total = items.length;
+  const checked = document.querySelectorAll('.check-item.done').length;
+  const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+  const offset = CIRCUMFERENCE - (pct / 100) * CIRCUMFERENCE;
+  document.getElementById('progress-ring-fill').style.strokeDashoffset = offset;
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('checked-count').textContent = checked;
+  document.getElementById('total-count').textContent = total;
+}
+function initChecklist() {
+  const state = loadState();
+  document.querySelectorAll('.check-item').forEach(item => {
+    const id = item.dataset.id;
+    if (state[id]) { item.classList.add('done'); item.setAttribute('aria-checked','true'); }
+    item.addEventListener('click', () => toggleItem(item));
+    item.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleItem(item); } });
+  });
+  updateProgress();
+}
+function toggleItem(item) {
+  const id = item.dataset.id;
+  const done = item.classList.toggle('done');
+  item.setAttribute('aria-checked', String(done));
+  const state = loadState();
+  if (done) state[id] = true; else delete state[id];
+  saveState(state);
+  updateProgress();
+}
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if (!confirm('Resetovať všetky zaznačené témy?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  document.querySelectorAll('.check-item').forEach(item => {
+    item.classList.remove('done');
+    item.setAttribute('aria-checked','false');
+  });
+  updateProgress();
+});
+initChecklist();
+
+// ── Live markdown fetch
+const OOP_URL = 'https://raw.githubusercontent.com/SPSITKNM/oop_opakovanie/main/oop_opakovanie.md';
+(async () => {
+  const skel = document.getElementById('oop-skeleton');
+  const content = document.getElementById('oop-content');
+  const timeEl = document.getElementById('load-time');
+  const region = document.getElementById('content-region');
+  try {
+    const res = await fetch(OOP_URL + '?t=' + Date.now());
+    if (!res.ok) throw new Error('fetch failed');
+    const text = await res.text();
+    skel.style.display = 'none';
+    content.innerHTML = marked.parse(text);
+    content.style.display = 'block';
+    region.removeAttribute('aria-busy');
+    timeEl.textContent = 'Načítané práve teraz';
+
+    // Add code copy buttons
+    content.querySelectorAll('pre').forEach(pre => {
+      const btn = document.createElement('button');
+      btn.className = 'icon-sm-btn';
+      btn.style.cssText = 'position:absolute;top:.5rem;right:.5rem;z-index:1';
+      btn.innerHTML = '<i data-lucide="copy" width="12" height="12" aria-hidden="true"></i> Kopírovať';
+      btn.setAttribute('aria-label', 'Kopírovať kód');
+      btn.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(pre.innerText).catch(() => {});
+        btn.innerHTML = '<i data-lucide="check" width="12" height="12" aria-hidden="true"></i> Skopírované';
+        lucide.createIcons({ attrs: { 'stroke-width': '1.75' } });
+        setTimeout(() => { btn.innerHTML = '<i data-lucide="copy" width="12" height="12" aria-hidden="true"></i> Kopírovať'; lucide.createIcons({ attrs: { 'stroke-width': '1.75' } }); }, 2000);
+      });
+      pre.style.position = 'relative';
+      pre.appendChild(btn);
+    });
+    lucide.createIcons({ attrs: { 'stroke-width': '1.75' } });
+  } catch {
+    skel.style.display = 'none';
+    content.innerHTML = '<p style="color:var(--t3);font-size:.88rem">Obsah momentálne nie je dostupný. Navštív <a href="https://github.com/SPSITKNM/oop_opakovanie/blob/main/oop_opakovanie.md" target="_blank" rel="noopener" style="color:var(--violet)">oop_opakovanie.md</a> priamo.</p>';
+    content.style.display = 'block';
+    region.removeAttribute('aria-busy');
+  }
+})();
 </script>
 </body>
 </html>
