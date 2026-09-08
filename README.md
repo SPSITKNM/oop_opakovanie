@@ -1,3 +1,11 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)"  srcset="assets/banner-oop-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/banner-oop-light.png">
+    <img alt="Opakovanie OOP · spsitknm.github.io" src="assets/banner-oop-light.png" width="900">
+  </picture>
+</p>
+
 # OOP — opakovanie
 
 Súhrn OOP termínov a zručností potrebných na komisionálnu skúšku z predmetu **PRO**

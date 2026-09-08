@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-label="Opakovanie OOP · spsitknm.github.io">
+  <rect width="1280" height="320" fill="#f6f3ec"></rect>
+  <g stroke="#ded6c6" stroke-width="1" fill="none">
+    <path d="M1092,262 L1004,214 L1092,146 L1188,206 L1266,150"></path>
+    <path d="M1004,214 L1096,74 L1188,206"></path>
+    <path d="M1096,74 L1266,150"></path>
+    <path d="M1092,146 L1096,74"></path>
+    <path d="M1004,214 L1092,262"></path>
+    <path d="M1096,74 C900,58 620,74 -20,64"></path>
+    <path d="M1092,146 C960,116 700,120 380,96"></path>
+  </g>
+  <g stroke="#6d28d9" stroke-width="1.4" fill="none" opacity="0.9">
+    <path d="M1004,214 L1092,146 L1096,74"></path>
+  </g>
+  <g fill="#f6f3ec" stroke="#bcb2a0" stroke-width="1">
+    <circle cx="1092" cy="262" r="5"></circle><circle cx="1188" cy="206" r="5"></circle>
+    <circle cx="1266" cy="150" r="5"></circle><circle cx="380" cy="96" r="5"></circle>
+  </g>
+  <g fill="#6d28d9">
+    <circle cx="1004" cy="214" r="5"></circle><circle cx="1092" cy="146" r="5"></circle><circle cx="1096" cy="74" r="5"></circle>
+  </g>
+  <text x="56" y="152" font-family="'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace" font-weight="500" font-size="13" letter-spacing="2.1" fill="#5b6167">OPAKOVANIE NA KOMISIONÁLNU SKÚŠKU</text>
+  <text x="56" y="222" font-family="Newsreader,ui-serif,Georgia,'Times New Roman',serif" font-weight="400" font-size="72" letter-spacing="-1.4" fill="#17191a">Objektové programovanie</text>
+  <text x="56" y="256" font-family="'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" fill="#4c5257">12 tém · dedičnosť · polymorfizmus · správa pamäte</text>
+  <text x="56" y="296" font-family="'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace" font-size="13" fill="#5b6167">spsitknm.github.io/oop.html</text>
+</svg>
