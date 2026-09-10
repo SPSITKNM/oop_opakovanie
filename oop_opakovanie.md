@@ -1063,6 +1063,109 @@ class Bank {
 - Napríklad účet má klientov v rolách vlastníka a partnera resp. banka má klientov a účty.
 - Jeden a ten istý objekt môže byť súčasťou viacerých kompozícií. Napríklad jeden klient môže byť súčasťou ako účtu, tak banky.
 
+## Vzťahy medzi objektmi — asociácia, agregácia, kompozícia
+
+Skladanie má tri podoby. Všetky sú vzťah „MÁ / POZNÁ“; líšia sa v tom,
+**kto vlastní životný cyklus časti** a **či sa časť dá zdieľať**.
+
+| Vzťah | UML značka (pri celku) | Časť existuje sama? | Zdieľateľná? | Zaniká s celkom? |
+|---|---|---|---|---|
+| Asociácia | plná čiara | áno | áno | nie |
+| Agregácia | prázdny kosoštvorec `◇` | áno | áno | nie |
+| Kompozícia | plný kosoštvorec `◆` | nie | nie (patrí 1 celku) | áno |
+
+### Asociácia — „poznám iný objekt“
+
+Objekt si drží odkaz na iný, aby ho vedel požiadať o službu. Ani jeden druhého nevlastní.
+
+```cpp
+class SeaUrchin {
+public:
+    void beEaten() { std::cout << "Jezko: som zjedeny!\n"; }
+};
+
+class Otter {
+    SeaUrchin* food = nullptr;        // asociacia — iba odkaz
+public:
+    void setFood(SeaUrchin* u) { food = u; }
+    void eat() { if (food) food->beEaten(); }
+};
+
+int main() {
+    SeaUrchin urchin;                 // objekty vznikaju nezavisle
+    Otter otter;
+    otter.setFood(&urchin);
+    otter.eat();                      // "Jezko: som zjedeny!"
+}                                     // obaja zanikaju samostatne
+```
+
+`otter.beEaten()` neexistuje — vydra iba drží odkaz, metódu vykoná ježko
+(`otter.food->beEaten()`). Asociácia neprenáša metódy druhej triedy; to robí len dedičnosť.
+
+### Agregácia — „celok–časť, časť je samostatná“
+
+Časť vznikne zvonku a celok si ju len pridá. Tá istá časť môže byť vo viacerých
+celkoch. Keď celok zanikne, časti žijú ďalej.
+
+```cpp
+class Tortoise {
+public:
+    std::string name;
+    Tortoise(std::string n) : name(std::move(n)) {}
+};
+
+class Creep {                         // skupina korytnaciek
+    std::vector<Tortoise*> members;   // agregacia — odkazy, nevlastni ich
+public:
+    void add(Tortoise* t) { members.push_back(t); }
+};
+
+int main() {
+    Tortoise franklin("Franklin");    // korytnacka vznika SAMA, mimo skupiny
+    Creep beach, zoo;
+    beach.add(&franklin);
+    zoo.add(&franklin);               // ta ista korytnacka v dvoch skupinach
+}                                     // skupiny zaniknu, franklin stale existuje
+```
+
+### Kompozícia — „časť nemôže existovať bez celku“
+
+Časť vzniká vnútri celku a zaniká s ním. Patrí práve jednému celku, nedá sa zdieľať.
+
+```cpp
+class Lobby    { /* ... */ };
+class Bathroom { /* ... */ };
+
+class VisitorCenter {
+    Lobby lobby;                      // kompozicia — hodnotovy clen
+    std::vector<Bathroom> bathrooms;  // kompozicia — celok ich vytvara a vlastni
+public:
+    VisitorCenter() {
+        bathrooms.emplace_back();     // casti vznikaju TU, vnutri celku
+    }
+};
+
+int main() {
+    VisitorCenter vc;                 // spolu s nim vznikli lobby aj bathroom
+}                                     // vc zanika -> lobby a bathrooms zanikaju s nim
+```
+
+Nikde nie je `new Lobby()` zvonku. „Lobby bez budovy“ nedáva zmysel.
+
+### Násobnosť (multiplicity)
+
+Číslo na konci čiary = koľko objektov tej triedy pripadá na **jeden** objekt druhej strany.
+
+| Zápis | Význam |
+|---|---|
+| `1` | práve jeden (povinný) |
+| `0..1` | nula alebo jeden (nepovinný) |
+| `*` / `0..*` | ľubovoľne veľa |
+| `1..*` | aspoň jeden |
+
+Príklad: `VisitorCenter  1 ◆────── 1..*  Bathroom` — každé centrum má aspoň
+jednu toaletu, každá toaleta patrí práve jednému centru.
+
 ## Úlohy na cvičenie
 - Implementujte príklad z prednášky a navrhnite kód, ktorý bude používať všetky triedy. Vytvorte desiatky klientov a účtov v banke a nasimulujte niektoré bežné úkony vykonávané v banke.
 - Navrhnite a implementujte podobnú úlohu, ako napríklad lekársku ordináciu, malú školu a pod.
