@@ -50,35 +50,6 @@ rozhodovacieho uzla. Vetvy musia pokryť všetky možnosti a nesmú sa prekrýva
 Rozšírenie „zobraz chybu pri zlom hesle" je presne to, čo by v use case diagrame
 bol vzťah `«extend»` — tu je rozpísané do konkrétneho toku.
 
-ASCII náčrt (keby si potreboval kresliť rýchlo na tabuľu):
-
-```
-        (●)
-         │
-         ▼
- ┌────────────────────┐  ◄────────────┐
- │ Zadaj meno a heslo │               │
- └────────────────────┘               │
-         │                            │
-         ▼                            │
-     ╱Údaje platné?╲──[nie]──►[Zobraz chybu]──┘
-         │ [áno]
-         ▼
-   [Vytvor reláciu]
-         │
-     ════╪════  fork
-      ▼      ▼
- [Načítaj  [Zapíš do
-  profil]   logu]
-      ▼      ▼
-     ════╪════  join
-         ▼
-  [Zobraz nástenku]
-         │
-         ▼
-        (◉)
-```
-
 ## BPMN (v skratke)
 
 **BPMN** = *Business Process Model and Notation* (štandard OMG). Slúži na
