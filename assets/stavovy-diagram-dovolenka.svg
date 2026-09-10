@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="300" viewBox="0 0 760 300" role="img" aria-label="Stavový diagram — životný cyklus žiadosti o dovolenku">
+  <style>
+    :root{ --stroke:#334155; --text:#1e293b; --node:#ffffff; --accent:#7c3aed; --muted:#64748b; --st:#f4f1fb; }
+    @media (prefers-color-scheme: dark){
+      :root{ --stroke:#cbd5e1; --text:#e2e8f0; --node:#1e293b; --accent:#a78bfa; --muted:#94a3b8; --st:#1c1930; }
+    }
+    text{fill:var(--text); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+    .edge{stroke:var(--stroke); stroke-width:1.5; fill:none; marker-end:url(#a);}
+    .state{fill:var(--st); stroke:var(--stroke); stroke-width:1.5;}
+    .init{fill:var(--accent);}
+    .fin{fill:none; stroke:var(--stroke); stroke-width:1.5;}
+    .finDot{fill:var(--accent);}
+    .lbl{font-size:11px; text-anchor:middle;}
+    .trg{font-size:9.5px; fill:var(--muted); text-anchor:middle;}
+    .trgL{font-size:9.5px; fill:var(--muted);}
+  </style>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--stroke)"/>
+    </marker>
+  </defs>
+
+  <circle class="init" cx="30" cy="70" r="8"/>
+  <path class="edge" d="M38,70 L56,70"/>
+
+  <rect class="state" x="58" y="48" width="84" height="44" rx="12"/>
+  <text class="lbl" x="100" y="74">Nová</text>
+  <path class="edge" d="M142,70 L196,70"/>
+  <text class="trg" x="169" y="62">odoslaná</text>
+
+  <rect class="state" x="198" y="48" width="146" height="44" rx="12"/>
+  <text class="lbl" x="271" y="74">Čaká na schválenie</text>
+  <path class="edge" d="M344,70 L408,70"/>
+  <text class="trg" x="376" y="62">schválil</text>
+
+  <rect class="state" x="410" y="48" width="100" height="44" rx="12"/>
+  <text class="lbl" x="460" y="74">Schválená</text>
+  <path class="edge" d="M510,70 L598,70"/>
+  <text class="trg" x="554" y="62">zapísané</text>
+
+  <rect class="state" x="600" y="48" width="90" height="44" rx="12"/>
+  <text class="lbl" x="645" y="74">Uzavretá</text>
+  <path class="edge" d="M690,70 L722,70"/>
+  <circle class="fin" cx="734" cy="70" r="9"/><circle class="finDot" cx="734" cy="70" r="4.5"/>
+
+  <path class="edge" d="M271,92 L271,182"/>
+  <text class="trgL" x="282" y="132">zamietol</text>
+  <text class="trgL" x="282" y="146">[s dôvodom]</text>
+  <rect class="state" x="211" y="184" width="120" height="44" rx="12"/>
+  <text class="lbl" x="271" y="210">Zamietnutá</text>
+  <path class="edge" d="M271,228 L271,256"/>
+  <circle class="fin" cx="271" cy="268" r="9"/><circle class="finDot" cx="271" cy="268" r="4.5"/>
+</svg>
