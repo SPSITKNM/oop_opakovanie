@@ -83,6 +83,38 @@ požiadavka jednoznačne overiteľná:
 Ak sa niektorý článok reťaze nedá vyplniť (požiadavka bez testu, obrazovka bez
 požiadavky), je to signál, že v analýze niečo chýba — alebo je tam niečo navyše.
 
+## Use case diagram
+
+Zachytáva **čo systém robí z pohľadu používateľa** — nie ako to robí. Je to prvý
+diagram analýzy: vymedzí rozsah systému a kto s ním pracuje.
+
+| Prvok | Značka | Význam |
+|---|---|---|
+| aktér | panáčik | rola, ktorá so systémom komunikuje (človek alebo iný systém) |
+| use case | elipsa | jedna funkcia systému („Podať žiadosť") |
+| hranica systému | obdĺžnik okolo use casov | čo je vnútri systému a čo mimo |
+| asociácia | plná čiara aktér — use case | aktér tento use case používa |
+
+### Vzťahy medzi use casmi
+
+| Vzťah | Značka | Význam | Smer šípky |
+|---|---|---|---|
+| **«include»** | prerušovaná šípka | vložený use case sa vykoná **vždy** ako súčasť základného | základný → vložený |
+| **«extend»** | prerušovaná šípka | rozširujúci use case sa vykoná **len za podmienky** | rozšírenie → základný |
+| **generalizácia** | plná čiara s trojuholníkom | špeciálny prípad aktéra alebo use casu | potomok → rodič |
+
+Pomôcka: **`include` = vždy, `extend` = možno.** A šípky idú **opačne** — pri
+`include` od základného k vloženému, pri `extend` od rozšírenia k základnému.
+
+![Use case diagram — systém dovoleniek](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/usecase-dovolenka.svg)
+
+`Podať žiadosť` **vždy** zahŕňa kontrolu zostatku dovolenky (`«include»`).
+`Eskalovať pri nečinnosti` sa spustí **len keď** vedúci dlho nereaguje —
+rozširuje `Posúdiť žiadosť` (`«extend»`) a spúšťa ho systémový aktér, nie človek.
+
+Každý use case sa potom rozpíše do **scenára** (hlavný tok + alternatívy +
+výnimky) — a ten sa dá nakresliť ako diagram aktivít alebo sekvenčný diagram.
+
 ## Diagram aktivít
 
 Behaviorálny UML diagram. Zobrazuje **tok riadenia** medzi činnosťami — ich
@@ -127,6 +159,67 @@ rozhodovacieho uzla. Vetvy musia pokryť všetky možnosti a nesmú sa prekrýva
 
 Rozšírenie „zobraz chybu pri zlom hesle" je presne to, čo by v use case diagrame
 bol vzťah `«extend»` — tu je rozpísané do konkrétneho toku.
+
+## Sekvenčný diagram
+
+Behaviorálny UML diagram. Ukazuje **výmenu správ medzi účastníkmi v čase** — kto
+komu čo pošle a v akom poradí. Používa sa na rozpísanie **jedného scenára** use
+casu do detailu.
+
+| Prvok | Značka | Význam |
+|---|---|---|
+| účastník | obdĺžnik hore + zvislá **čiara života** (lifeline) | objekt / systém / aktér zapojený do interakcie |
+| aktivácia | úzky obdĺžnik na čiare života | účastník práve niečo vykonáva |
+| synchrónna správa | plná čiara, **plný** hrot | volanie — odosielateľ čaká na dokončenie |
+| asynchrónna správa | plná čiara, **otvorený** hrot | odošle a nečaká (napr. notifikácia) |
+| **návratová správa** | **prerušovaná** čiara, otvorený hrot | odpoveď na predchádzajúce volanie |
+
+Pomôcka: **plná = otázka / príkaz, prerušovaná = odpoveď na ňu.**
+
+### Kombinované rámce (fragments)
+
+Rámec okolo časti diagramu s nálepkou v ľavom hornom rohu:
+
+| Rámec | Význam |
+|---|---|
+| **`alt`** | vetvenie — vykoná sa **práve jedna** oblasť (if / else), každá má podmienku `[…]` |
+| **`opt`** | voliteľná časť — vykoná sa **0 alebo 1×** |
+| **`loop`** | opakovanie |
+| **`par`** | paralelné vykonanie viacerých oblastí |
+| **`ref`** | odkaz na iný sekvenčný diagram |
+
+![Sekvenčný diagram — podanie a schválenie žiadosti](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/sekvencny-diagram-dovolenka.svg)
+
+Zamestnanec zavolá `podajŽiadosť(...)` synchrónne a čaká na `id žiadosti` späť
+(prerušovaná šípka). Systém pošle vedúcemu **asynchrónnu** notifikáciu. Rámec
+**`alt`** rozdeľuje ďalší priebeh podľa výsledku rozhodnutia: `[schválené]` vs
+`[zamietnuté]` — vykoná sa len jedna vetva.
+
+Každá správa smerujúca do účastníka by mala zodpovedať **operácii** jeho triedy
+v triednom diagrame — je to dobrá kontrola konzistencie modelu.
+
+## Stavový diagram
+
+Behaviorálny UML diagram. Zobrazuje **stavy jedného objektu a prechody medzi
+nimi**. Kreslí sa vtedy, keď má objekt výrazný **životný cyklus** — žiadosť,
+objednávka či ticket, ktoré počas života menia stav a v každom sa správajú inak.
+
+| Prvok | Značka | Význam |
+|---|---|---|
+| počiatočný stav | vyplnený kruh `●` | odkiaľ objekt vzniká |
+| stav | zaoblený obdĺžnik | pomenovaná situácia, v ktorej objekt zotrváva |
+| prechod | šípka s popisom `udalosť [podmienka] / akcia` | čo objekt prevedie do iného stavu |
+| koncový stav | kruh v kruhu `◉` | životný cyklus končí |
+
+![Stavový diagram — životný cyklus žiadosti o dovolenku](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/stavovy-diagram-dovolenka.svg)
+
+Žiadosť vzniká v stave `Nová`, po odoslaní čaká na schválenie. Odtiaľ vedú **dva
+prechody**: `schválil` → pokračuje ďalej, alebo `zamietol [s dôvodom]` →
+`Zamietnutá` a koniec. Podmienka `[s dôvodom]` je stráž — prechod sa vykoná len
+vtedy, ak je dôvod vyplnený (to je zároveň jedna z požiadaviek z úvodu).
+
+**Nezamieňať** so sekvenčným diagramom: sekvenčný ukazuje *výmenu správ medzi
+viacerými* objektmi, stavový *životný cyklus jedného* objektu.
 
 ## BPMN — procesný pohľad
 
