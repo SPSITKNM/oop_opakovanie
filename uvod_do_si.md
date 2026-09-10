@@ -5,6 +5,12 @@ Diagram aktivít a BPMN opisujú **správanie** — *ako* niečo prebieha krok z
 Sú to najbežnejšie nástroje na zachytenie procesu alebo scenára tak, aby mu
 rozumel aj neprogramátor.
 
+> **Práca softvérového analytika.** Skôr než sa čokoľvek naprogramuje, analytik
+> sa rozpráva s ľuďmi z firmy a zisťuje, *ako proces reálne funguje* — kto čo
+> robí, kde sa rozhoduje, čo môže zlyhať. Výsledok nakreslí ako diagram (často
+> BPMN), odsúhlasí ho so zadávateľom a **až z neho vzniknú požiadavky, use casy
+> a návrh systému**. Diagram je spoločný jazyk medzi biznisom a vývojom.
+
 ## Diagram aktivít
 
 Behaviorálny UML diagram. Zobrazuje **tok riadenia** medzi činnosťami — ich
@@ -50,20 +56,73 @@ rozhodovacieho uzla. Vetvy musia pokryť všetky možnosti a nesmú sa prekrýva
 Rozšírenie „zobraz chybu pri zlom hesle" je presne to, čo by v use case diagrame
 bol vzťah `«extend»` — tu je rozpísané do konkrétneho toku.
 
-## BPMN (v skratke)
+## BPMN — procesný pohľad
 
-**BPMN** = *Business Process Model and Notation* (štandard OMG). Slúži na
-modelovanie **biznis procesov**, často naprieč viacerými oddeleniami alebo
-firmami. Je podrobnejší a „biznisovejší" než diagram aktivít.
+**BPMN** = *Business Process Model and Notation* (štandard OMG). Nie je súčasťou
+UML. Opisuje **biznis proces** — kto, čo a v akom poradí robí, aby vznikol
+výsledok. Často zachytáva spoluprácu viacerých oddelení alebo firiem. Jeho
+najväčšia sila: rozumie mu aj netechnický človek, takže je to spoločný jazyk
+medzi analytikom a zadávateľom.
+
+![BPMN — proces žiadosti o dovolenku](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/bpmn-ziadost-o-dovolenku.svg)
+
+Čítanie: zamestnanec **vyplní žiadosť** → HR ju **posúdi** → brána **Schválené?**
+rozhodne. `[áno]` sa termín **automaticky zapíše do kalendára** a proces končí
+úspechom; `[nie]` sa zamestnancovi **pošle oznámenie o zamietnutí** a proces
+končí neúspechom. Dva pruhy (*lanes*) ukazujú, že vypĺňanie robí zamestnanec a
+posudzovanie HR — presne ten druh informácie, ktorý analytik potrebuje.
+
+## Udalosti (events)
+
+Kruh. Hrúbka obrysu hovorí, kde v procese udalosť je:
+
+| Udalosť | Značka | Význam |
+|---|---|---|
+| štartová | tenký kruh | čo proces **spúšťa** (prišla žiadosť, nastal termín) |
+| medzičasová | dvojitý kruh | niečo **počas** behu (uplynul čas, prišla správa) |
+| koncová | hrubý kruh | proces **skončil** (úspešne alebo neúspešne) |
+
+## Úlohy (tasks) a ich typy
+
+Tu BPMN prekonáva obyčajný vývojový diagram — rozlišuje **kto alebo čo** prácu
+vykoná. Malá ikona v ľavom hornom rohu úlohy určuje typ:
+
+| Typ úlohy | Kto/čo ju robí | Príklad |
+|---|---|---|
+| **User task** | človek, ale **cez systém** (formulár v aplikácii) | „Vyplniť žiadosť", „Posúdiť žiadosť" |
+| **Manual task** | človek **bez systému** (fyzická činnosť) | „Odniesť zložku do archívu" |
+| **Service task** | **automaticky systém** alebo externá služba (API) | „Zapísať do kalendára", „Odoslať e-mail" |
+| **Script task** | procesný engine spustí **skript / kód** priamo v procese | „Vypočítať zostatok dovolenky" |
+| **Send / Receive task** | odošle správu / čaká na správu | „Poslať notifikáciu" / „Počkať na potvrdenie z banky" |
+| **Business rule task** | vyhodnotí **rozhodovaciu tabuľku** (DMN) | „Určiť zľavu podľa vernostného stupňa" |
+
+Pre analytika je tento výber dôležitý:
+
+- **User task** → treba navrhnúť obrazovku a počítať s človekom
+- **Service task** → treba integráciu, niečo naprogramovať ako automat
+- **Manual task** → systém sa toho vôbec netýka (len to zdokumentujeme)
+
+## Brány (gateways)
+
+Kosoštvorec. Symbol vnútri určuje správanie:
+
+| Brána | Symbol | Správanie |
+|---|---|---|
+| **exkluzívna (XOR)** | `×` | pokračuje **práve jedna** vetva (if / else) |
+| **paralelná (AND)** | `+` | pokračujú **všetky** vetvy naraz |
+| **inkluzívna (OR)** | `○` | pokračuje **jedna alebo viac** vetiev podľa podmienok |
+| **udalosťová** | pentagón | čaká sa, ktorá **udalosť** nastane skôr |
+
+Rozvetvenie aj opätovné zlúčenie sa kreslí rovnakou bránou.
+
+## Toky a účastníci
 
 | Prvok | Značka | Význam |
 |---|---|---|
-| udalosť (event) | kruh — tenký = štart, dvojitý = medzičas, hrubý = koniec | čo sa stalo alebo má stať |
-| úloha (task) | zaoblený obdĺžnik | jednotka práce |
-| brána (gateway) | kosoštvorec — `×` exkluzívna, `+` paralelná, `○` inkluzívna | vetvenie a zlučovanie toku |
-| sekvenčný tok | plná šípka | poradie v rámci jedného procesu |
-| tok správ (message flow) | prerušovaná šípka | komunikácia medzi účastníkmi |
-| bazén a dráhy (pool / lane) | veľký rámec s pruhmi | účastník procesu (firma, rola) |
+| sekvenčný tok | plná šípka | poradie krokov **v jednom** procese |
+| tok správ (message flow) | prerušovaná šípka s krúžkom | komunikácia **medzi** dvoma účastníkmi (poolmi) |
+| bazén (pool) | veľký rámec | jeden **účastník** procesu (firma, systém, zákazník) |
+| dráha (lane) | pruh v bazéne | **rola** alebo oddelenie vnútri účastníka |
 
 ## Diagram aktivít vs BPMN
 

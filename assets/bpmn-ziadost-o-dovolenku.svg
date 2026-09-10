@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="360" viewBox="0 0 780 360" role="img" aria-label="BPMN — proces žiadosti o dovolenku">
+  <style>
+    :root{
+      --stroke:#334155; --text:#1e293b; --node:#ffffff; --band:#eef2f7;
+      --gw:#fdf0c9; --muted:#64748b;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --stroke:#cbd5e1; --text:#e2e8f0; --node:#1e293b; --band:#172033;
+        --gw:#2d2a44; --muted:#94a3b8;
+      }
+    }
+    .edge{stroke:var(--stroke); stroke-width:1.5; fill:none; marker-end:url(#arr);}
+    .frame{fill:none; stroke:var(--stroke); stroke-width:1.5;}
+    .band{fill:var(--band); stroke:var(--stroke); stroke-width:1.5;}
+    .task{fill:var(--node); stroke:var(--stroke); stroke-width:1.5;}
+    .gw{fill:var(--gw); stroke:var(--stroke); stroke-width:1.5;}
+    .ev{fill:var(--node); stroke:var(--stroke);}
+    .ico{fill:none; stroke:var(--stroke); stroke-width:1.3;}
+    text{fill:var(--text); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+    .lbl{font-size:12px; text-anchor:middle;}
+    .type{font-size:9px; fill:var(--muted); letter-spacing:.5px; text-anchor:middle;}
+    .guard{font-size:10.5px; fill:var(--muted); text-anchor:middle;}
+    .lane{font-size:10.5px; fill:var(--muted); letter-spacing:.7px; text-anchor:middle;}
+    .gwlbl{font-size:11px; text-anchor:middle; fill:var(--muted);}
+    .end-lbl{font-size:10.5px; text-anchor:middle;}
+  </style>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--stroke)"/>
+    </marker>
+  </defs>
+
+  <!-- pool + lanes -->
+  <rect class="frame" x="6" y="8" width="768" height="344"/>
+  <rect class="band" x="6" y="8" width="22" height="344"/>
+  <text class="lane" transform="translate(19,180) rotate(-90)">ŽIADOSŤ O DOVOLENKU</text>
+  <rect class="band" x="28" y="8" width="22" height="344"/>
+  <line class="frame" x1="28" y1="180" x2="774" y2="180"/>
+  <text class="lane" transform="translate(41,96) rotate(-90)">ZAMESTNANEC</text>
+  <text class="lane" transform="translate(41,270) rotate(-90)">HR / SYSTÉM</text>
+
+  <!-- lane 1 -->
+  <circle class="ev" cx="88" cy="94" r="15" stroke-width="1.5"/>
+  <path class="edge" d="M103,94 L131,94"/>
+  <rect class="task" x="132" y="70" width="128" height="48" rx="8"/>
+  <g transform="translate(140,78)"><circle class="ico" cx="6" cy="4" r="2.6"/><path class="ico" d="M0.5,12 a5.5,5.5 0 0 1 11,0"/></g>
+  <text class="type" x="196" y="88">USER TASK</text>
+  <text class="lbl" x="196" y="106">Vyplniť žiadosť</text>
+
+  <path class="edge" d="M196,118 L196,228"/>
+
+  <!-- lane 2 -->
+  <rect class="task" x="132" y="228" width="128" height="48" rx="8"/>
+  <g transform="translate(140,236)"><circle class="ico" cx="6" cy="4" r="2.6"/><path class="ico" d="M0.5,12 a5.5,5.5 0 0 1 11,0"/></g>
+  <text class="type" x="196" y="246">USER TASK</text>
+  <text class="lbl" x="196" y="264">Posúdiť žiadosť</text>
+
+  <path class="edge" d="M260,252 L300,252"/>
+  <polygon class="gw" points="324,228 348,252 324,276 300,252"/>
+  <path class="ico" d="M316,244 L332,260 M332,244 L316,260" stroke-width="1.6"/>
+  <text class="gwlbl" x="324" y="214">Schválené?</text>
+
+  <!-- ano -->
+  <text class="guard" x="392" y="245">áno</text>
+  <path class="edge" d="M348,252 L430,252"/>
+  <rect class="task" x="430" y="230" width="152" height="46" rx="8"/>
+  <g transform="translate(440,241)" class="ico"><circle cx="6" cy="6" r="3"/><path d="M6,-0.5 V2 M6,10 V12.5 M-0.5,6 H2 M10,6 H12.5 M1.6,1.6 l1.6,1.6 M8.8,8.8 l1.6,1.6 M10.4,1.6 l-1.6,1.6 M3.2,8.8 l-1.6,1.6"/></g>
+  <text class="type" x="510" y="247">SERVICE TASK</text>
+  <text class="lbl" x="510" y="265">Zapísať do kalendára</text>
+  <path class="edge" d="M582,252 L620,252"/>
+  <circle class="ev" cx="642" cy="252" r="15" stroke-width="3.5"/>
+  <text class="end-lbl" x="642" y="226">Schválené</text>
+
+  <!-- nie -->
+  <text class="guard" x="335" y="300">nie</text>
+  <path class="edge" d="M324,276 L324,318 L430,318"/>
+  <rect class="task" x="430" y="296" width="152" height="46" rx="8"/>
+  <g transform="translate(441,307)"><rect class="ico" x="0" y="1" width="12" height="9" rx="1"/><path class="ico" d="M0.5,2 L6,7 L11.5,2"/></g>
+  <text class="type" x="510" y="313">SEND TASK</text>
+  <text class="lbl" x="510" y="331">Oznámiť zamietnutie</text>
+  <path class="edge" d="M582,318 L620,318"/>
+  <circle class="ev" cx="642" cy="318" r="15" stroke-width="3.5"/>
+  <text class="end-lbl" x="642" y="292">Zamietnuté</text>
+</svg>
