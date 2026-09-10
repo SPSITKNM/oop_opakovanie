@@ -138,6 +138,34 @@ Pre školský projekt spravidla stačí **diagram aktivít** na rozpis scenárov
 BPMN spomíname preto, že v praxi (najmä v procesnom a bankovom prostredí) je
 veľmi rozšírený.
 
+## Wireframe a mockup
+
+Keď je jasné *čo* systém robí (use casy) a *ako* proces beží (BPMN / diagram
+aktivít), analytik načrtne aj *ako to bude vyzerať na obrazovke*. Nie preto, aby
+navrhol finálny dizajn — ale aby **overil tok a obsah obrazovky** skôr, než sa
+začne programovať.
+
+| Úroveň | Čo to je | Kedy |
+|---|---|---|
+| **wireframe** | nízkofidelitný náčrt — rozloženie prvkov, žiadne farby ani písma | najskôr, na overenie štruktúry a toku |
+| **mockup** | vernejší návrh — už s farbami, typografiou, reálnym obsahom | keď je štruktúra odsúhlasená |
+| **prototyp** | klikateľný model, dá sa ním „preklikať" scenár | pred vývojom, na používateľské testovanie |
+
+Wireframe kreslíme len pre **kľúčové obrazovky** (2–3), nie pre celú aplikáciu, a
+každú viažeme na konkrétny use case.
+
+![Wireframe — nová žiadosť o dovolenku a zoznam žiadostí](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/wireframe-ziadost-o-dovolenku.svg)
+
+Ľavá obrazovka pokrýva use case „podať žiadosť", pravá „sledovať stav". Farby
+odznakov stavu zámerne kopírujú stavy z procesu (zelená = schválené, žltá =
+čaká, červená = zamietnuté) — rovnaký vizuálny jazyk naprieč diagramom aj
+obrazovkou uľahčuje orientáciu.
+
+> **Pre študentov:** toto je bod, kde si navrhnete **vlastnú aplikáciu** — čo
+> chcete postaviť. Ako budete na programovaní preberať ďalšie koncepty, tento
+> návrh budete postupne implementovať. Oplatí sa navrhnúť niečo, čo naozaj
+> chcete mať hotové.
+
 ## Súvisiace
 
 - **Use Case diagram** a scenáre — [šablóna Systémovej analýzy](/citacka.html?s=pro&doc=systemova-analyza)
