@@ -1111,7 +1111,7 @@ celkoch. Keď celok zanikne, časti žijú ďalej.
 class Tortoise {
 public:
     std::string name;
-    Tortoise(std::string n) : name(std::move(n)) {}
+    Tortoise(std::string n) { name = n; }   // konstruktor — nastavi meno
 };
 
 class Creep {                         // skupina korytnaciek
