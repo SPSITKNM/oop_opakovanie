@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="470" height="600" viewBox="0 0 470 600" role="img" aria-label="Traceability — od požiadavky R1 cez proces, dáta a obrazovku až po test">
+  <style>
+    :root{
+      --stroke:#334155; --text:#1e293b; --node:#ffffff; --band:#eef2f7;
+      --accent:#7c3aed; --muted:#64748b;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --stroke:#cbd5e1; --text:#e2e8f0; --node:#1e293b; --band:#1e2739;
+        --accent:#a78bfa; --muted:#94a3b8;
+      }
+    }
+    .edge{stroke:var(--stroke); stroke-width:1.5; fill:none; marker-end:url(#a);}
+    .box{fill:var(--node); stroke:var(--stroke); stroke-width:1.5;}
+    .thread{stroke:var(--accent); stroke-width:2.5;}
+    text{fill:var(--text); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+    .kind{font-size:10px; font-weight:700; letter-spacing:.7px; fill:var(--accent);}
+    .body{font-size:11px;}
+    .tag{font-size:10px; font-weight:700; fill:#fff; text-anchor:middle;}
+  </style>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--stroke)"/>
+    </marker>
+  </defs>
+
+  <!-- thread -->
+  <line class="thread" x1="26" y1="30" x2="26" y2="566"/>
+  <rect x="8" y="16" width="36" height="20" rx="10" fill="var(--accent)"/>
+  <text class="tag" x="26" y="30">R1</text>
+
+  <!-- stage 1 -->
+  <rect class="box" x="54" y="20" width="400" height="82" rx="9"/>
+  <text class="kind" x="70" y="42">POŽIADAVKA</text>
+  <text class="body" x="70" y="62">Zamestnanec chce vidieť stav svojej žiadosti</text>
+  <text class="body" x="70" y="80">(dnes sa o zamietnutí ani nedozvie).</text>
+  <path class="edge" d="M254,102 L254,126"/>
+
+  <!-- stage 2 -->
+  <rect class="box" x="54" y="128" width="400" height="82" rx="9"/>
+  <text class="kind" x="70" y="150">PROCES · BPMN (TO-BE)</text>
+  <text class="body" x="70" y="170">Žiadosť má centrálny stav; každá zmena</text>
+  <text class="body" x="70" y="188">stavu automaticky spustí notifikáciu.</text>
+  <path class="edge" d="M254,210 L254,234"/>
+
+  <!-- stage 3 -->
+  <rect class="box" x="54" y="236" width="400" height="82" rx="9"/>
+  <text class="kind" x="70" y="258">DÁTA · dátový model</text>
+  <text class="body" x="70" y="278">pole Žiadosť.Stav + entita Notifikácia</text>
+  <text class="body" x="70" y="296">(história zmien = audit log).</text>
+  <path class="edge" d="M254,318 L254,342"/>
+
+  <!-- stage 4 -->
+  <rect class="box" x="54" y="344" width="400" height="82" rx="9"/>
+  <text class="kind" x="70" y="366">OBRAZOVKA · wireframe</text>
+  <text class="body" x="70" y="386">zoznam „Moje žiadosti" — stavový odznak</text>
+  <text class="body" x="70" y="404">a dôvod zamietnutia na jeden pohľad.</text>
+  <path class="edge" d="M254,426 L254,450"/>
+
+  <!-- stage 5 -->
+  <rect class="box" x="54" y="452" width="400" height="100" rx="9"/>
+  <text class="kind" x="70" y="474">TEST · Given – When – Then</text>
+  <text class="body" x="70" y="494">Given zamietnutá žiadosť</text>
+  <text class="body" x="70" y="512">When zamestnanec otvorí prehľad</text>
+  <text class="body" x="70" y="530">Then vidí stav aj dôvod (bez e-mailu)</text>
+</svg>

@@ -1,15 +1,87 @@
 # Úvod do softvérového inžinierstva — modelovanie správania
 
-Triedny diagram alebo ER diagram opisujú **štruktúru** (čo systém obsahuje).
-Diagram aktivít a BPMN opisujú **správanie** — *ako* niečo prebieha krok za krokom.
-Sú to najbežnejšie nástroje na zachytenie procesu alebo scenára tak, aby mu
-rozumel aj neprogramátor.
+Skôr než sa začne programovať, treba vedieť **čo** sa má postaviť a **prečo**.
+Diagramy a wireframy (nižšie) sú len nástroje, ktorými sa výsledok zachytí — táto
+prvá časť je o metóde, ktorá im predchádza.
 
-> **Práca softvérového analytika.** Skôr než sa čokoľvek naprogramuje, analytik
-> sa rozpráva s ľuďmi z firmy a zisťuje, *ako proces reálne funguje* — kto čo
-> robí, kde sa rozhoduje, čo môže zlyhať. Výsledok nakreslí ako diagram (často
-> BPMN), odsúhlasí ho so zadávateľom a **až z neho vzniknú požiadavky, use casy
-> a návrh systému**. Diagram je spoločný jazyk medzi biznisom a vývojom.
+## SW analytik
+
+Analytik nie je „kreslič diagramov". Jeho úloha je **položiť správne otázky skôr,
+než sa začne programovať**, a nedať sa odbiť tým, čo si zákazník *myslí*, že chce.
+Rozpráva sa s ľuďmi z firmy, zisťuje, ako proces reálne funguje — kde sa
+rozhoduje, čo môže zlyhať — a až z toho vzniknú požiadavky, use casy a návrh
+systému. Diagram je potom spoločný jazyk medzi biznisom a vývojom.
+
+Takto sa na váš softvér bude pýtať aj potenciálny zákazník — a tieto otázky si
+viete položiť sami, kým ešte len rozmýšľate, čo postaviť.
+
+### Požiadavka
+
+**Požiadavka** = jedna konkrétna vec, ktorú má systém robiť alebo spĺňať. Musí byť
+**overiteľná** — ak sa nedá jednoznačne povedať „splnené / nesplnené", je to len
+želanie, nie požiadavka.
+
+| | Funkčná požiadavka | Nefunkčná požiadavka (NFR) |
+|---|---|---|
+| Odpovedá na | *čo* systém robí | *ako dobre* to robí |
+| Príklad | „Systém zobrazí stav žiadosti" | „Žiadosť vidí len jej autor", „Odozva do 2 s" |
+
+**FURPS** — model na roztriedenie požiadaviek: **F**unctionality (funkčnosť),
+**U**sability (použiteľnosť), **R**eliability (spoľahlivosť), **P**erformance
+(výkon), **S**upportability (udržiavateľnosť). Prvé `F` sú funkčné požiadavky,
+zvyšok sú NFR.
+
+**MoSCoW** — priorita pre *rozsah*, nie „dôležitosť":
+
+| Trieda | Význam |
+|---|---|
+| **M**ust have | bez toho nemá zmysel dodať |
+| **S**hould have | dôležité, ale dá sa dočasne obísť |
+| **C**ould have | pridá sa, ak zvýši čas |
+| **W**on't have (teraz) | vedome odložené na neskôr |
+
+Požiadavky sa vedú v tabuľke, aby bolo vidno ich stav a väzbu na riešenie:
+
+| Kód | Popis | Priorita | Stav | Rieši sa cez |
+|---|---|---|---|---|
+| R1 | Zamestnanec chce poznať stav svojej žiadosti | Must | Analyzované | centrálny stav + notifikácie |
+| R2 | Vedúci chce históriu žiadostí oddelenia | Must | Analyzované | audit log (história zmien stavu) |
+
+### AS-IS a TO-BE
+
+Analytik zachytí **dva stavy procesu**:
+
+- **AS-IS** — ako to funguje *dnes*, aj s chybami
+- **TO-BE** — ako to má fungovať *po* zavedení systému
+
+Medzi nimi je najdôležitejšia otázka: **prečo dnešný stav nefunguje?** Nestačí
+prvá odpoveď — pýtaj sa „prečo" dovtedy, kým sa nenarazí na **koreňovú príčinu**:
+
+> Zamestnanec nevie stav žiadosti.
+> — *Prečo?* Lebo stav žije len v e-mailoch.
+> — *Prečo?* Lebo neexistuje spoločný systém záznamu.
+> — *Prečo?* Lebo proces vznikol ad-hoc, bez vlastníka, ktorý by ho navrhol.
+
+Často zistíš, že viacero rôznych sťažností sú v skutočnosti **symptómy jednej
+príčiny** — a vyrieši ich jeden zásah, nie štyri.
+
+### Od požiadavky po test
+
+Všetky artefakty — proces, dáta, obrazovka, test — sú **prepojené**. Každý
+vychádza z požiadavky a dá sa po tej niti prejsť tam aj späť. Toto je odpoveď na
+otázku „načo toľko diagramov":
+
+![Traceability — od požiadavky R1 po test](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/traceability-poziadavka-test.svg)
+
+Posledný článok, **test**, sa píše v tvare **Given – When – Then**, aby bola
+požiadavka jednoznačne overiteľná:
+
+> **Given** zamietnutá žiadosť
+> **When** zamestnanec otvorí prehľad „Moje žiadosti"
+> **Then** vidí stav *Zamietnutá* aj dôvod, bez čakania na e-mail
+
+Ak sa niektorý článok reťaze nedá vyplniť (požiadavka bez testu, obrazovka bez
+požiadavky), je to signál, že v analýze niečo chýba — alebo je tam niečo navyše.
 
 ## Diagram aktivít
 
