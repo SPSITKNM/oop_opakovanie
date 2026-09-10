@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="500" viewBox="0 0 540 500" role="img" aria-label="Diagram aktivít — prihlásenie používateľa">
+  <style>
+    :root{
+      --stroke:#334155; --text:#1e293b; --node:#ffffff;
+      --accent:#7c3aed; --decision:#fdf0c9; --muted:#64748b;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --stroke:#cbd5e1; --text:#e2e8f0; --node:#1e293b;
+        --accent:#a78bfa; --decision:#2d2a44; --muted:#94a3b8;
+      }
+    }
+    .edge{stroke:var(--stroke); stroke-width:1.5; fill:none; marker-end:url(#arrow);}
+    .bar{stroke:var(--accent); stroke-width:5; stroke-linecap:round;}
+    .node{fill:var(--node); stroke:var(--stroke); stroke-width:1.5;}
+    .decision{fill:var(--decision); stroke:var(--stroke); stroke-width:1.5;}
+    .accent-fill{fill:var(--accent);}
+    .end-ring{fill:none; stroke:var(--stroke); stroke-width:1.5;}
+    text{fill:var(--text); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+    .lbl{font-size:12.5px; text-anchor:middle;}
+    .guard{font-size:11px; fill:var(--muted);}
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--stroke)"/>
+    </marker>
+  </defs>
+
+  <!-- start -->
+  <circle class="accent-fill" cx="280" cy="24" r="8"/>
+  <path class="edge" d="M280,32 L280,46"/>
+
+  <!-- a1 -->
+  <rect class="node" x="180" y="48" width="200" height="38" rx="9"/>
+  <text class="lbl" x="280" y="72">Zadaj meno a heslo</text>
+  <path class="edge" d="M280,86 L280,102"/>
+
+  <!-- decision -->
+  <polygon class="decision" points="280,104 344,146 280,188 216,146"/>
+  <text class="lbl" x="280" y="150">Údaje platné?</text>
+
+  <!-- ano -->
+  <text class="guard" x="296" y="206">[áno]</text>
+  <path class="edge" d="M280,188 L280,212"/>
+
+  <!-- a_ok -->
+  <rect class="node" x="178" y="214" width="204" height="38" rx="9"/>
+  <text class="lbl" x="280" y="238">Vytvor reláciu (session)</text>
+
+  <!-- nie -->
+  <text class="guard" x="176" y="139">[nie]</text>
+  <path class="edge" d="M216,146 L97,146 L97,212"/>
+
+  <!-- err -->
+  <rect class="node" x="34" y="214" width="126" height="38" rx="9"/>
+  <text class="lbl" x="97" y="238">Zobraz chybu</text>
+
+  <!-- loop back to a1 -->
+  <path class="edge" d="M34,233 L20,233 L20,67 L178,67"/>
+
+  <!-- a_ok -> fork -->
+  <path class="edge" d="M280,252 L280,274"/>
+  <line class="bar" x1="185" y1="276" x2="375" y2="276"/>
+  <path class="edge" d="M210,276 L210,298"/>
+  <path class="edge" d="M350,276 L350,298"/>
+
+  <!-- parallel actions -->
+  <rect class="node" x="145" y="300" width="130" height="38" rx="9"/>
+  <text class="lbl" x="210" y="324">Načítaj profil</text>
+  <rect class="node" x="280" y="300" width="175" height="38" rx="9"/>
+  <text class="lbl" x="367" y="324">Zapíš do logu (audit)</text>
+
+  <!-- join -->
+  <path class="edge" d="M210,338 L210,360"/>
+  <path class="edge" d="M350,338 L350,360"/>
+  <line class="bar" x1="185" y1="362" x2="375" y2="362"/>
+  <path class="edge" d="M280,362 L280,384"/>
+
+  <!-- a_end -->
+  <rect class="node" x="180" y="386" width="200" height="38" rx="9"/>
+  <text class="lbl" x="280" y="410">Zobraz nástenku</text>
+  <path class="edge" d="M280,424 L280,446"/>
+
+  <!-- end -->
+  <circle class="end-ring" cx="280" cy="460" r="9"/>
+  <circle class="accent-fill" cx="280" cy="460" r="4.5"/>
+</svg>
