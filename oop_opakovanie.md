@@ -2628,6 +2628,198 @@ Volanie `zvierata[i]->zvuk()` za behu:
 - Skrytý ukazovateľ a tabuľka sú spôsob, akým to robia prakticky všetky prekladače. Jazyk C++ ich formálne nepredpisuje.
 - Reťaz pri volaní: **ukazovateľ → objekt na heape → skrytý ukazovateľ → tabuľka triedy → správny kód.**
 
+## Ako objekt vie, ktorú metódu zavolať
+- Otázka: ako sa program „rozhodne“ medzi `Haf` a `Mnau`?
+- **Nepozerá sa na predka.** Pozerá sa na **samotný objekt**, ktorý si nesie odkaz na to, kto je.
+
+### Objekt v pamäti
+- Ak má trieda `virtual` metódy, objekt sa skladá z dvoch častí:
+
+```
+objekt Pes:
+┌───────────────────────────┐
+│ skrytý ukazovateľ         │ ← "štítok": kto som, kde sú moje metódy
+├───────────────────────────┤
+│ atribúty (vek, ...)       │
+└───────────────────────────┘
+```
+
+- Skrytý ukazovateľ ukazuje na **tabuľku metód triedy**, ktorej je objekt. Každá trieda má vlastnú tabuľku:
+
+```
+tabuľka triedy Pes:     zvuk → Pes::zvuk      (kód, ktorý vypíše Haf)
+tabuľka triedy Macka:   zvuk → Macka::zvuk    (kód, ktorý vypíše Mnau)
+```
+
+![Skrytý ukazovateľ v objekte a tabuľky tried](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/polymorfizmus-09-stitok-v-objekte.svg)
+
+- Tabuľka patrí **triede** (jedna pre všetky psy), skrytý ukazovateľ je **v každom objekte**.
+
+### Kto skrytý ukazovateľ nastaví
+- **Konštruktor**, v momente vzniku objektu:
+  - `new Pes()` zapíše do objektu adresu **tabuľky Pes**,
+  - `new Macka()` zapíše do objektu adresu **tabuľky Macka**.
+- Objekt si teda od svojho vzniku nesie informáciu, čím je. Nepotrebuje na to predka.
+
+### Čo sa stane pri `u->zvuk()`
+Volanie je v kóde vždy rovnaké a robí tri kroky:
+1. Choď na objekt, na ktorý ukazuje `u`.
+2. Prečítaj z neho skrytý ukazovateľ, teda tabuľku, ktorá mu patrí.
+3. V tabuľke nájdi riadok `zvuk` a zavolaj kód, ktorý tam je.
+
+- Pre `Pes` vedie krok 2 na tabuľku Pes (`Haf`), pre `Macka` na tabuľku Macka (`Mnau`). Program je rovnaký, líši sa len to, čo je uložené v objekte.
+- Typ `Zviera*` potrebuje prekladač len na to, aby vedel, **ktorý riadok** tabuľky čítať (`zvuk` je riadok č. 0 v tabuľkách všetkých zvierat). Metódu z triedy `Zviera` nevyberá.
+
+### To isté ručne, bez `virtual`
+- Mechanizmus nie je mágia. Tu je napísaný ručne bežnými prvkami jazyka (`struct` a ukazovateľ na funkciu). Pri `virtual` to robí prekladač za nás.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+struct Zviera;                                  // dopredná deklarácia
+
+struct Tabulka {                                // "tabuľka triedy": zoznam funkcií
+    void (*zvuk)(Zviera*);                      // ukazovateľ na funkciu
+};
+
+struct Zviera {
+    Tabulka* tabulka;                           // "skrytý ukazovateľ" spravený ručne
+};
+
+void pesZvuk(Zviera*)   { cout << "Haf" << endl; }
+void mackaZvuk(Zviera*) { cout << "Mnau" << endl; }
+
+Tabulka pesTabulka   = { pesZvuk };             // tabuľka "Pes"
+Tabulka mackaTabulka = { mackaZvuk };           // tabuľka "Macka"
+
+int main() {
+    Zviera pes   = { &pesTabulka };             // "konštruktor": nastaví tabuľku
+    Zviera macka = { &mackaTabulka };
+
+    Zviera* zvierata[2] = { &pes, &macka };
+
+    for (int i = 0; i < 2; i++) {
+        zvierata[i]->tabulka->zvuk(zvierata[i]);    // TOTO robí za nás prekladač pri virtual
+    }
+}
+```
+
+Výstup programu:
+
+```
+Haf
+Mnau
+```
+
+- Riadok v slučke je tri kroky vyššie. Je na oboch objektoch **rovnaký**, a predsa zavolá inú funkciu, lebo objekty majú **rôzne tabuľky**.
+- Je to ukážka, že OOP je postavené na procedurálnych prvkoch: `struct` (dáta) + ukazovatele na funkcie (správanie).
+
+### Dôkaz: skrytý ukazovateľ je v objekte
+- Vypíšeme prvých 8 bajtov troch objektov, teda skrytý ukazovateľ. (Je to len ukážka, čítanie skrytého ukazovateľa nie je súčasť jazyka a v reálnom kóde sa nerobí.)
+
+```cpp
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+class Zviera {
+public:
+    virtual void zvuk() { cout << "..." << endl; }
+    virtual ~Zviera() {}
+};
+class Pes   : public Zviera { public: void zvuk() override { cout << "Haf" << endl; } };
+class Macka : public Zviera { public: void zvuk() override { cout << "Mnau" << endl; } };
+
+void* skrytyUkazovatel(Zviera* z) {             // prečítame prvých 8 bajtov objektu
+    void* v;
+    memcpy(&v, static_cast<void*>(z), sizeof(v));
+    return v;
+}
+
+int main() {
+    Zviera* a = new Pes();
+    Zviera* b = new Pes();
+    Zviera* c = new Macka();
+
+    cout << "Pes 1:   " << skrytyUkazovatel(a) << endl;
+    cout << "Pes 2:   " << skrytyUkazovatel(b) << endl;
+    cout << "Macka:   " << skrytyUkazovatel(c) << endl;
+    cout << "Pes 1 a Pes 2 maju rovnaky skryty ukazovatel: "
+         << (skrytyUkazovatel(a) == skrytyUkazovatel(b) ? "ano" : "nie") << endl;
+    cout << "Pes 1 a Macka maju rovnaky skryty ukazovatel: "
+         << (skrytyUkazovatel(a) == skrytyUkazovatel(c) ? "ano" : "nie") << endl;
+
+    delete a; delete b; delete c;
+}
+```
+
+Príklad výstupu (adresy sú len ilustračné a pri každom spustení sa líšia):
+
+```
+Pes 1:   0x10364c0c8
+Pes 2:   0x10364c0c8
+Macka:   0x10364c140
+Pes 1 a Pes 2 maju rovnaky skryty ukazovatel: ano
+Pes 1 a Macka maju rovnaky skryty ukazovatel: nie
+```
+
+- Dva psy majú **rovnakú** tabuľku (patrí triede), mačka **inú**.
+
+### Bonus: skrytý ukazovateľ nastavuje konštruktor
+- Ak zavoláme virtuálnu metódu **priamo v konštruktore predka**, objekt ešte nie je celý `Pes`, a tak sa zavolá verzia predka:
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Zviera {
+public:
+    Zviera() {
+        cout << "konstruktor Zviera: ";
+        zvuk();                                 // virtuálne volanie UVNÚTRI konštruktora predka
+    }
+    virtual void zvuk() { cout << "..." << endl; }
+    virtual ~Zviera() {}
+};
+
+class Pes : public Zviera {
+public:
+    Pes() {
+        cout << "konstruktor Pes:    ";
+        zvuk();                                 // teraz už sme v konštruktore Pes
+    }
+    void zvuk() override { cout << "Haf" << endl; }
+};
+
+int main() {
+    Pes p;
+    cout << "hotovy objekt:      ";
+    p.zvuk();
+}
+```
+
+Výstup programu:
+
+```
+konstruktor Zviera: ...
+konstruktor Pes:    Haf
+hotovy objekt:      Haf
+```
+
+- V konštruktore predka ukazuje skrytý ukazovateľ na tabuľku `Zviera`. Až konštruktor potomka ho prepíše na tabuľku `Pes`.
+- Je to dôkaz, že za výber verzie zodpovedá **štítok v objekte** a nie „pozeranie sa na predka“.
+- Praktické pravidlo: **nevolaj virtuálne metódy v konštruktore ani destruktore**, správajú sa inak, než by sme čakali.
+
+### Zhrnutie
+| Bez `virtual` | S `virtual` |
+|---|---|
+| objekt nemá žiadny štítok | objekt nesie skrytý ukazovateľ na tabuľku svojej triedy |
+| prekladač vyberie funkciu **pri preklade** podľa typu `Zviera*` | program vyberie funkciu **za behu** z tabuľky, ktorú nájde v objekte |
+| výsledok `...` | výsledok `Haf` alebo `Mnau` podľa objektu |
+
+- Veta na zapamätanie: **`virtual` = objekt si pamätá, kto je, a metódu si vyberie podľa toho.**
+
 ## Prečo ukazovatele, a nie obyčajné pole objektov
 - Mohlo by nás napadnúť `Zviera zvierata[3];` bez hviezdičiek. Problém je vo **veľkosti**:
   - `sizeof(Zviera) = 16`, ale `sizeof(Pes) = 24` (pes má dva atribúty navyše).
@@ -2893,6 +3085,8 @@ Ak chýba čo len jedno, dostaneme `...` namiesto `Haf`.
 - Aké tri podmienky musia byť splnené, aby polymorfizmus fungoval?
 - Prečo sa polymorfizmus robí cez ukazovatele a referencie a nie cez premenné po hodnote?
 - Čo je skrytý ukazovateľ a tabuľka virtuálnych metód?
+- Kto a kedy nastaví skrytý ukazovateľ v objekte? Prečo dva objekty rovnakej triedy zdieľajú tú istú tabuľku?
+- Prečo sa virtuálna metóda zavolaná v konštruktore predka správa ako verzia predka?
 - Prečo má mať trieda s `virtual` metódami aj `virtual` destruktor?
 - Čo musí sedieť pri prekrytí metódy? Čo je kovariantný návratový typ?
 - Čo robí kľúčové slovo `override`?
