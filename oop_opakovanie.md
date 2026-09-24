@@ -54,6 +54,84 @@ public:
 - Sekvencie, iterácie, vetvenia, skoky, abstrakcie.
 - Tak, ako to dnes poznáme z bežne používaných jazykov.
 
+## Procedurálne programovanie
+- Podskupina imperatívneho programovania: program je **sada funkcií (procedúr)**, ktoré sa volajú v určitom poradí.
+- Myslíme v štýle: **„Čo mám urobiť a v akom poradí?“**
+- **Dáta a funkcie sú oddelené.**
+  - Dáta drží `struct`, ktorý nevie s nimi nič robiť.
+  - Funkcie dáta nevlastnia, dostanú ich cez parametre.
+  - Výsledok je návratová hodnota alebo zmena odovzdaných dát cez referenciu.
+- `main` je „riaditeľ“: vytvorí dáta a postupne volá funkcie.
+
+### Príklad v C++
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+// dáta – držiak bez správania
+struct Student {
+    string meno;
+    vector<int> znamky;
+};
+
+// funkcia dáta len číta a vráti výsledok
+double priemer(const Student& s) {
+    if (s.znamky.empty()) return 0;
+    double sucet = 0;
+    for (int z : s.znamky) sucet += z;
+    return sucet / s.znamky.size();
+}
+
+// funkcia dáta mení, nič nevracia
+void pridajZnamku(Student& s, int znamka) {
+    s.znamky.push_back(znamka);
+}
+
+// funkcia len vypisuje
+void vypis(const Student& s) {
+    cout << s.meno << ": " << priemer(s) << endl;
+}
+
+int main() {
+    Student jan{"Ján", {}};
+
+    pridajZnamku(jan, 1);
+    pridajZnamku(jan, 2);
+    pridajZnamku(jan, 1);
+
+    vypis(jan);
+}
+```
+
+### Ako sa dáta predávajú
+
+| Spôsob | Zápis | Význam |
+|---|---|---|
+| Hodnotou | `void f(Student s)` | funkcia dostane **kópiu**, originál sa nezmení |
+| Referenciou | `void f(Student& s)` | funkcia pracuje s **originálom** a môže ho zmeniť |
+| Const referenciou | `void f(const Student& s)` | funkcia **vidí originál**, ale nesmie ho meniť (bez kopírovania) |
+
+- Výsledok jednej funkcie môže ísť ako vstup do ďalšej: `vypisHodnotenie(priemer(jan));`
+
+### Ako sa na to pozerať pri návrhu
+- Rozdelíme problém na kroky: načítaj dáta → spracuj dáta → vypíš výsledok.
+- Každá funkcia robí **jednu vec**, `main` ich zloží do celku.
+- Vhodné pre menšie programy, skripty a jednoduché nástroje (typicky C, Pascal).
+
+### Slabé miesto procedurálneho prístupu
+- Dáta sú voľne prístupné odkiaľkoľvek, nikto nekontroluje ich platnosť:
+
+```cpp
+jan.znamky.push_back(999);   // neplatná známka, prekladač nenamieta
+```
+
+- Čím väčší projekt (pozri *Veľké projekty*), tým ťažšie je sledovať, ktorá funkcia mení ktoré dáta.
+- Presne toto rieši objektovo orientovaný prístup: dáta a funkcie, ktoré s nimi smú pracovať, patria do jednej triedy a dáta sa dajú skryť (`private`).
+- Metódy triedy sú stále len funkcie, ktoré majú prístup k dátam „svojho“ objektu.
+
 ## Modulárne programovanie
 - Návrh zhora-nadol.
 - Rozdelenie programu na nezávislé, zameniteľné moduly, ktoré zabezpečujú čiastkovú funkcionalitu.
