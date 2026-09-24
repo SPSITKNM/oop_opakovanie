@@ -830,7 +830,7 @@ bool vyber(int suma) {
 | `public` | ✔ | ✔ | ✔ |
 
 - Pravidlo: **atribúty `private`, metódy `public`.**
-- `protected` dáva zmysel až pri dedičnosti (pozri príklad *C++ Account Class (Protected Balance)* nižšie v poznámkach).
+- `protected` dáva zmysel až pri dedičnosti (pozri kapitolu *Dedičnosť v C++* hneď za touto kapitolou a príklad *C++ Account Class (Protected Balance)* nižšie v poznámkach).
 
 ### `class` vs. `struct`
 - Jediný rozdiel v C++ je **predvolený prístup**, teda čo platí, keď nenapíšeš nič.
@@ -1049,6 +1049,719 @@ int main() {
 
 ### Vzorová odpoveď: princíp enkapsulácie
 > Dáta objektu sú skryté (`private`) a prístup k nim je len cez verejné metódy, ktoré strážia platnosť dát. Používateľ triedy pozná len rozhranie (verejné metódy), nie implementáciu (skryté atribúty). Vďaka tomu sa dá vnútro triedy meniť bez zásahu do kódu, ktorý ju používa.
+
+---
+
+# Dedičnosť v C++ — druhý pilier OOP
+
+## Osnova hodiny
+- Čo je dedičnosť a prečo ju potrebujeme (predok, potomok, vzťah „JE“).
+- Zápis dedičnosti v C++ (`class B : public A`).
+- Konštruktory a destruktory pri dedičnosti, poradie volania.
+- Prístup k členom predka (`private` vs. `protected`).
+- Redefinícia metódy v potomkovi.
+- Štyri typy dedičnosti: single, multilevel, hierarchical, multiple.
+- Dedičnosť vs. skladanie (JE vs. MÁ), najčastejšie chyby.
+
+## Základná myšlienka
+- **Dedičnosť = nová trieda (potomok) prevezme atribúty a metódy existujúcej triedy (predka) a môže pridať vlastné.**
+- Trieda, od ktorej dedíme, sa volá **predok** (base class, parent, superclass).
+- Trieda, ktorá dedí, sa volá **potomok** (derived class, child, subclass).
+- Vzťah medzi nimi je **JE** (IS-A): `SporiaciUcet` **je** `Ucet`, `Manazer` **je** `Zamestnanec`.
+- Prínos: **opätovné použitie kódu**. Spoločné veci napíšeme raz v predkovi, potomok ich dostane zadarmo.
+- Nadväzuje na enkapsuláciu: predok si stráži svoje `private` dáta, potomok s nimi pracuje cez to, čo predok dovolí.
+
+## Krok 1: problém bez dedičnosti
+- Máme účet. Teraz chceme aj sporiaci účet, ktorý navyše pripisuje úrok.
+- Bez dedičnosti by sme skopírovali celú triedu `Ucet` a pridali úrok.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Ucet {
+private:
+    int zostatok;
+
+public:
+    Ucet(int z) {
+        zostatok = z;
+    }
+
+    void vloz(int suma) {                   // toto je v OBOCH triedach rovnaké
+        if (suma > 0) {
+            zostatok = zostatok + suma;
+        }
+    }
+
+    int getZostatok() const {               // aj toto
+        return zostatok;
+    }
+};
+
+class SporiaciUcet {                        // kópia Ucet + úrok
+private:
+    int zostatok;                           // OPAKUJE SA
+    double urok;
+
+public:
+    SporiaciUcet(int z, double u) {
+        zostatok = z;                       // OPAKUJE SA
+        urok = u;
+    }
+
+    void vloz(int suma) {                   // OPAKUJE SA
+        if (suma > 0) {
+            zostatok = zostatok + suma;
+        }
+    }
+
+    int getZostatok() const {               // OPAKUJE SA
+        return zostatok;
+    }
+
+    void pripisUrok() {                     // jediná nová vec
+        int u = zostatok * urok;
+        zostatok = zostatok + u;
+    }
+};
+
+int main() {
+    Ucet a(100);
+    SporiaciUcet s(1000, 0.05);
+    a.vloz(50);
+    s.vloz(100);
+    s.pripisUrok();
+    cout << a.getZostatok() << endl;        // 150
+    cout << s.getZostatok() << endl;        // 1155
+}
+```
+
+![Dve podobné triedy bez dedičnosti — opakujúci sa kód](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/dedicnost-01-bez-dedicnosti.svg)
+
+- Zvýraznené riadky v diagrame sú v oboch triedach rovnaké.
+- Ak nájdeme chybu vo `vloz`, musíme ju opraviť na dvoch miestach. Pri desiatich podobných triedach na desiatich.
+- Toto rieši dedičnosť.
+
+## Krok 2: dedičnosť v C++
+- Zápis: `class Potomok : public Predok`.
+- Dvojbodka za názvom potomka znamená „dedí od“.
+- Kľúčové slovo `public` pred predkom zachová prístup: `public` členy predka ostanú `public` aj v potomkovi. Zatiaľ píšeme **vždy `public`**.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Ucet {                                // PREDOK
+private:
+    int zostatok;
+
+public:
+    Ucet(int z) {
+        zostatok = z;
+        cout << "Ucet(" << z << ")" << endl;
+    }
+
+    ~Ucet() {
+        cout << "~Ucet()" << endl;
+    }
+
+    void vloz(int suma) {
+        if (suma > 0) {
+            zostatok = zostatok + suma;
+        }
+    }
+
+    int getZostatok() const {
+        return zostatok;
+    }
+};
+
+class SporiaciUcet : public Ucet {          // POTOMOK: SporiaciUcet dedí od Ucet
+private:
+    double urok;                            // len nové veci, zvyšok už máme
+
+public:
+    SporiaciUcet(int z, double u) : Ucet(z) {   // najprv sa zavolá konštruktor predka
+        urok = u;
+        cout << "SporiaciUcet(" << z << ", " << u << ")" << endl;
+    }
+
+    ~SporiaciUcet() {
+        cout << "~SporiaciUcet()" << endl;
+    }
+
+    void pripisUrok() {
+        int u = getZostatok() * urok;       // zostatok je private v Ucet, pýtame sa cez getter
+        vloz(u);                            // meníme cez metódu predka
+    }
+};
+
+int main() {
+    SporiaciUcet s(1000, 0.05);
+    s.vloz(100);                            // zdedená metóda z Ucet
+    s.pripisUrok();                         // vlastná metóda potomka
+    cout << s.getZostatok() << endl;        // 1155
+}
+```
+
+Výstup programu:
+
+```
+Ucet(1000)
+SporiaciUcet(1000, 0.05)
+1155
+~SporiaciUcet()
+~Ucet()
+```
+
+![Dedičnosť — SporiaciUcet dedí od Ucet](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/dedicnost-02-single-zaklad.svg)
+
+- **Šípka s prázdnym trojuholníkom** vždy smeruje od **potomka k predkovi**.
+- V diagrame má potomok len **nové** členy. Zdedené (`zostatok`, `vloz`, `getZostatok`) sa nekreslia znova, dostane ich cez šípku.
+- Objekt `s` vie volať `vloz()` a `getZostatok()`, hoci ich `SporiaciUcet` nikde nenapísal.
+- Zdedené sú všetky členy predka, okrem konštruktorov a destruktorov. Tie si každá trieda píše sama.
+
+## Konštruktory a destruktory pri dedičnosti
+
+### Poradie volania
+- Objekt potomka **obsahuje** objekt predka. Najprv sa preto musí vytvoriť predok.
+- **Konštruktory** sa volajú od predka k potomkovi.
+- **Destruktory** sa volajú opačne: od potomka k predkovi.
+
+![Poradie volania konštruktorov a destruktorov pri dedičnosti](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/dedicnost-03-poradie-konstruktorov.svg)
+
+- Presne to vidno vo výstupe vyššie: `Ucet(1000)` → `SporiaciUcet(...)` a na konci `~SporiaciUcet()` → `~Ucet()`.
+
+### Ako potomok povie predkovi, s čím má vzniknúť
+- Predok `Ucet` má konštruktor `Ucet(int z)`, teda potrebuje parameter.
+- Potomok ho musí odovzdať v zápise za dvojbodkou:
+
+```cpp
+SporiaciUcet(int z, double u) : Ucet(z) {   // za dvojbodkou voláme konštruktor predka
+    urok = u;                               // v tele nastavíme vlastné atribúty
+}
+```
+
+- Za dvojbodkou sa zavolá konštruktor predka s hodnotou `z`. Až potom sa vykoná telo.
+- Ak predok **má konštruktor bez parametrov**, nemusíme ho volať, C++ ho zavolá samo.
+- Ak predok **nemá konštruktor bez parametrov** a potomok ho nezavolá vôbec, prekladač skončí chybou:
+
+```cpp
+SporiaciUcet(int z, double u) {             // CHYBA PRI PREKLADE: chýba : Ucet(z)
+    urok = u;
+}
+```
+
+## Prístup k členom predka: `private` vs. `protected`
+- Potomok **nemá** prístup k `private` členom predka, hoci ich objekt fyzicky obsahuje.
+- Je to enkapsulácia: predok si svoje dáta stráži aj pred vlastnými potomkami.
+
+```cpp
+void pripisUrok() {
+    // zostatok = zostatok + zostatok * urok;   // CHYBA PRI PREKLADE: zostatok je private v Ucet
+    int u = getZostatok() * urok;               // OK: cez getter
+    vloz(u);                                    // OK: cez metódu predka
+}
+```
+
+- **Riešenie A (preferované):** potomok pracuje cez `public` metódy predka, ako v príklade vyššie.
+- **Riešenie B:** predok označí atribút `protected`. Vidí ho predok aj potomkovia, zvonka je stále zamknutý.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Ucet {
+protected:                                  // vidí predok a potomkovia, zvonka nie
+    int zostatok;
+
+public:
+    Ucet(int z) {
+        zostatok = z;
+    }
+
+    int getZostatok() const {
+        return zostatok;
+    }
+};
+
+class SporiaciUcet : public Ucet {
+private:
+    double urok;
+
+public:
+    SporiaciUcet(int z, double u) : Ucet(z) {
+        urok = u;
+    }
+
+    void pripisUrok() {
+        zostatok = zostatok + zostatok * urok;  // OK: zostatok je protected, potomok ho vidí
+    }
+};
+
+int main() {
+    SporiaciUcet s(1000, 0.05);
+    s.pripisUrok();
+    cout << s.getZostatok() << endl;            // 1050
+    // s.zostatok = 5;                          // CHYBA PRI PREKLADE: zvonka je protected zamknuté
+}
+```
+
+![private vs. protected pri dedičnosti](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/dedicnost-04-protected.svg)
+
+| Modifikátor v predkovi | Trieda samotná | Potomok | Zvonka |
+|---|---|---|---|
+| `private` | ✔ | ✘ | ✘ |
+| `protected` | ✔ | ✔ | ✘ |
+| `public` | ✔ | ✔ | ✔ |
+
+- Pozor: `protected` **poruší časť enkapsulácie**, lebo potomok siaha na dáta predka priamo. Ak predok zmení vnútro, môže rozbiť aj potomkov. Preto sa pri `protected` treba pýtať, či nestačí getter.
+- V diagrame sa `protected` značí `#`.
+
+## Redefinícia metódy
+- Potomok môže napísať metódu s **rovnakým názvom aj parametrami** ako predok. Tým ju **redefinuje**: pre objekt potomka platí jeho verzia.
+- Verziu predka stále vieme zavolať zápisom `Predok::metoda()`.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Ucet {
+protected:
+    int zostatok;
+
+public:
+    Ucet(int z) {
+        zostatok = z;
+    }
+
+    bool vyber(int suma) {                      // verzia predka
+        if (suma > 0 && suma <= zostatok) {
+            zostatok = zostatok - suma;
+            return true;
+        }
+        return false;
+    }
+
+    int getZostatok() const {
+        return zostatok;
+    }
+};
+
+class StandartnyUcet : public Ucet {
+private:
+    int poplatok;
+
+public:
+    StandartnyUcet(int z, int p) : Ucet(z) {
+        poplatok = p;
+    }
+
+    bool vyber(int suma) {                      // REDEFINÍCIA: rovnaká hlavička ako v Ucet
+        cout << "Standartny vyber s poplatkom " << poplatok << endl;
+        return Ucet::vyber(suma + poplatok);    // zavoláme verziu predka
+    }
+};
+
+int main() {
+    StandartnyUcet s(100, 2);
+    bool ok = s.vyber(50);                      // vyberie 50 + poplatok 2
+    cout << ok << " " << s.getZostatok() << endl;   // 1 48
+}
+```
+
+- `Ucet::vyber(...)` je zápis s **názvom triedy a dvoma dvojbodkami**: „zavolaj verziu z Ucet“.
+- Redefinícia (bez `virtual`) sa rozhoduje podľa **typu premennej**. Ako sa správa objekt, keď na neho ukazuje ukazovateľ na predka, rieši až tretí pilier, **polymorfizmus** (`virtual`, `override`).
+
+## Štyri typy dedičnosti
+
+![Štyri typy dedičnosti — prehľad](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/dedicnost-05-prehlad-typov.svg)
+
+| Typ | Anglicky | Predkov | Potomkov | Príklad |
+|---|---|---|---|---|
+| Jednoduchá | Single | 1 | 1 | `Ucet` ← `SporiaciUcet` |
+| Viacúrovňová | Multilevel | reťaz | reťaz | `Osoba` ← `Zamestnanec` ← `Manazer` |
+| Hierarchická | Hierarchical | 1 | viac | `Ucet` ← `StandartnyUcet`, `UverUcet` |
+| Viacnásobná | Multiple | viac | 1 | `Auto`, `Lod` ← `Amfibia` |
+
+### 1. Single (jednoduchá)
+- **Jeden predok, jeden potomok.**
+- Je to náš príklad `Ucet` ← `SporiaciUcet` z kroku 2 (pozri diagram vyššie).
+
+```cpp
+class SporiaciUcet : public Ucet { /* ... */ };     // jeden predok
+```
+
+### 2. Multilevel (viacúrovňová)
+- **Reťaz dedičnosti:** potomok sa sám stane predkom ďalšej triedy.
+- Trieda na spodku má všetko zo všetkých úrovní nad sebou.
+- Každý konštruktor volá len konštruktor svojho **priameho** predka.
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Osoba {                                   // úroveň 1
+protected:
+    string meno;
+
+public:
+    Osoba(string m) {
+        meno = m;
+    }
+
+    void predstavSa() {
+        cout << "Som " << meno << endl;
+    }
+};
+
+class Zamestnanec : public Osoba {              // úroveň 2: dedí od Osoba
+protected:
+    int plat;
+
+public:
+    Zamestnanec(string m, int p) : Osoba(m) {   // odovzdá meno predkovi
+        plat = p;
+    }
+
+    void vypisPlat() {
+        cout << meno << " zarobi " << plat << " eur" << endl;
+    }
+};
+
+class Manazer : public Zamestnanec {            // úroveň 3: dedí od Zamestnanec
+private:
+    int pocetPodriadenych;
+
+public:
+    Manazer(string m, int p, int n) : Zamestnanec(m, p) {   // Osoba sa nevolá priamo
+        pocetPodriadenych = n;
+    }
+
+    void vypisTim() {
+        cout << meno << " vedie " << pocetPodriadenych << " ludi" << endl;
+    }
+};
+
+int main() {
+    Manazer m("Eva", 3000, 5);
+    m.predstavSa();                             // z Osoba (o dve úrovne vyššie)
+    m.vypisPlat();                              // zo Zamestnanec
+    m.vypisTim();                               // vlastná metóda
+}
+```
+
+Výstup programu:
+
+```
+Som Eva
+Eva zarobi 3000 eur
+Eva vedie 5 ludi
+```
+
+![Viacúrovňová dedičnosť — Osoba, Zamestnanec, Manazer](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/dedicnost-06-multilevel.svg)
+
+- `Manazer` je `Zamestnanec`, `Zamestnanec` je `Osoba`, teda `Manazer` je aj `Osoba`.
+- Konštruktory sa volajú v poradí `Osoba` → `Zamestnanec` → `Manazer`, destruktory opačne.
+
+### 3. Hierarchical (hierarchická)
+- **Jeden predok, viac potomkov.** Každý potomok pridáva vlastné správanie.
+- Spoločné veci sú len v predkovi, potomkovia sú od seba nezávislí.
+- Presne takto vyzerá bankový systém z komisionálnej skúšky (`Ucet`, `StandartnyUcet`, `UverUcet`).
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Ucet {                                    // spoločný predok
+protected:
+    int zostatok;
+
+public:
+    Ucet(int z) {
+        zostatok = z;
+    }
+
+    void vloz(int suma) {
+        if (suma > 0) {
+            zostatok = zostatok + suma;
+        }
+    }
+
+    bool vyber(int suma) {                      // základné pravidlo: nesmie ísť do mínusu
+        if (suma > 0 && suma <= zostatok) {
+            zostatok = zostatok - suma;
+            return true;
+        }
+        return false;
+    }
+
+    int getZostatok() const {
+        return zostatok;
+    }
+};
+
+class StandartnyUcet : public Ucet {            // potomok 1: každý výber stojí poplatok
+private:
+    int poplatok;
+
+public:
+    StandartnyUcet(int z, int p) : Ucet(z) {
+        poplatok = p;
+    }
+
+    bool vyber(int suma) {                      // redefinícia
+        return Ucet::vyber(suma + poplatok);    // pravidlo predka, ale s poplatkom
+    }
+};
+
+class UverUcet : public Ucet {                  // potomok 2: povolený mínus do limitu
+private:
+    int limit;
+
+public:
+    UverUcet(int z, int l) : Ucet(z) {
+        limit = l;
+    }
+
+    bool vyber(int suma) {                      // redefinícia s iným pravidlom
+        if (suma > 0 && suma <= zostatok + limit) {
+            zostatok = zostatok - suma;
+            return true;
+        }
+        return false;
+    }
+};
+
+int main() {
+    StandartnyUcet s(100, 2);
+    UverUcet u(100, 200);
+
+    cout << s.vyber(50) << " " << s.getZostatok() << endl;      // 1 48   (50 + poplatok 2)
+    cout << s.vyber(50) << " " << s.getZostatok() << endl;      // 0 48   (52 > 48)
+
+    cout << u.vyber(250) << " " << u.getZostatok() << endl;     // 1 -150 (do limitu 200)
+    cout << u.vyber(100) << " " << u.getZostatok() << endl;     // 0 -150 (presiahlo by limit)
+
+    s.vloz(10);                                 // vloz() sme nepísali, zdedili sme ho
+    u.vloz(10);
+}
+```
+
+![Hierarchická dedičnosť — Ucet, StandartnyUcet, UverUcet](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/dedicnost-07-hierarchical.svg)
+
+- Obaja potomkovia dostali `vloz`, `vyber` aj `getZostatok` od predka.
+- Každý si **redefinoval** `vyber` po svojom. V diagrame je to označené tagom `redefinícia`.
+- Zmena vo `vloz` v triede `Ucet` sa prejaví v oboch potomkoch naraz.
+
+### 4. Multiple (viacnásobná)
+- **Jeden potomok, viac predkov.** Zápis: predkovia oddelení čiarkou.
+- Potomok dostane členy **od všetkých** predkov.
+- C++ dedenie od viacerých tried podporuje (napr. Java a C# nie, tam sa to rieši rozhraniami).
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Auto {
+public:
+    Auto() {
+        cout << "Auto()" << endl;
+    }
+
+    void jazdi() {
+        cout << "Jazdim po ceste" << endl;
+    }
+
+    void zapniMotor() {
+        cout << "Motor auta" << endl;
+    }
+};
+
+class Lod {
+public:
+    Lod() {
+        cout << "Lod()" << endl;
+    }
+
+    void pluje() {
+        cout << "Plavim po vode" << endl;
+    }
+
+    void zapniMotor() {                         // rovnaký názov ako v Auto
+        cout << "Motor lode" << endl;
+    }
+};
+
+class Amfibia : public Auto, public Lod {       // dedí od OBOCH, oddelené čiarkou
+public:
+    Amfibia() {
+        cout << "Amfibia()" << endl;
+    }
+};
+
+int main() {
+    Amfibia a;                                  // Auto(), Lod(), Amfibia() v poradí zápisu
+    a.jazdi();                                  // z Auto
+    a.pluje();                                  // z Lod
+    // a.zapniMotor();                          // CHYBA PRI PREKLADE: nejednoznačné, Auto aj Lod ho majú
+    a.Auto::zapniMotor();                       // riešenie: povieme, ktorú verziu chceme
+    a.Lod::zapniMotor();
+}
+```
+
+Výstup programu:
+
+```
+Auto()
+Lod()
+Amfibia()
+Jazdim po ceste
+Plavim po vode
+Motor auta
+Motor lode
+```
+
+![Viacnásobná dedičnosť — Amfibia dedí od Auto a Lod](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/dedicnost-08-multiple.svg)
+
+- Konštruktory predkov sa volajú v **poradí, v akom sú zapísaní** (`Auto`, potom `Lod`), až potom konštruktor potomka.
+- Ak majú dvaja predkovia metódu s rovnakým názvom, volanie je **nejednoznačné** a prekladač ho odmietne. Vyriešime to zápisom `objekt.Predok::metoda()`.
+- Viacnásobná dedičnosť je silná, ale zložitá. Používa sa opatrne.
+
+#### Diamantový problém (dobré vedieť)
+- Ak majú dvaja predkovia **spoločného predka**, vznikne diamant.
+- `Brigadnik` dedí od `Student` aj `Zamestnanec`, ktorí obaja dedia od `Osoba`. Bez opatrenia by `Brigadnik` obsahoval **dve kópie** `Osoba`.
+- Riešenie: **virtuálna dedičnosť** (`virtual public`). Spoločný predok potom existuje len raz.
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Osoba {
+private:
+    string meno;
+
+public:
+    void setMeno(string m) {
+        meno = m;
+    }
+
+    string getMeno() const {
+        return meno;
+    }
+};
+
+class Student : virtual public Osoba {          // virtual: spoločný predok bude len jeden
+};
+
+class Zamestnanec : virtual public Osoba {
+};
+
+class Brigadnik : public Student, public Zamestnanec {
+};
+
+int main() {
+    Brigadnik b;
+    b.setMeno("Jan");                           // bez virtual: CHYBA PRI PREKLADE (nejednoznačné)
+    cout << b.getMeno() << endl;                // Jan
+}
+```
+
+![Diamantový problém a virtuálna dedičnosť](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/dedicnost-09-diamant.svg)
+
+- Kombinácia viacerých typov (napr. hierarchická + multiple) sa volá **hybridná dedičnosť**. Diamant je jej typický príklad.
+
+## Dedičnosť vs. skladanie (JE vs. MÁ)
+- Dedičnosť použijeme len keď platí vzťah **JE** (potomok je špeciálny prípad predka).
+- Ak platí vzťah **MÁ**, použijeme **skladanie** (objekt drží iný objekt ako atribút).
+
+| Veta | Vzťah | Riešenie |
+|---|---|---|
+| `SporiaciUcet` **je** `Ucet` | JE | dedičnosť |
+| `Manazer` **je** `Zamestnanec` | JE | dedičnosť |
+| `Ucet` **má** majiteľa (`Klient`) | MÁ | atribút `Klient majitel;` |
+| `Banka` **má** účty | MÁ | atribút s účtami |
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Klient {
+private:
+    string meno;
+
+public:
+    Klient(string m) {
+        meno = m;
+    }
+
+    string getMeno() const {
+        return meno;
+    }
+};
+
+class Ucet {                                    // Ucet NIE JE Klient, Ucet MÁ Klienta
+private:
+    Klient majitel;                             // skladanie: atribút typu Klient
+    int zostatok;
+
+public:
+    Ucet(string m, int z) : majitel(m) {        // Klient nemá prázdny konštruktor, inicializujeme ho takto
+        zostatok = z;
+    }
+
+    string getMajitel() const {
+        return majitel.getMeno();
+    }
+};
+
+int main() {
+    Ucet u("Jan", 100);
+    cout << u.getMajitel() << endl;             // Jan
+}
+```
+
+- Chyba začiatočníkov: dediť len preto, že chceme prevziať nejaký kód. Ak veta „X je Y“ nedáva zmysel, nededíme.
+- Skladanie, agregácia a kompozícia sú rozobrané v kapitole *Vzťahy medzi objektmi*.
+
+## Najčastejšie chyby
+- **Zabudnuté `public` pri dedení.** V `class` je predvolené dedenie `private`, takže verejné metódy predka zvonka nefungujú.
+
+```cpp
+class SporiaciUcet : Ucet { /* ... */ };            // dedenie je private (predvolene v class)
+class SporiaciUcet : public Ucet { /* ... */ };     // správne
+```
+
+- **Chýbajúce `: Predok(...)`**, keď predok nemá konštruktor bez parametrov.
+- **Prístup k `private` členu predka** z potomka. Použi getter alebo `protected`.
+- **Nejednoznačné volanie** pri viacnásobnej dedičnosti (rovnaký názov metódy u dvoch predkov).
+- **Dedičnosť namiesto skladania:** `Ucet` nededí od `Klient`, pretože `Ucet` nie je klient.
+- **Redefinícia bez `virtual` nie je polymorfizmus.** K tomu sa dostaneme pri treťom pilieri.
+
+## Úlohy na cvičenie
+- Vytvorte triedu `Zviera` (atribút `meno`, metóda `predstavSa()`) a potomkov `Pes` a `Macka`, každý s vlastnou metódou (`stekaj()`, `pradie()`). Nakreslite triedny diagram.
+- Vytvorte reťaz `Vozidlo` ← `Auto` ← `SportoveAuto` (viacúrovňová dedičnosť). Každá úroveň pridá aspoň jeden atribút a metódu.
+- Doplňte hierarchiu účtov o tretieho potomka `SporiaciUcet`, ktorý nepovolí výber viac ako 500 eur naraz.
+- Vytvorte triedy `Lietadlo` a `Lod` a potomka `Hydroplan`. Vyriešte nejednoznačnú metódu `zapniMotor()`.
+- Rozhodnite, kde platí JE a kde MÁ: `Kruh` – `Tvar`, `Auto` – `Motor`, `Student` – `Osoba`, `Trieda` – `Student`.
+
+## Kontrolné otázky
+- Vysvetlite princíp dedičnosti. Uveďte príklad v C++.
+- Čo je predok a čo potomok? Ktorý smer má šípka v triednom diagrame?
+- Aký je rozdiel medzi vzťahom JE a MÁ? Kedy použijeme dedičnosť?
+- V akom poradí sa volajú konštruktory a destruktory pri dedičnosti?
+- Ako odovzdá potomok parametre konštruktoru predka?
+- Aký je rozdiel medzi `private` a `protected` z pohľadu potomka?
+- Čo je redefinícia metódy a ako zavoláme verziu predka?
+- Vymenujte a nakreslite štyri typy dedičnosti (single, multilevel, hierarchical, multiple).
+- Čo je diamantový problém a ako sa rieši?
+
+### Vzorová odpoveď: princíp dedičnosti
+> Dedičnosť umožňuje vytvoriť novú triedu (potomka) z existujúcej triedy (predka). Potomok automaticky získa atribúty a metódy predka a môže pridať vlastné alebo redefinovať zdedené. Vzťah medzi nimi je „JE“ (`SporiaciUcet` je `Ucet`). Dedičnosť podporuje opätovné použitie kódu: spoločné veci píšeme raz v predkovi. V C++ ju zapisujeme `class Potomok : public Predok`.
 
 ---
 

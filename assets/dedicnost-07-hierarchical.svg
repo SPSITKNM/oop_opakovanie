@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="710" height="358" viewBox="0 0 710 358" role="img" aria-label="Rozhranie a implementácia — zmena vnútra bez zmeny okolia">
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="408" viewBox="0 0 800 408" role="img" aria-label="Hierarchická dedičnosť — Ucet, StandartnyUcet, UverUcet">
   <style>
     :root{ --stroke:#334155; --text:#1e293b; --node:#ffffff; --band:#eef2f7; --accent:#7c3aed; --muted:#64748b; --cls:#f4f1fb; --pub:#15803d; --priv:#b91c1c; --prot:#b45309; --note:#fffbeb; --obj:#eef6ff; }
     @media (prefers-color-scheme: dark){
@@ -44,35 +44,36 @@
     </marker>
   </defs>
 
-  <rect class="cls" x="30" y="60" width="230" height="122" rx="4"/>
-  <text class="name" x="145.0" y="80">Ucet (verzia 1)</text>
-  <line class="sep" x1="30" y1="90" x2="260" y2="90"/>
-  <text class="mem" x="40" y="108.0"><tspan class="priv">-</tspan> zostatok: int</text>
-  <line class="sep" x1="30" y1="118" x2="260" y2="118"/>
-  <text class="mem" x="40" y="136.0"><tspan class="pub">+</tspan> Ucet(z: int)</text>
-  <text class="mem" x="40" y="154.0"><tspan class="pub">+</tspan> vloz(suma: int): void</text>
-  <text class="mem" x="40" y="172.0"><tspan class="pub">+</tspan> getZostatok(): int</text>
-  <rect class="cls" x="400" y="60" width="230" height="122" rx="4"/>
-  <text class="name" x="515.0" y="80">Ucet (verzia 2)</text>
-  <line class="sep" x1="400" y1="90" x2="630" y2="90"/>
-  <text class="mem" x="410" y="108.0"><tspan class="priv">-</tspan> centy: long long</text>
-  <line class="sep" x1="400" y1="118" x2="630" y2="118"/>
-  <text class="mem" x="410" y="136.0"><tspan class="pub">+</tspan> Ucet(z: int)</text>
-  <text class="mem" x="410" y="154.0"><tspan class="pub">+</tspan> vloz(suma: int): void</text>
-  <text class="mem" x="410" y="172.0"><tspan class="pub">+</tspan> getZostatok(): int</text>
-  <rect class="hl" x="33" y="120.0" width="224" height="60"/>
-  <rect class="hl" x="403" y="120.0" width="224" height="60"/>
-  <text class="ttl" x="30" y="40">Pôvodná implementácia</text>
-  <text class="ttl" x="400" y="40">Zmenená implementácia (ukladáme centy)</text>
-  <path class="edge" d="M268,104.0 L392,104.0"/>
-  <text class="mutc" x="330.0" y="96.0">vnútro sa zmenilo</text>
-  <text class="mutc" x="145.0" y="200">rozhranie (zvýraznené) je rovnaké</text>
-  <text class="mutc" x="515.0" y="200">rozhranie (zvýraznené) je rovnaké</text>
-  <rect class="node" x="255" y="228" width="150" height="40" rx="8"/>
-  <text class="lblc" x="330.0" y="252.0">main()</text>
-  <path class="ok" d="M255,248 L145.0,206"/>
-  <path class="ok" d="M405,248 L515.0,206"/>
-  <rect class="note" x="30" y="294" width="650" height="44" rx="3"/>
-  <text class="lbl" x="40" y="314">main() volá len vloz a getZostatok, preto ostáva nezmenený.</text>
-  <text class="lbl" x="40" y="330">Keby bol zostatok public, museli by sme prepísať každé miesto, ktoré ho používa.</text>
+  <rect class="cls" x="285.0" y="20" width="230" height="140" rx="4"/>
+  <text class="name" x="400.0" y="40">Ucet</text>
+  <line class="sep" x1="285.0" y1="50" x2="515.0" y2="50"/>
+  <text class="mem" x="295.0" y="68.0"><tspan class="prot">#</tspan> zostatok: int</text>
+  <line class="sep" x1="285.0" y1="78" x2="515.0" y2="78"/>
+  <text class="mem" x="295.0" y="96.0"><tspan class="pub">+</tspan> Ucet(z: int)</text>
+  <text class="mem" x="295.0" y="114.0"><tspan class="pub">+</tspan> vloz(suma: int): void</text>
+  <text class="mem" x="295.0" y="132.0"><tspan class="pub">+</tspan> vyber(suma: int): bool</text>
+  <text class="mem" x="295.0" y="150.0"><tspan class="pub">+</tspan> getZostatok(): int</text>
+  <rect class="cls" x="111.60000000000002" y="220" width="268.4" height="104" rx="4"/>
+  <text class="name" x="245.8" y="240">StandartnyUcet</text>
+  <line class="sep" x1="111.60000000000002" y1="250" x2="380.0" y2="250"/>
+  <text class="mem" x="121.60000000000002" y="268.0"><tspan class="priv">-</tspan> poplatok: int</text>
+  <line class="sep" x1="111.60000000000002" y1="278" x2="380.0" y2="278"/>
+  <text class="mem" x="121.60000000000002" y="296.0"><tspan class="pub">+</tspan> StandartnyUcet(z: int, p: int)</text>
+  <text class="mem" x="121.60000000000002" y="314.0"><tspan class="pub">+</tspan> vyber(suma: int): bool</text>
+  <text class="tag" x="372.0" y="314.0">redefinícia</text>
+  <rect class="cls" x="420.0" y="220" width="268.4" height="104" rx="4"/>
+  <text class="name" x="554.2" y="240">UverUcet</text>
+  <line class="sep" x1="420.0" y1="250" x2="688.4" y2="250"/>
+  <text class="mem" x="430.0" y="268.0"><tspan class="priv">-</tspan> limit: int</text>
+  <line class="sep" x1="420.0" y1="278" x2="688.4" y2="278"/>
+  <text class="mem" x="430.0" y="296.0"><tspan class="pub">+</tspan> UverUcet(z: int, l: int)</text>
+  <text class="mem" x="430.0" y="314.0"><tspan class="pub">+</tspan> vyber(suma: int): bool</text>
+  <text class="tag" x="680.4" y="314.0">redefinícia</text>
+  <path class="genl" d="M245.8,220 L245.8,192"/>
+  <path class="genl" d="M554.2,220 L554.2,192"/>
+  <path class="genl" d="M245.8,192 L554.2,192"/>
+  <path class="gen" d="M400.0,192 L400.0,161"/>
+  <rect class="note" x="30" y="344" width="740" height="44" rx="3"/>
+  <text class="lbl" x="40" y="364">Dva potomkovia toho istého predka. Spoločné veci (zostatok, vloz, getZostatok) sú len v Ucet.</text>
+  <text class="lbl" x="40" y="380">vyber() je v potomkoch redefinovaná (rovnaká hlavička ako u predka, iné správanie).</text>
 </svg>

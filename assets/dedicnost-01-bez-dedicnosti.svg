@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="710" height="358" viewBox="0 0 710 358" role="img" aria-label="Rozhranie a implementácia — zmena vnútra bez zmeny okolia">
+<svg xmlns="http://www.w3.org/2000/svg" width="750" height="274" viewBox="0 0 750 274" role="img" aria-label="Dve podobné triedy bez dedičnosti — opakujúci sa kód">
   <style>
     :root{ --stroke:#334155; --text:#1e293b; --node:#ffffff; --band:#eef2f7; --accent:#7c3aed; --muted:#64748b; --cls:#f4f1fb; --pub:#15803d; --priv:#b91c1c; --prot:#b45309; --note:#fffbeb; --obj:#eef6ff; }
     @media (prefers-color-scheme: dark){
@@ -44,35 +44,29 @@
     </marker>
   </defs>
 
-  <rect class="cls" x="30" y="60" width="230" height="122" rx="4"/>
-  <text class="name" x="145.0" y="80">Ucet (verzia 1)</text>
-  <line class="sep" x1="30" y1="90" x2="260" y2="90"/>
-  <text class="mem" x="40" y="108.0"><tspan class="priv">-</tspan> zostatok: int</text>
-  <line class="sep" x1="30" y1="118" x2="260" y2="118"/>
-  <text class="mem" x="40" y="136.0"><tspan class="pub">+</tspan> Ucet(z: int)</text>
-  <text class="mem" x="40" y="154.0"><tspan class="pub">+</tspan> vloz(suma: int): void</text>
-  <text class="mem" x="40" y="172.0"><tspan class="pub">+</tspan> getZostatok(): int</text>
-  <rect class="cls" x="400" y="60" width="230" height="122" rx="4"/>
-  <text class="name" x="515.0" y="80">Ucet (verzia 2)</text>
-  <line class="sep" x1="400" y1="90" x2="630" y2="90"/>
-  <text class="mem" x="410" y="108.0"><tspan class="priv">-</tspan> centy: long long</text>
-  <line class="sep" x1="400" y1="118" x2="630" y2="118"/>
-  <text class="mem" x="410" y="136.0"><tspan class="pub">+</tspan> Ucet(z: int)</text>
-  <text class="mem" x="410" y="154.0"><tspan class="pub">+</tspan> vloz(suma: int): void</text>
-  <text class="mem" x="410" y="172.0"><tspan class="pub">+</tspan> getZostatok(): int</text>
-  <rect class="hl" x="33" y="120.0" width="224" height="60"/>
-  <rect class="hl" x="403" y="120.0" width="224" height="60"/>
-  <text class="ttl" x="30" y="40">Pôvodná implementácia</text>
-  <text class="ttl" x="400" y="40">Zmenená implementácia (ukladáme centy)</text>
-  <path class="edge" d="M268,104.0 L392,104.0"/>
-  <text class="mutc" x="330.0" y="96.0">vnútro sa zmenilo</text>
-  <text class="mutc" x="145.0" y="200">rozhranie (zvýraznené) je rovnaké</text>
-  <text class="mutc" x="515.0" y="200">rozhranie (zvýraznené) je rovnaké</text>
-  <rect class="node" x="255" y="228" width="150" height="40" rx="8"/>
-  <text class="lblc" x="330.0" y="252.0">main()</text>
-  <path class="ok" d="M255,248 L145.0,206"/>
-  <path class="ok" d="M405,248 L515.0,206"/>
-  <rect class="note" x="30" y="294" width="650" height="44" rx="3"/>
-  <text class="lbl" x="40" y="314">main() volá len vloz a getZostatok, preto ostáva nezmenený.</text>
-  <text class="lbl" x="40" y="330">Keby bol zostatok public, museli by sme prepísať každé miesto, ktoré ho používa.</text>
+  <rect class="cls" x="30" y="30" width="250" height="122" rx="4"/>
+  <text class="name" x="155.0" y="50">Ucet</text>
+  <line class="sep" x1="30" y1="60" x2="280" y2="60"/>
+  <text class="mem" x="40" y="78.0"><tspan class="priv">-</tspan> zostatok: int</text>
+  <line class="sep" x1="30" y1="88" x2="280" y2="88"/>
+  <text class="mem" x="40" y="106.0"><tspan class="pub">+</tspan> Ucet(z: int)</text>
+  <text class="mem" x="40" y="124.0"><tspan class="pub">+</tspan> vloz(suma: int): void</text>
+  <text class="mem" x="40" y="142.0"><tspan class="pub">+</tspan> getZostatok(): int</text>
+  <rect class="cls" x="370" y="30" width="255.35" height="158" rx="4"/>
+  <text class="name" x="497.675" y="50">SporiaciUcet</text>
+  <line class="sep" x1="370" y1="60" x2="625.35" y2="60"/>
+  <text class="mem" x="380" y="78.0"><tspan class="priv">-</tspan> zostatok: int</text>
+  <text class="mem" x="380" y="96.0"><tspan class="priv">-</tspan> urok: double</text>
+  <line class="sep" x1="370" y1="106" x2="625.35" y2="106"/>
+  <text class="mem" x="380" y="124.0"><tspan class="pub">+</tspan> SporiaciUcet(z: int, u: double)</text>
+  <text class="mem" x="380" y="142.0"><tspan class="pub">+</tspan> vloz(suma: int): void</text>
+  <text class="mem" x="380" y="160.0"><tspan class="pub">+</tspan> getZostatok(): int</text>
+  <text class="mem" x="380" y="178.0"><tspan class="pub">+</tspan> pripisUrok(): void</text>
+  <rect class="hl" x="33" y="66.0" width="244" height="16"/>
+  <rect class="hl" x="33" y="112.0" width="244" height="34"/>
+  <rect class="hl" x="373" y="66.0" width="249.35" height="16"/>
+  <rect class="hl" x="373" y="130.0" width="249.35" height="34"/>
+  <rect class="note" x="30" y="210" width="690" height="44" rx="3"/>
+  <text class="lbl" x="40" y="230">Zvýraznený kód je v oboch triedach rovnaký (copy-paste).</text>
+  <text class="lbl" x="40" y="246">Ak v ňom nájdeme chybu, musíme ju opraviť na viacerých miestach.</text>
 </svg>
