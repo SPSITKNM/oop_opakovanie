@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="352" viewBox="0 0 720 352" role="img" aria-label="Rozhranie Tlacitelne a jeho implementácie">
+  <style>
+    :root{ --stroke:#334155; --text:#1e293b; --node:#ffffff; --band:#eef2f7; --accent:#7c3aed; --muted:#64748b; --cls:#f4f1fb; --pub:#15803d; --priv:#b91c1c; --prot:#b45309; --note:#fffbeb; --obj:#eef6ff; }
+    @media (prefers-color-scheme: dark){
+      :root{ --stroke:#cbd5e1; --text:#e2e8f0; --node:#1e293b; --band:#1e2739; --accent:#a78bfa; --muted:#94a3b8; --cls:#1c1930; --pub:#4ade80; --priv:#f87171; --prot:#fbbf24; --note:#2a2412; --obj:#152238; }
+    }
+    text{fill:var(--text); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+    .cls{fill:var(--cls); stroke:var(--stroke); stroke-width:1.5;}
+    .obj{fill:var(--obj); stroke:var(--stroke); stroke-width:1.5;}
+    .sep{stroke:var(--stroke); stroke-width:1.2;}
+    .name{font-size:13px; font-weight:700; text-anchor:middle;}
+    .oname{font-size:12.5px; font-weight:700; text-anchor:middle; text-decoration:underline;}
+    .stereo{font-size:10.5px; fill:var(--muted); text-anchor:middle;}
+    .mem{font-size:11.5px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; white-space:pre;}
+    .tag{font-size:9.5px; fill:var(--muted); text-anchor:end; font-style:italic;}
+    .pub{fill:var(--pub); font-weight:700;} .priv{fill:var(--priv); font-weight:700;} .prot{fill:var(--prot); font-weight:700;}
+    .lbl{font-size:11px;} .lblc{font-size:11px; text-anchor:middle;}
+    .mut{font-size:10.5px; fill:var(--muted);} .mutc{font-size:10.5px; fill:var(--muted); text-anchor:middle;}
+    .ttl{font-size:12.5px; font-weight:700; fill:var(--accent);} .ttlc{font-size:12.5px; font-weight:700; fill:var(--accent); text-anchor:middle;}
+    .code{font-size:11px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+    .okt{fill:var(--pub); font-weight:700;} .badt{fill:var(--priv); font-weight:700;}
+    .ok{stroke:var(--pub); stroke-width:1.6; fill:none; marker-end:url(#mok);}
+    .bad{stroke:var(--priv); stroke-width:1.6; fill:none; stroke-dasharray:5 4;}
+    .edge{stroke:var(--stroke); stroke-width:1.4; fill:none; marker-end:url(#mopen);}
+    .dep{stroke:var(--stroke); stroke-width:1.3; fill:none; stroke-dasharray:5 4; marker-end:url(#mopen);}
+    .gen{stroke:var(--stroke); stroke-width:1.5; fill:none; marker-end:url(#mtri);}
+    .genl{stroke:var(--stroke); stroke-width:1.5; fill:none;}
+    .real{stroke:var(--stroke); stroke-width:1.5; fill:none; stroke-dasharray:6 4; marker-end:url(#mtri);}
+    .reall{stroke:var(--stroke); stroke-width:1.5; fill:none; stroke-dasharray:6 4;}
+    .node{fill:var(--node); stroke:var(--stroke); stroke-width:1.4;}
+    .note{fill:var(--note); stroke:var(--muted); stroke-width:1; stroke-dasharray:4 3;}
+    .hl{fill:var(--accent); opacity:.16;}
+    .brk{stroke:var(--muted); stroke-width:1.3; fill:none;}
+    .grid{stroke:var(--stroke); stroke-width:1; fill:none;}
+    .hdr{fill:var(--band); stroke:var(--stroke); stroke-width:1;}
+  </style>
+  <defs>
+    <marker id="mopen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="var(--stroke)" stroke-width="1.4"/>
+    </marker>
+    <marker id="mtri" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" orient="auto">
+      <path d="M1,1 L11,6 L1,11 z" fill="var(--node)" stroke="var(--stroke)" stroke-width="1.4"/>
+    </marker>
+    <marker id="mok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--pub)"/>
+    </marker>
+  </defs>
+
+  <rect class="cls" x="255.0" y="20" width="210" height="84" rx="4"/>
+  <text class="stereo" x="360.0" y="34">«interface»</text>
+  <text class="name" x="360.0" y="54" style="font-style:italic">Tlacitelne</text>
+  <line class="sep" x1="255.0" y1="64" x2="465.0" y2="64"/>
+  <line class="sep" x1="255.0" y1="76" x2="465.0" y2="76"/>
+  <text class="mem" x="265.0" y="94.0" style="font-style:italic"><tspan class="pub">+</tspan> tlac(): void</text>
+  <text class="tag" x="457.0" y="94.0">= 0</text>
+  <rect class="cls" x="145.0" y="164" width="190" height="104" rx="4"/>
+  <text class="name" x="240.0" y="184">Faktura</text>
+  <line class="sep" x1="145.0" y1="194" x2="335.0" y2="194"/>
+  <text class="mem" x="155.0" y="212.0"><tspan class="priv">-</tspan> cislo: int</text>
+  <line class="sep" x1="145.0" y1="222" x2="335.0" y2="222"/>
+  <text class="mem" x="155.0" y="240.0"><tspan class="pub">+</tspan> Faktura(c: int)</text>
+  <text class="mem" x="155.0" y="258.0"><tspan class="pub">+</tspan> tlac(): void</text>
+  <rect class="cls" x="385.0" y="164" width="190" height="104" rx="4"/>
+  <text class="name" x="480.0" y="184">Fotka</text>
+  <line class="sep" x1="385.0" y1="194" x2="575.0" y2="194"/>
+  <text class="mem" x="395.0" y="212.0"><tspan class="priv">-</tspan> nazov: string</text>
+  <line class="sep" x1="385.0" y1="222" x2="575.0" y2="222"/>
+  <text class="mem" x="395.0" y="240.0"><tspan class="pub">+</tspan> Fotka(n: string)</text>
+  <text class="mem" x="395.0" y="258.0"><tspan class="pub">+</tspan> tlac(): void</text>
+  <path class="reall" d="M240.0,164 L240.0,136"/>
+  <path class="reall" d="M480.0,164 L480.0,136"/>
+  <path class="reall" d="M240.0,136 L480.0,136"/>
+  <path class="real" d="M360.0,136 L360.0,105"/>
+  <rect class="note" x="30" y="288" width="660" height="44" rx="3"/>
+  <text class="lbl" x="40" y="308">Rozhranie = trieda len s čistými virtuálnymi metódami (bez dát).</text>
+  <text class="lbl" x="40" y="324">Prerušovaná šípka s prázdnym trojuholníkom znamená: trieda rozhranie implementuje.</text>
+</svg>

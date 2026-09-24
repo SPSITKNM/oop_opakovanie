@@ -21,7 +21,8 @@ dvanástich tém s vlastným progresom
 `oop_opakovanie.md` pokrýva: modularitu a jej päť kritérií, faktory kvality softvéru,
 procedurálne programovanie, triedu vs objekt, deklaráciu a definíciu triedy,
 enkapsuláciu v C++ (`private`/`public`, konštruktor, gettery a settery),
-dedičnosť v C++ (single, multilevel, hierarchical, multiple) s triednymi diagramami a príklady tried
+dedičnosť v C++ (single, multilevel, hierarchical, multiple),
+abstrakciu v C++ (abstraktné triedy, čisté virtuálne metódy, rozhrania) s triednymi diagramami a príklady tried
 (`KeyValue`, `Account`, `CreditAccount`) v C++.
 
 Dvanásť tém checklistu: triedy a objekty, enkapsulácia, dedičnosť, virtual/override,

@@ -1372,7 +1372,7 @@ int main() {
 ```
 
 - `Ucet::vyber(...)` je zápis s **názvom triedy a dvoma dvojbodkami**: „zavolaj verziu z Ucet“.
-- Redefinícia (bez `virtual`) sa rozhoduje podľa **typu premennej**. Ako sa správa objekt, keď na neho ukazuje ukazovateľ na predka, rieši až tretí pilier, **polymorfizmus** (`virtual`, `override`).
+- Redefinícia (bez `virtual`) sa rozhoduje podľa **typu premennej**. Ako sa správa objekt, keď na neho ukazuje ukazovateľ na predka, rieši až **polymorfizmus** (`virtual`, `override`).
 
 ## Štyri typy dedičnosti
 
@@ -1740,7 +1740,7 @@ class SporiaciUcet : public Ucet { /* ... */ };     // správne
 - **Prístup k `private` členu predka** z potomka. Použi getter alebo `protected`.
 - **Nejednoznačné volanie** pri viacnásobnej dedičnosti (rovnaký názov metódy u dvoch predkov).
 - **Dedičnosť namiesto skladania:** `Ucet` nededí od `Klient`, pretože `Ucet` nie je klient.
-- **Redefinícia bez `virtual` nie je polymorfizmus.** K tomu sa dostaneme pri treťom pilieri.
+- **Redefinícia bez `virtual` nie je polymorfizmus.** K tomu sa dostaneme pri štvrtom pilieri (abstraktné triedy a `virtual` pozri kapitolu *Abstrakcia v C++* hneď nižšie).
 
 ## Úlohy na cvičenie
 - Vytvorte triedu `Zviera` (atribút `meno`, metóda `predstavSa()`) a potomkov `Pes` a `Macka`, každý s vlastnou metódou (`stekaj()`, `pradie()`). Nakreslite triedny diagram.
@@ -1762,6 +1762,426 @@ class SporiaciUcet : public Ucet { /* ... */ };     // správne
 
 ### Vzorová odpoveď: princíp dedičnosti
 > Dedičnosť umožňuje vytvoriť novú triedu (potomka) z existujúcej triedy (predka). Potomok automaticky získa atribúty a metódy predka a môže pridať vlastné alebo redefinovať zdedené. Vzťah medzi nimi je „JE“ (`SporiaciUcet` je `Ucet`). Dedičnosť podporuje opätovné použitie kódu: spoločné veci píšeme raz v predkovi. V C++ ju zapisujeme `class Potomok : public Predok`.
+
+---
+
+# Abstrakcia v C++ — tretí pilier OOP
+
+## Osnova hodiny
+- Čo je abstrakcia: ukázať **čo**, schovať **ako**.
+- Abstrakcia ako výber podstatných vlastností (model).
+- Abstraktná trieda a čistá virtuálna metóda (`= 0`).
+- Virtuálna vs. čistá virtuálna metóda.
+- Abstraktná trieda so spoločným kódom (`Ucet`).
+- Rozhranie (interface).
+- Abstrakcia vs. enkapsulácia, najčastejšie chyby.
+
+## Základná myšlienka
+- **Abstrakcia = ukážeme len to podstatné, zložité veci schováme.**
+- Príklad zo života: **diaľkový ovládač**.
+  - Stlačíme „hlasnejšie“ a hlasitosť sa zvýši.
+  - Vieme, **čo** tlačidlo robí. Nevieme, **ako** to televízor vnútri robí, a nemusíme.
+- V programe to znamená dve veci:
+  1. Do triedy dáme **len podstatné vlastnosti** reálnej veci (model).
+  2. Niektoré pojmy sú príliš všeobecné na konkrétnu podobu. Vieme, **čo** musia vedieť, ale **ako** to robia, určia až konkrétni potomkovia (**abstraktná trieda**).
+
+## Krok 1: model obsahuje len podstatné
+- Skutočný klient banky má veľa vlastností: meno, číslo účtu, zostatok, farbu očí, obľúbené jedlo, výšku.
+- Banku zaujíma len časť z nich. Do triedy dáme **len tie**.
+
+![Abstrakcia — model obsahuje len podstatné vlastnosti](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/abstrakcia-01-podstatne-nepodstatne.svg)
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Ucet {
+private:
+    string majitel;                 // podstatné: kto účet vlastní
+    string cislo;                   // podstatné: identifikácia účtu
+    int zostatok;                   // podstatné: koľko peňazí je na účte
+    // farba očí, obľúbené jedlo, výška: banku nezaujímajú, do modelu nepatria
+
+public:
+    Ucet(string m, string c, int z) {
+        majitel = m;
+        cislo = c;
+        zostatok = z;
+    }
+
+    void vloz(int suma) {           // ČO vieme s účtom robiť
+        if (suma > 0) {
+            zostatok = zostatok + suma;
+        }
+    }
+
+    bool vyber(int suma) {
+        if (suma > 0 && suma <= zostatok) {
+            zostatok = zostatok - suma;
+            return true;
+        }
+        return false;
+    }
+
+    int getZostatok() const {
+        return zostatok;
+    }
+};
+
+int main() {
+    Ucet a("Jan", "SK01", 100);
+    a.vloz(50);
+    a.vyber(30);
+    cout << a.getZostatok() << endl;        // 120
+}
+```
+
+- Čo je „podstatné“, závisí od **účelu**. Zdravotná poisťovňa by do modelu klienta dala výšku a váhu, banka nie.
+- Používateľ triedy volá `vyber(30)`. Nezaujíma ho, ako presne sa kontroluje zostatok.
+
+## Krok 2: všeobecný pojem bez konkrétnej podoby
+- Predstav si, že niekto povie: „Nakresli **tvar**.“ Nevieme. Musíme sa opýtať: aký? Kruh? Štvorec? Trojuholník?
+- Slovo „tvar“ je **pojem**, nie konkrétna vec. Vieme o ňom len jedno: **každý tvar má obsah**. Ako sa obsah počíta, závisí od konkrétneho tvaru.
+- V programovaní takýto pojem zapíšeme ako **abstraktnú triedu**.
+
+## Krok 3: abstraktná trieda a čistá virtuálna metóda
+- Napíšeme triedu `Tvar`, ktorá povie len: „každý tvar vie vypočítať obsah“.
+
+```cpp
+class Tvar {
+public:
+    virtual double obsah() = 0;     // "každý tvar má obsah", ale AKO sa počíta, neviem
+};
+```
+
+- Rozbor riadka `virtual double obsah() = 0;`:
+  - `double obsah()` je obyčajná metóda, ktorá vráti číslo,
+  - `= 0` znamená: **tu žiadny kód nebude**, doplní ho niekto iný,
+  - `virtual` musí stáť pred tým (jeho význam podrobne vysvetlí pilier Polymorfizmus).
+- Takejto metóde sa hovorí **čistá virtuálna metóda** (pure virtual).
+- Trieda, ktorá má **aspoň jednu** čistú virtuálnu metódu, je **abstraktná**.
+
+## Krok 4: konkrétne triedy doplnia „ako“
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Tvar {                                    // ABSTRAKTNÁ trieda
+public:
+    virtual double obsah() = 0;                 // čistá virtuálna metóda: bez tela
+};
+
+class Kruh : public Tvar {
+private:
+    double polomer;
+
+public:
+    Kruh(double r) {
+        polomer = r;
+    }
+
+    double obsah() {                            // doplníme AKO pre kruh
+        return 3.14 * polomer * polomer;
+    }
+};
+
+class Obdlznik : public Tvar {
+private:
+    double a;
+    double b;
+
+public:
+    Obdlznik(double x, double y) {
+        a = x;
+        b = y;
+    }
+
+    double obsah() {                            // iné AKO pre obdĺžnik
+        return a * b;
+    }
+};
+
+class Trojuholnik : public Tvar {
+private:
+    double zakladna;
+    double vyska;
+
+public:
+    Trojuholnik(double z, double v) {
+        zakladna = z;
+        vyska = v;
+    }
+
+    double obsah() {                            // ešte iné AKO
+        return zakladna * vyska / 2;
+    }
+};
+
+int main() {
+    Kruh k(2);
+    Obdlznik o(3, 4);
+    Trojuholnik t(4, 5);
+
+    cout << k.obsah() << endl;                  // 12.56
+    cout << o.obsah() << endl;                  // 12
+    cout << t.obsah() << endl;                  // 10
+
+    // Tvar x;                                  // CHYBA PRI PREKLADE: Tvar je abstraktný
+}
+```
+
+![Abstraktná trieda Tvar a jej potomkovia](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/abstrakcia-02-tvar.svg)
+
+- V diagrame je abstraktná trieda a jej abstraktná metóda písaná **kurzívou**, nad názvom je `«abstract»`.
+- Každý tvar počíta obsah **inak**, ale všetky majú metódu `obsah()`. To je zaručené.
+
+### Pravidlá abstraktnej triedy
+1. **Objekt abstraktnej triedy sa nedá vytvoriť.** Nie je dokončená.
+
+```cpp
+Tvar x;         // CHYBA PRI PREKLADE: variable type 'Tvar' is an abstract class
+```
+
+2. **Potomok musí čistú virtuálnu metódu implementovať**, ak chce byť konkrétny (aby sa z neho dali vytvárať objekty). Inak zostane abstraktný aj on.
+
+```cpp
+class Trojuholnik : public Tvar {
+    // obsah() nie je doplnený
+};
+
+Trojuholnik t;  // CHYBA PRI PREKLADE: Trojuholnik je stále abstraktný
+```
+
+3. **Hlavička musí sedieť**: rovnaký názov a rovnaké parametre. Iné parametre znamenajú **inú metódu**, pôvodná `= 0` ostáva nedoplnená.
+
+```cpp
+double obsah() { ... }          // sedí: doplní abstraktnú metódu
+double obsah(int x) { ... }     // NESEDÍ: iná metóda, Tvar zostáva abstraktný
+```
+
+4. **`= 0` je možné len pri `virtual`.** Zápis `double obsah() = 0;` bez `virtual` je chyba.
+5. Riadok `virtual double obsah() = 0;` je **zmluva**: kto chce byť tvar, musí vedieť povedať svoj obsah.
+
+## Virtuálna vs. čistá virtuálna metóda
+- Nie každá `virtual` metóda nútí potomka niečo doplniť. Núti len tá s `= 0`.
+
+| Zápis | Názov | Potomok |
+|---|---|---|
+| `virtual void f() { ... }` | virtuálna metóda (má telo) | **môže** ju prekryť, nemusí |
+| `virtual void f() = 0;` | čistá virtuálna metóda (bez tela) | **musí** ju implementovať |
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Zviera {
+public:
+    virtual void zvuk() {                       // má telo, potomok ju môže zmeniť
+        cout << "..." << endl;
+    }
+};
+
+class Pes : public Zviera {
+public:
+    void zvuk() {                               // prekryje verziu predka
+        cout << "Haf" << endl;
+    }
+};
+
+class Ryba : public Zviera {                    // zvuk() neprekrýva, použije sa verzia predka
+};
+
+int main() {
+    Zviera z;                                   // OK: Zviera NIE JE abstraktné
+    Pes p;
+    Ryba r;
+    z.zvuk();                                   // ...
+    p.zvuk();                                   // Haf
+    r.zvuk();                                   // ...
+}
+```
+
+![Virtuálna vs. čistá virtuálna metóda](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/abstrakcia-03-virtual-vs-cista.svg)
+
+- `Zviera` je **konkrétna** trieda, lebo nemá žiadnu metódu `= 0`. Objekt sa z nej dá vytvoriť.
+- `Tvar` je **abstraktná** trieda, lebo má metódu `= 0`.
+- Význam samotného `virtual` (ktorá verzia sa zavolá, keď na objekt potomka ukazuje ukazovateľ na predka) je **polymorfizmus**, ďalší pilier.
+
+## Abstraktná trieda so spoločným kódom
+- Abstraktná trieda nemusí byť len „prázdna zmluva“. Môže mať aj **hotové** atribúty a metódy, ktoré potomkovia zdedia.
+- Rozdelenie práce:
+  - **spoločné** veci píšeme raz v predkovi,
+  - **rôzne** veci necháme ako `= 0` a doplnia ich potomkovia.
+- Takto vyzerá bankový systém zo skúšky.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Ucet {                                    // ABSTRAKTNÁ trieda
+protected:
+    int zostatok;
+
+public:
+    Ucet(int z) {
+        zostatok = z;
+    }
+
+    virtual bool moznoVybrat(int suma) = 0;     // povie ČO (dá sa vybrať?), nie AKO
+
+    bool vyber(int suma) {                      // hotová metóda, ktorá "prázdnu" použije
+        if (moznoVybrat(suma)) {
+            zostatok = zostatok - suma;
+            return true;
+        }
+        return false;
+    }
+
+    int getZostatok() const {
+        return zostatok;
+    }
+};
+
+class StandartnyUcet : public Ucet {
+public:
+    StandartnyUcet(int z) : Ucet(z) {}
+
+    bool moznoVybrat(int suma) {                // AKO: nesmie ísť do mínusu
+        return suma > 0 && suma <= zostatok;
+    }
+};
+
+class UverUcet : public Ucet {
+private:
+    int limit;
+
+public:
+    UverUcet(int z, int l) : Ucet(z) {
+        limit = l;
+    }
+
+    bool moznoVybrat(int suma) {                // AKO: smie ísť do mínusu do limitu
+        return suma > 0 && suma <= zostatok + limit;
+    }
+};
+
+int main() {
+    StandartnyUcet s(100);
+    UverUcet u(100, 200);
+
+    cout << s.vyber(150) << " " << s.getZostatok() << endl;     // 0 100
+    cout << u.vyber(150) << " " << u.getZostatok() << endl;     // 1 -50
+
+    // Ucet x(100);                             // CHYBA PRI PREKLADE: Ucet je abstraktný
+}
+```
+
+![Abstraktný Ucet a jeho potomkovia](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/abstrakcia-04-ucet.svg)
+
+- `vyber()` je napísaná **raz** v predkovi. Pri kontrole zavolá `moznoVybrat()`, ktorú doplní konkrétny potomok.
+- Zmena pravidla výberu sa robí len v potomkovi, `vyber()` ostáva nedotknutá.
+- To, že `vyber()` z predka zavolá verziu `moznoVybrat()` z **potomka**, je polymorfizmus. Podrobne ho rozoberá ďalší pilier.
+
+## Rozhranie (interface)
+- **Rozhranie** je abstraktná trieda, ktorá má **len čisté virtuálne metódy** a žiadne dáta.
+- Popisuje len „čo vie“, bez akejkoľvek implementácie. Je to čistá zmluva.
+- C++ nemá pre rozhranie samostatné kľúčové slovo (ako Java alebo C# `interface`), používa sa abstraktná trieda.
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Tlacitelne {                              // ROZHRANIE: len čisté virtuálne metódy
+public:
+    virtual void tlac() = 0;
+};
+
+class Faktura : public Tlacitelne {
+private:
+    int cislo;
+
+public:
+    Faktura(int c) {
+        cislo = c;
+    }
+
+    void tlac() {                               // implementuje zmluvu
+        cout << "Tlacim fakturu c. " << cislo << endl;
+    }
+};
+
+class Fotka : public Tlacitelne {
+private:
+    string nazov;
+
+public:
+    Fotka(string n) {
+        nazov = n;
+    }
+
+    void tlac() {                               // iná implementácia tej istej zmluvy
+        cout << "Tlacim fotku " << nazov << endl;
+    }
+};
+
+int main() {
+    Faktura f(101);
+    Fotka o("more.jpg");
+    f.tlac();                                   // Tlacim fakturu c. 101
+    o.tlac();                                   // Tlacim fotku more.jpg
+}
+```
+
+![Rozhranie Tlacitelne a jeho implementácie](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/abstrakcia-05-rozhranie.svg)
+
+- Rozhranie hovorí: „kto chce byť tlačiteľný, musí vedieť `tlac()`.“
+- Nesúvisiace triedy (`Faktura`, `Fotka`) môžu implementovať to isté rozhranie.
+- V diagrame sa rozhranie značí `«interface»` a implementácia **prerušovanou šípkou** s prázdnym trojuholníkom.
+
+## Abstrakcia vs. enkapsulácia
+- Pletú sa, lebo obe niečo skrývajú. Líšia sa cieľom.
+
+![Enkapsulácia vs. abstrakcia](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/abstrakcia-06-vs-enkapsulacia.svg)
+
+| | Enkapsulácia | Abstrakcia |
+|---|---|---|
+| Otázka | **Ako** ochránim dáta? | **Čo** ukážem používateľovi? |
+| Nástroj | `private`, gettery, settery | zjednodušené rozhranie, abstraktná trieda |
+| Skrýva | dáta (atribúty) | zložitosť (ako to funguje) |
+| Príklad | `zostatok` je `private` | používateľ vidí `vyber()`, nie pravidlá |
+
+- Skratka: **enkapsulácia = zámok na dátach, abstrakcia = zjednodušený ovládací panel.**
+
+## Najčastejšie chyby
+- **Pokus vytvoriť objekt abstraktnej triedy** (`Tvar x;`). Vytvárame len konkrétnych potomkov.
+- **Potomok nedoplnil čistú virtuálnu metódu**, a tak zostal abstraktný.
+- **Iná hlavička v potomkovi** (`obsah(int)` namiesto `obsah()`). Je to iná metóda a `= 0` ostáva nedoplnená.
+- **`= 0` bez `virtual`.** Prekladač zápis odmietne.
+- **Zámena `virtual` a `virtual ... = 0`.** Len druhá vyžaduje implementáciu od potomka.
+- **Abstrakcia ako „všetko schovať“.** Do modelu dávame len podstatné, nie všetko a nie nič.
+
+## Úlohy na cvičenie
+- Vytvorte abstraktnú triedu `Zviera` s čistou virtuálnou metódou `zvuk()` a potomkov `Pes` a `Macka`. Skúste vytvoriť objekt `Zviera`. Čo sa stane?
+- Do hierarchie tvarov pridajte `Stvorec` s vlastným výpočtom obsahu a pridajte do `Tvar` druhú čistú metódu `obvod()`. Doplňte ju všetkým potomkom.
+- Doplňte hierarchiu účtov o `SporiaciUcet`, ktorý povolí výber najviac 500 eur naraz (upravte len `moznoVybrat`).
+- Navrhnite rozhranie `Prehratelne` s metódou `prehraj()` a implementujte ho v triedach `Pesnicka` a `Video`. Nakreslite triedny diagram.
+- Vysvetlite vlastnými slovami, prečo je `Zviera` z ukážky s obyčajnou `virtual` metódou konkrétna a `Tvar` abstraktný.
+
+## Kontrolné otázky
+- Čo je abstrakcia? Uveďte príklad.
+- Čo je abstraktná trieda a čo čistá virtuálna metóda? Ako sa zapisuje?
+- Dá sa vytvoriť objekt abstraktnej triedy? Prečo?
+- Čo musí urobiť potomok, aby sa z neho dali vytvárať objekty?
+- Aký je rozdiel medzi `virtual` a `virtual ... = 0`?
+- Čo je rozhranie (interface) a ako sa v C++ zapisuje?
+- Ako sa v triednom diagrame značí abstraktná trieda, abstraktná metóda a rozhranie?
+- Aký je rozdiel medzi abstrakciou a enkapsuláciou?
+
+### Vzorová odpoveď: princíp abstrakcie
+> Abstrakcia znamená ukázať len podstatné a skryť zložitosť. V triede modelujeme len tie vlastnosti reálnej veci, ktoré sú pre problém dôležité. V C++ ju vyjadrujeme aj abstraktnými triedami: trieda s aspoň jednou čistou virtuálnou metódou (`virtual void f() = 0;`) určuje, **čo** musia potomkovia vedieť, ale nehovorí **ako**. Objekt abstraktnej triedy sa nedá vytvoriť, konkrétny potomok musí čisté virtuálne metódy implementovať.
 
 ---
 

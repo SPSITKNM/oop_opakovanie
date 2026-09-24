@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="234" viewBox="0 0 780 234" role="img" aria-label="Enkapsulácia vs. abstrakcia">
+  <style>
+    :root{ --stroke:#334155; --text:#1e293b; --node:#ffffff; --band:#eef2f7; --accent:#7c3aed; --muted:#64748b; --cls:#f4f1fb; --pub:#15803d; --priv:#b91c1c; --prot:#b45309; --note:#fffbeb; --obj:#eef6ff; }
+    @media (prefers-color-scheme: dark){
+      :root{ --stroke:#cbd5e1; --text:#e2e8f0; --node:#1e293b; --band:#1e2739; --accent:#a78bfa; --muted:#94a3b8; --cls:#1c1930; --pub:#4ade80; --priv:#f87171; --prot:#fbbf24; --note:#2a2412; --obj:#152238; }
+    }
+    text{fill:var(--text); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+    .cls{fill:var(--cls); stroke:var(--stroke); stroke-width:1.5;}
+    .obj{fill:var(--obj); stroke:var(--stroke); stroke-width:1.5;}
+    .sep{stroke:var(--stroke); stroke-width:1.2;}
+    .name{font-size:13px; font-weight:700; text-anchor:middle;}
+    .oname{font-size:12.5px; font-weight:700; text-anchor:middle; text-decoration:underline;}
+    .stereo{font-size:10.5px; fill:var(--muted); text-anchor:middle;}
+    .mem{font-size:11.5px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; white-space:pre;}
+    .tag{font-size:9.5px; fill:var(--muted); text-anchor:end; font-style:italic;}
+    .pub{fill:var(--pub); font-weight:700;} .priv{fill:var(--priv); font-weight:700;} .prot{fill:var(--prot); font-weight:700;}
+    .lbl{font-size:11px;} .lblc{font-size:11px; text-anchor:middle;}
+    .mut{font-size:10.5px; fill:var(--muted);} .mutc{font-size:10.5px; fill:var(--muted); text-anchor:middle;}
+    .ttl{font-size:12.5px; font-weight:700; fill:var(--accent);} .ttlc{font-size:12.5px; font-weight:700; fill:var(--accent); text-anchor:middle;}
+    .code{font-size:11px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+    .okt{fill:var(--pub); font-weight:700;} .badt{fill:var(--priv); font-weight:700;}
+    .ok{stroke:var(--pub); stroke-width:1.6; fill:none; marker-end:url(#mok);}
+    .bad{stroke:var(--priv); stroke-width:1.6; fill:none; stroke-dasharray:5 4;}
+    .edge{stroke:var(--stroke); stroke-width:1.4; fill:none; marker-end:url(#mopen);}
+    .dep{stroke:var(--stroke); stroke-width:1.3; fill:none; stroke-dasharray:5 4; marker-end:url(#mopen);}
+    .gen{stroke:var(--stroke); stroke-width:1.5; fill:none; marker-end:url(#mtri);}
+    .genl{stroke:var(--stroke); stroke-width:1.5; fill:none;}
+    .real{stroke:var(--stroke); stroke-width:1.5; fill:none; stroke-dasharray:6 4; marker-end:url(#mtri);}
+    .reall{stroke:var(--stroke); stroke-width:1.5; fill:none; stroke-dasharray:6 4;}
+    .node{fill:var(--node); stroke:var(--stroke); stroke-width:1.4;}
+    .note{fill:var(--note); stroke:var(--muted); stroke-width:1; stroke-dasharray:4 3;}
+    .hl{fill:var(--accent); opacity:.16;}
+    .brk{stroke:var(--muted); stroke-width:1.3; fill:none;}
+    .grid{stroke:var(--stroke); stroke-width:1; fill:none;}
+    .hdr{fill:var(--band); stroke:var(--stroke); stroke-width:1;}
+  </style>
+  <defs>
+    <marker id="mopen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="var(--stroke)" stroke-width="1.4"/>
+    </marker>
+    <marker id="mtri" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" orient="auto">
+      <path d="M1,1 L11,6 L1,11 z" fill="var(--node)" stroke="var(--stroke)" stroke-width="1.4"/>
+    </marker>
+    <marker id="mok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--pub)"/>
+    </marker>
+  </defs>
+
+  <text class="ttl" x="30" y="28">ENKAPSULÁCIA: zámok na dátach</text>
+  <text class="ttl" x="420" y="28">ABSTRAKCIA: zjednodušený ovládací panel</text>
+  <rect class="cls" x="30" y="44" width="280" height="122" rx="4"/>
+  <text class="name" x="170.0" y="64">Ucet</text>
+  <line class="sep" x1="30" y1="74" x2="310" y2="74"/>
+  <text class="mem" x="40" y="92.0"><tspan class="priv">-</tspan> zostatok: int</text>
+  <line class="sep" x1="30" y1="102" x2="310" y2="102"/>
+  <text class="mem" x="40" y="120.0"><tspan class="pub">+</tspan> vloz(suma: int): void</text>
+  <text class="mem" x="40" y="138.0"><tspan class="pub">+</tspan> vyber(suma: int): bool</text>
+  <text class="mem" x="40" y="156.0"><tspan class="pub">+</tspan> getZostatok(): int</text>
+  <rect class="hl" x="33" y="80.0" width="274" height="16"/>
+  <path class="brk" d="M314,80.0 L320,80.0 L320,96.0 L314,96.0"/>
+  <text class="mut" x="326" y="92.0" text-anchor="start">zamknuté</text>
+  <text class="lbl" x="30" y="192">Otázka: AKO ochránim dáta?</text>
+  <text class="mut" x="30" y="210">Nástroj: private, gettery, settery.</text>
+  <text class="mut" x="430" y="48">používateľ vidí len ČO, nie AKO:</text>
+  <rect class="node" x="430" y="60" width="190" height="34" rx="8"/>
+  <text class="lblc" x="525.0" y="81.0">vloz()</text>
+  <rect class="node" x="430" y="102" width="190" height="34" rx="8"/>
+  <text class="lblc" x="525.0" y="123.0">vyber()</text>
+  <rect class="node" x="430" y="144" width="190" height="34" rx="8"/>
+  <text class="lblc" x="525.0" y="165.0">getZostatok()</text>
+  <text class="lbl" x="430" y="192">Otázka: ČO ukážem používateľovi?</text>
+  <text class="mut" x="430" y="210">Nástroj: rozhranie, abstraktná trieda.</text>
+  <line class="grid" x1="395" y1="16" x2="395" y2="222" stroke-dasharray="4 4"/>
+</svg>
