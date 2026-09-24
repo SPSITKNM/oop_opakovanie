@@ -455,6 +455,556 @@ class Program
 
 ---
 
+# Enkapsulácia (zapuzdrenie) v C++ — prvý pilier OOP
+
+## Osnova hodiny
+- Čo je enkapsulácia a prečo ju potrebujeme.
+- Trieda a objekt (inštancia).
+- Konštruktor.
+- Gettery a settery.
+- Modifikátory prístupu (`private`, `protected`, `public`).
+- Kompletný príklad a najčastejšie chyby.
+
+## Základná myšlienka
+- **Enkapsulácia = dáta objektu schováme dovnútra a meniť ich smú len metódy, ktoré určíme my.**
+- Analógia s bankomatom:
+  - Do trezoru nemôžeš siahnuť (`private`).
+  - Môžeš stlačiť tlačidlo „vybrať 50 €“ (`public`).
+  - Bankomat sám skontroluje, či na to máš.
+- Nadväzuje na kapitolu Modularita (kritérium *Zapúzdrenie*):
+  - verejná časť = **rozhranie** (čo objekt vie),
+  - skrytá časť = **implementácia** (ako to robí).
+- V triede platí: `public` metódy sú rozhranie, `private` atribúty sú implementácia.
+
+## Krok 1: objekt bez ochrany
+- Začneme triedou, v ktorej sú dáta `public`.
+- `public` znamená, že k členu sa dá dostať odkiaľkoľvek.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Ucet {
+public:                 // public = prístupné odkiaľkoľvek
+    int zostatok;       // atribút (dáta objektu)
+};
+
+int main() {
+    Ucet a;                         // vytvoríme objekt (inštanciu) triedy Ucet
+    a.zostatok = 100;               // nastavíme zostatok, funguje
+    a.zostatok = -5000;             // funguje aj toto, nikto nekontroluje, či to dáva zmysel
+    cout << a.zostatok << endl;     // -5000
+}
+```
+
+- Prekladač nenamieta, ale účet má záporný zostatok, ktorý nikto nechcel.
+- Toto je presne slabé miesto procedurálneho štýlu (pozri sekciu Procedurálne programovanie): dáta sú voľne dostupné a nikto ich nestráži.
+
+## Trieda a objekt: `Ucet a;`
+- `Ucet` je **trieda** (predpis, „plán domu“).
+- `a` je **objekt** (inštancia triedy, „postavený dom“).
+- Slová *objekt* a *inštancia* znamenajú to isté.
+- Je to rovnaké ako pri `int x;`: `int` je typ, `x` je konkrétna hodnota toho typu.
+
+```cpp
+Ucet a;                 // prvý objekt
+Ucet b;                 // druhý objekt
+a.zostatok = 100;
+b.zostatok = 500;       // každý objekt má vlastnú kópiu dát
+```
+
+- Z jednej triedy vznikne toľko objektov, koľko chceme, a každý má vlastné dáta.
+- Takto zapísaný objekt je na **stacku** a zanikne na konci bloku `{ }`, v ktorom vznikol.
+
+## Krok 2: zamkneme dáta (`private`)
+- Zmeníme `public` na `private`.
+- `private` = k členu sa dostane len kód **vnútri triedy** (jej vlastné metódy).
+
+```cpp
+class Ucet {
+private:                // private = vidí len samotná trieda
+    int zostatok;
+};
+
+int main() {
+    Ucet a;
+    // a.zostatok = 100;    // CHYBA PRI PREKLADE: 'zostatok' is a private member
+}
+```
+
+- Chyba vznikne už **pri preklade**, program sa vôbec nespustí.
+- Dáta sú v bezpečí, ale teraz s nimi nevieme vôbec pracovať. Potrebujeme bránu.
+
+## Krok 3: brána — `public` metódy
+- Metódy sú súčasťou triedy, preto smú siahnuť na `private` atribúty.
+- Každá metóda môže skontrolovať, či zmena dáva zmysel.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Ucet {
+private:
+    int zostatok;                   // dáta sú zamknuté
+
+public:
+    Ucet(int z) {                   // konštruktor: nastaví počiatočnú hodnotu
+        zostatok = z;
+    }
+
+    void vloz(int suma) {           // brána na zmenu dát
+        if (suma > 0) {             // pravidlo: vkladať sa dá len kladná suma
+            zostatok = zostatok + suma;
+        }
+    }
+
+    int getZostatok() {             // brána na čítanie dát
+        return zostatok;
+    }
+};
+
+int main() {
+    Ucet a(100);                    // účet so zostatkom 100
+    a.vloz(50);                     // zostatok = 150
+    a.vloz(-999);                   // metóda to odmietne, zostatok ostane 150
+    cout << a.getZostatok() << endl;    // 150
+    // a.zostatok = -5000;          // CHYBA PRI PREKLADE, zostatok je private
+}
+```
+
+```
+zvonka                       trieda Ucet
+──────                       ─────────────────────────
+a.vloz(50)          ───────► public:   vloz()
+a.getZostatok()     ───────► public:   getZostatok()
+                             ─────────────────────────
+a.zostatok          ───X     private:  zostatok        (zamknuté)
+```
+
+- K `zostatok` sa dostaneme **len cez metódy**.
+- Pravidlá (`suma > 0`) sú na **jednom mieste**, nie rozhádzané po programe.
+
+## Konštruktor
+
+### Čo je konštruktor
+- Konštruktor je **metóda, ktorá sa spustí sama pri vytvorení objektu** a nastaví mu počiatočný stav.
+- Dve pravidlá:
+  - názov je **rovnaký ako názov triedy**,
+  - **nemá návratový typ** (ani `void`).
+
+```cpp
+class Ucet {
+private:
+    int zostatok;
+
+public:
+    Ucet(int z) {           // konštruktor: názov = názov triedy, bez návratového typu
+        zostatok = z;       // nastavíme počiatočnú hodnotu
+    }
+};
+
+Ucet a(100);                // tu sa konštruktor spustí, z = 100, zostatok = 100
+```
+
+### Konštruktor ako brána
+- Atribút `zostatok` je `private`, zvonka ho nenastavíme.
+- Konštruktor je **oficiálna brána**, cez ktorú objekt dostane počiatočné hodnoty.
+- Metódy (`vloz`, `vyber`) sú brána na zmeny **neskôr**.
+
+| Brána | Kedy sa používa |
+|---|---|
+| konštruktor | pri **vzniku** objektu, nastaví počiatočný stav |
+| metódy (`vloz`, `vyber`) | **neskôr**, keď hodnoty meníme |
+
+### Konštruktor objekt nevytvára, ale nastavuje
+1. Pamäť pre objekt vyhradí C++ (na stacku alebo na heape).
+2. Potom sa zavolá konštruktor, ktorý objektu nastaví začiatočný stav.
+
+```cpp
+Ucet a(100);
+//    │
+//    ├─ 1. C++ vyhradí miesto v pamäti pre objekt
+//    └─ 2. konštruktor nastaví zostatok = 100
+```
+
+- Vďaka konštruktoru nezačne objekt život s náhodnými hodnotami z pamäte.
+- Konštruktor môže nastaviť aj pevnú hodnotu, nielen parameter:
+
+```cpp
+Ucet() {
+    zostatok = 0;           // každý nový účet začne s nulou
+}
+```
+
+### Dva zápisy konštruktora
+```cpp
+// 1) základný zápis: priradenie v tele
+Ucet(int z) {
+    zostatok = z;
+}
+
+// 2) skrátený zápis: inicializačný zoznam
+Ucet(int z) : zostatok(z) {}
+```
+
+- Oba robia to isté. Na začiatok používaj prvý, je základný a ľahšie sa číta.
+- Inicializačný zoznam (`: zostatok(z)`) vytvorí člen rovno so správnou hodnotou. Je nutný až pri zložitejších členoch (`const` člen, referencia), preto sa v C++ často používa.
+
+### Predvolený (default) konštruktor
+- Predvolený konštruktor je konštruktor **bez parametrov**. Volá ho zápis `Ucet a;`.
+- Ak v triede **nenapíšeš žiadny konštruktor**, C++ ho vytvorí samo.
+- Vygenerovaný je **prázdny**, nič nenastaví, takže `zostatok` obsahuje náhodnú hodnotu z pamäte.
+
+```cpp
+class Ucet {
+public:
+    int zostatok;
+};
+
+Ucet a;                     // volá sa prázdny predvolený konštruktor
+                            // a.zostatok obsahuje náhodné číslo z pamäte
+```
+
+### Pasca: vlastný konštruktor zruší predvolený
+- Keď napíšeš **akýkoľvek vlastný konštruktor** (napr. s parametrom), C++ predvolený konštruktor už negeneruje.
+
+```cpp
+class Ucet {
+private:
+    int zostatok;
+
+public:
+    Ucet(int z) {
+        zostatok = z;
+    }
+};
+
+int main() {
+    Ucet b(100);            // OK
+    // Ucet a;              // CHYBA PRI PREKLADE: neexistuje konštruktor bez parametrov
+}
+```
+
+- Riešenie: predvolený konštruktor dopíšeme sami.
+
+### Viac konštruktorov v jednej triede
+- Konštruktorov môže byť viac, musia sa líšiť počtom alebo typom parametrov.
+- C++ vyberie ten, ktorý sedí na zápis pri vytváraní objektu.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Ucet {
+private:
+    int zostatok;
+
+public:
+    Ucet() {                // predvolený konštruktor (bez parametrov)
+        zostatok = 0;
+    }
+
+    Ucet(int z) {           // konštruktor s parametrom
+        zostatok = z;
+    }
+
+    int getZostatok() {
+        return zostatok;
+    }
+};
+
+int main() {
+    Ucet a;                 // volá Ucet()     -> zostatok = 0
+    Ucet b(100);            // volá Ucet(int)  -> zostatok = 100
+    cout << a.getZostatok() << endl;    // 0
+    cout << b.getZostatok() << endl;    // 100
+}
+```
+
+### Destruktor (stručne)
+- Destruktor je opak konštruktora: zavolá sa **sám pri zániku objektu**.
+- Zapisuje sa `~Ucet()`, bez parametrov a bez návratového typu.
+- Potrebný je vtedy, keď objekt vlastní dynamickú pamäť (pozri `KeyValue` vyššie).
+
+## Gettery a settery
+- **Getter** = metóda, ktorá **vráti** hodnotu `private` atribútu (čítanie).
+- **Setter** = metóda, ktorá **nastaví** hodnotu `private` atribútu (zápis).
+- Sú to najjednoduchšie „brány“ pri enkapsulácii.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Ucet {
+private:
+    int zostatok;
+
+public:
+    Ucet() {
+        zostatok = 0;
+    }
+
+    int getZostatok() const {           // getter; const = metóda objekt nemení
+        return zostatok;
+    }
+
+    void setZostatok(int z) {           // setter
+        if (z >= 0) {                   // kontrola: záporný zostatok nepustíme
+            zostatok = z;
+        }
+    }
+};
+
+int main() {
+    Ucet a;
+    a.setZostatok(100);                 // OK, zostatok = 100
+    a.setZostatok(-5);                  // ignorované, zostatok ostane 100
+    cout << a.getZostatok() << endl;    // 100
+}
+```
+
+| Atribút | Getter | Setter |
+|---|---|---|
+| `zostatok` | `getZostatok()` | `setZostatok(int z)` |
+| `meno` | `getMeno()` | `setMeno(string m)` |
+
+- Názov sa skladá z `get` / `set` a názvu atribútu.
+- **Bez settera je atribút zvonka len na čítanie.** Takto sa robia hodnoty, ktoré sa nemajú meniť (napr. číslo účtu, kód klienta).
+- `const` za zátvorkou getteru sľubuje, že metóda objekt nemení.
+- Setter má zmysel len vtedy, ak **kontroluje**. Setter bez kontroly je len `public` atribút v prestrojení.
+- Lepší návrh ako `setZostatok` je metóda, ktorá vyjadruje, čo sa s účtom reálne robí:
+
+```cpp
+bool vyber(int suma) {
+    if (suma > 0 && suma <= zostatok) {     // pravidlá výberu na jednom mieste
+        zostatok = zostatok - suma;
+        return true;                        // výber sa podaril
+    }
+    return false;                           // výber sa nepodaril
+}
+```
+
+## Modifikátory prístupu
+
+| Modifikátor | Trieda | Potomok | Zvonka |
+|---|---|---|---|
+| `private` | ✔ | ✘ | ✘ |
+| `protected` | ✔ | ✔ | ✘ |
+| `public` | ✔ | ✔ | ✔ |
+
+- Pravidlo: **atribúty `private`, metódy `public`.**
+- `protected` dáva zmysel až pri dedičnosti (pozri príklad *C++ Account Class (Protected Balance)* nižšie v poznámkach).
+
+### `class` vs. `struct`
+- Jediný rozdiel v C++ je **predvolený prístup**, teda čo platí, keď nenapíšeš nič.
+
+| Kľúčové slovo | Predvolený prístup |
+|---|---|
+| `class` | `private` |
+| `struct` | `public` |
+
+```cpp
+class Ucet {
+    int zostatok;           // private (predvolene)
+};
+
+struct Student {
+    int vek;                // public (predvolene)
+};
+
+int main() {
+    Ucet a;
+    Student s;
+    // a.zostatok = 100;    // CHYBA PRI PREKLADE, private
+    s.vek = 20;             // OK, public
+}
+```
+
+- Predvolený prístup platí pre **všetky členy**, aj pre metódy a konštruktory. Ak v `class` zabudneš `public:`, zvonka nič nezavoláš.
+- `struct` = „holé dáta“ (procedurálny štýl, príklad so `Student`), `class` = objekt s ochranou.
+- Aj keď je `private` v `class` predvolené, píšeme ho explicitne, aby bolo jasné, čo je čo.
+
+## Kde je objekt v pamäti
+- Enkapsulácia funguje rovnako, či je objekt na stacku, alebo na heape.
+- Trieda sama nie je ani na stacku, ani na heape. Na stacku alebo heape je až **inštancia**, a miesto určuje spôsob vytvorenia.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Ucet {
+private:
+    int zostatok;
+
+public:
+    Ucet(int z) {
+        zostatok = z;
+    }
+
+    void vloz(int suma) {
+        if (suma > 0) {
+            zostatok = zostatok + suma;
+        }
+    }
+
+    int getZostatok() {
+        return zostatok;
+    }
+};
+
+int main() {
+    Ucet a(100);                // objekt na STACKU, zanikne na konci bloku
+    a.vloz(50);                 // prístup cez bodku
+    cout << a.getZostatok() << endl;        // 150
+
+    Ucet* b = new Ucet(100);    // objekt na HEAPE, b je ukazovateľ (sám je na stacku)
+    b->vloz(50);                // prístup cez šípku
+    cout << b->getZostatok() << endl;       // 150
+    delete b;                   // heap uvoľňujeme ručne
+}
+```
+
+| | Stack | Heap |
+|---|---|---|
+| Vytvorenie | `Ucet a(100);` | `new Ucet(100)` |
+| Prístup ku členom | `a.vloz(50)` | `b->vloz(50)` |
+| Zánik | automaticky na konci bloku | ručne cez `delete` |
+
+## Kompletný príklad: účet
+- Spojíme všetko: `private` atribúty, konštruktory, gettery, metódy s kontrolou.
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Ucet {
+private:                                // dáta sú skryté
+    string majitel;
+    int zostatok;
+
+public:                                 // rozhranie triedy
+    Ucet(string m) {                    // konštruktor s majiteľom, zostatok začína na 0
+        majitel = m;
+        zostatok = 0;
+    }
+
+    Ucet(string m, int z) {             // konštruktor s majiteľom aj zostatkom
+        majitel = m;
+        if (z >= 0) {                   // záporný počiatočný zostatok nepustíme
+            zostatok = z;
+        } else {
+            zostatok = 0;
+        }
+    }
+
+    string getMajitel() const {         // getter, majiteľ nemá setter (nemení sa)
+        return majitel;
+    }
+
+    int getZostatok() const {           // getter
+        return zostatok;
+    }
+
+    void vloz(int suma) {               // zmena stavu len povolenou operáciou
+        if (suma > 0) {
+            zostatok = zostatok + suma;
+        }
+    }
+
+    bool vyber(int suma) {              // vráti true, ak sa výber podaril
+        if (suma > 0 && suma <= zostatok) {
+            zostatok = zostatok - suma;
+            return true;
+        }
+        return false;
+    }
+};
+
+int main() {
+    Ucet jan("Jan", 100);               // volá konštruktor s dvoma parametrami
+    Ucet eva("Eva");                    // volá konštruktor s jedným parametrom
+
+    jan.vloz(50);                       // 150
+    jan.vloz(-20);                      // odmietnuté, ostane 150
+    bool ok = jan.vyber(500);           // false, na účte nie je dosť
+    jan.vyber(30);                      // 120
+
+    cout << jan.getMajitel() << ": " << jan.getZostatok() << endl;  // Jan: 120
+    cout << eva.getMajitel() << ": " << eva.getZostatok() << endl;  // Eva: 0
+    cout << (ok ? "vyber presiel" : "vyber zamietnuty") << endl;    // vyber zamietnuty
+
+    // jan.zostatok = 1000000;          // CHYBA PRI PREKLADE, private
+    // jan.majitel = "Peter";           // CHYBA PRI PREKLADE, private
+}
+```
+
+## Rozhranie a implementácia
+- **Rozhranie** = `public` časť: čo objekt vie (`vloz`, `vyber`, `getZostatok`).
+- **Implementácia** = `private` časť: ako to robí (v čom a ako ukladá dáta).
+- Vďaka enkapsulácii môžeme vnútro zmeniť a kód, ktorý objekt používa, sa nezmení.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Ucet {
+private:
+    long long centy;                    // vnútro sa zmenilo: zostatok ukladáme v centoch
+
+public:
+    Ucet(int z) {
+        centy = z * 100LL;
+    }
+
+    void vloz(int suma) {
+        if (suma > 0) {
+            centy = centy + suma * 100LL;
+        }
+    }
+
+    int getZostatok() const {
+        return centy / 100;             // navonok stále eurá, rozhranie ostalo rovnaké
+    }
+};
+
+int main() {
+    Ucet a(100);                        // tento kód je rovnaký ako predtým
+    a.vloz(50);
+    cout << a.getZostatok() << endl;    // 150
+}
+```
+
+- Keby bol `zostatok` `public`, každé miesto v programe, ktoré s ním pracuje, by sme museli prepísať.
+
+## Najčastejšie chyby
+- **Všetko `public`.** Trieda potom nechráni nič.
+- **Setter bez kontroly.** Ochrana je len naoko.
+- **Zabudnuté `public:` v `class`.** Zvonka sa nedá zavolať ani konštruktor.
+- **Vlastný konštruktor s parametrom a `Ucet a;`.** Predvolený konštruktor už neexistuje.
+- **Zápis `Ucet a();`.** Prekladač ho berie ako deklaráciu funkcie, nie ako vytvorenie objektu. Predvolený konštruktor voláme zápisom `Ucet a;`.
+- **Zabudnuté `delete`** pri objekte vytvorenom cez `new`.
+
+## Úlohy na cvičenie
+- Prepíšte procedurálny príklad `Student` (`struct` + funkcie) na triedu so `private` atribútmi, konštruktorom, getterom mena a metódami `pridajZnamku` a `priemer`. Známka smie byť len 1 až 5.
+- Vytvorte triedu `Osoba` s atribútmi `meno` a `vek`. Vek nastavte cez setter, ktorý povolí len hodnoty 0 až 150. Meno nech je len na čítanie.
+- Doplňte triedu `Ucet` o metódu `prevedNa(Ucet& cielovy, int suma)`, ktorá presunie peniaze na iný účet len ak je na zdrojovom dosť prostriedkov.
+
+## Kontrolné otázky
+- Vysvetlite princíp enkapsulácie. Uveďte príklad v C++.
+- Aký je rozdiel medzi `private`, `protected` a `public`?
+- Čo je konštruktor a aké pravidlá musí spĺňať jeho zápis?
+- Kedy sa volá predvolený konštruktor a kedy ho C++ negeneruje?
+- Čo je getter a čo je setter? Prečo nestačí mať atribút `public`?
+- Aký je rozdiel medzi `class` a `struct` v C++?
+- Čo je rozhranie a čo implementácia triedy?
+- Prečo môžeme zmeniť vnútornú reprezentáciu dát bez zmeny kódu, ktorý triedu používa?
+
+### Vzorová odpoveď: princíp enkapsulácie
+> Dáta objektu sú skryté (`private`) a prístup k nim je len cez verejné metódy, ktoré strážia platnosť dát. Používateľ triedy pozná len rozhranie (verejné metódy), nie implementáciu (skryté atribúty). Vďaka tomu sa dá vnútro triedy meniť bez zásahu do kódu, ktorý ju používa.
+
+---
+
 # Triedy a objekty (objektová orientácia) 2024/25
 
 ## Osnova hodiny
