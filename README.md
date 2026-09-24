@@ -22,7 +22,9 @@ dvanástich tém s vlastným progresom
 procedurálne programovanie, triedu vs objekt, deklaráciu a definíciu triedy,
 enkapsuláciu v C++ (`private`/`public`, konštruktor, gettery a settery),
 dedičnosť v C++ (single, multilevel, hierarchical, multiple),
-abstrakciu v C++ (abstraktné triedy, čisté virtuálne metódy, rozhrania) s triednymi diagramami a príklady tried
+abstrakciu v C++ (abstraktné triedy, čisté virtuálne metódy, rozhrania),
+polymorfizmus v C++ (`virtual`, `override`, ukazovatele, tabuľka virtuálnych metód) s triednymi
+diagramami a príklady tried
 (`KeyValue`, `Account`, `CreditAccount`) v C++.
 
 Dvanásť tém checklistu: triedy a objekty, enkapsulácia, dedičnosť, virtual/override,

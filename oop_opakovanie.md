@@ -1740,7 +1740,7 @@ class SporiaciUcet : public Ucet { /* ... */ };     // správne
 - **Prístup k `private` členu predka** z potomka. Použi getter alebo `protected`.
 - **Nejednoznačné volanie** pri viacnásobnej dedičnosti (rovnaký názov metódy u dvoch predkov).
 - **Dedičnosť namiesto skladania:** `Ucet` nededí od `Klient`, pretože `Ucet` nie je klient.
-- **Redefinícia bez `virtual` nie je polymorfizmus.** K tomu sa dostaneme pri štvrtom pilieri (abstraktné triedy a `virtual` pozri kapitolu *Abstrakcia v C++* hneď nižšie).
+- **Redefinícia bez `virtual` nie je polymorfizmus.** K tomu sa dostaneme pri štvrtom pilieri (kapitola *Polymorfizmus v C++*; abstraktné triedy pozri kapitolu *Abstrakcia v C++*).
 
 ## Úlohy na cvičenie
 - Vytvorte triedu `Zviera` (atribút `meno`, metóda `predstavSa()`) a potomkov `Pes` a `Macka`, každý s vlastnou metódou (`stekaj()`, `pradie()`). Nakreslite triedny diagram.
@@ -1858,7 +1858,7 @@ public:
 - Rozbor riadka `virtual double obsah() = 0;`:
   - `double obsah()` je obyčajná metóda, ktorá vráti číslo,
   - `= 0` znamená: **tu žiadny kód nebude**, doplní ho niekto iný,
-  - `virtual` musí stáť pred tým (jeho význam podrobne vysvetlí pilier Polymorfizmus).
+  - `virtual` musí stáť pred tým (jeho význam podrobne vysvetľuje kapitola *Polymorfizmus v C++* hneď nižšie).
 - Takejto metóde sa hovorí **čistá virtuálna metóda** (pure virtual).
 - Trieda, ktorá má **aspoň jednu** čistú virtuálnu metódu, je **abstraktná**.
 
@@ -2182,6 +2182,724 @@ int main() {
 
 ### Vzorová odpoveď: princíp abstrakcie
 > Abstrakcia znamená ukázať len podstatné a skryť zložitosť. V triede modelujeme len tie vlastnosti reálnej veci, ktoré sú pre problém dôležité. V C++ ju vyjadrujeme aj abstraktnými triedami: trieda s aspoň jednou čistou virtuálnou metódou (`virtual void f() = 0;`) určuje, **čo** musia potomkovia vedieť, ale nehovorí **ako**. Objekt abstraktnej triedy sa nedá vytvoriť, konkrétny potomok musí čisté virtuálne metódy implementovať.
+
+---
+
+# Polymorfizmus v C++ — štvrtý pilier OOP
+
+## Osnova hodiny
+- Čo je polymorfizmus a aký problém rieši.
+- Typ premennej vs. typ objektu.
+- Ukazovateľ a referencia na predka (stack, heap, `new`, `->`, `delete`).
+- Statická väzba (bez `virtual`) a dynamická väzba (s `virtual`).
+- Ako je polymorfizmus implementovaný: skrytý ukazovateľ a tabuľka.
+- Pole ukazovateľov, prečo nie pole objektov, orezanie objektu.
+- Virtuálny destruktor.
+- Prekrytie metódy (`override`): čo musí sedieť.
+- Bankový systém (`Banka`, abstraktný `Ucet`).
+
+## Základná myšlienka
+- **Polymorfizmus = „mnoho podôb“: jedno volanie, ale správanie závisí od toho, aký objekt za ním naozaj je.**
+- Príklad zo života: povieme skupine zvierat „**ozvi sa!**“. Pes zaštekáte, mačka zamňauká, ryba mlčí. Všetkým sme povedali to isté a každé to urobí po svojom.
+- Nadväzuje na predošlé piliere:
+  - **dedičnosť**: `Pes` JE `Zviera`,
+  - **abstrakcia**: predok určuje, **čo** sa musí vedieť (`zvuk()`),
+  - polymorfizmus: každý potomok to vykoná **po svojom** a program vyberie správnu verziu **za behu**.
+
+## Krok 1: problém bez polymorfizmu
+- Chceme funkciu `ozviSa`, ktorá zviera „rozozvučí“.
+- Prvý nápad bez polymorfizmu: zviera si pamätá svoj druh a funkcia sa pýta.
+
+```cpp
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Zviera {
+public:
+    string druh;                        // "pes", "macka", ...
+};
+
+void ozviSa(Zviera& z) {                // BEZ polymorfizmu: rozhoduje funkcia
+    if (z.druh == "pes") {
+        cout << "Haf" << endl;
+    } else if (z.druh == "macka") {
+        cout << "Mnau" << endl;
+    } else if (z.druh == "kohut") {     // nové zviera = musíme upraviť aj túto funkciu
+        cout << "Kykyryki" << endl;
+    }
+}
+
+int main() {
+    Zviera a;
+    a.druh = "pes";
+    Zviera b;
+    b.druh = "macka";
+    ozviSa(a);                          // Haf
+    ozviSa(b);                          // Mnau
+}
+```
+
+![Bez polymorfizmu a s polymorfizmom](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/polymorfizmus-01-problem.svg)
+
+- Funguje to, ale je to nepraktické:
+  - pri každom novom zvierati treba prepísať funkciu,
+  - takýchto funkcií (`nakrm`, `pohladkaj`, ...) môže byť v programe veľa,
+  - ľahko na jednu zabudneme.
+- Chceme to opačne: **zviera samo vie, ako sa ozve**, a `ozviSa` len povie „ozvi sa“ bez toho, aby vedela, čo je to za zviera.
+
+## Krok 2: každé zviera má svoju metódu `zvuk()`
+- Každý potomok `Zviera` má metódu `zvuk()` s **rovnakou hlavičkou** a **vlastným telom**.
+- Hlavička je spoločná (zmluva), telo je iné (každý po svojom).
+
+![Hierarchia zvierat s virtuálnou metódou](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/polymorfizmus-04-hierarchia-zvierat.svg)
+
+- `Ryba` metódu `zvuk()` neprekrýva, dostane verziu z predka (`...`).
+- Ak mám priamo `Pes p;`, potom `p.zvuk();` vypíše `Haf`. Zaujímavé je, keď o zvierati **nevieme, aké presne je**.
+
+## Krok 3: typ premennej a typ objektu
+- Pri každom objekte existujú **dve rôzne veci**:
+  1. **typ premennej**: čo je napísané pred názvom, teda ako sa na objekt „pozeráme“,
+  2. **typ objektu**: čo v pamäti skutočne leží.
+- Kým sú rovnaké (`Pes p;`), všetko je jasné. Polymorfizmus vzniká, keď sa **líšia**.
+- Líšiť sa môžu preto, že `Pes` JE `Zviera`: na psa sa smieme pozerať ako na obyčajné zviera.
+
+## Krok 4: ukazovateľ a referencia na predka
+- Do obyčajnej premennej typu `Zviera` sa pes „nevojde“ tak, aby ním ostal (pozri *Orezanie objektu* nižšie).
+- Preto na objekt **ukazujeme**, a na to sú dva nástroje: referencia a ukazovateľ.
+
+### Pamäť: stack a heap
+| Časť | Čo tam leží | Ako vzniká |
+|---|---|---|
+| **Stack** | obyčajné premenné, ukazovatele | automaticky, zaniká na konci bloku |
+| **Heap** | objekty vytvorené cez `new` | ručne, žije, kým ho nezmažeme (`delete`) |
+
+### Referencia (`&`) = druhé meno
+```cpp
+Pes p;
+Zviera& r = p;          // r je ďalšie meno pre ten istý objekt p (nie kópia)
+```
+
+### Ukazovateľ (`*`) = adresa
+- Ukazovateľ je premenná, ktorá nedrží objekt, ale **jeho adresu** (papierik s adresou domu).
+- Je vždy rovnako veľký (na 64-bitovom systéme 8 bajtov), bez ohľadu na veľkosť objektu, na ktorý ukazuje.
+
+```cpp
+Pes p;                      // objekt na STACKU
+Zviera* u1 = &p;            // & = "adresa objektu p", u1 si ju zapamätá
+Zviera* u2 = new Pes();     // objekt na HEAPE, u2 si pamätá jeho adresu
+u2->zvuk();                 // -> = "choď na adresu a zavolaj metódu" (to isté ako (*u2).zvuk())
+delete u2;                  // objekt vytvorený cez new musíme zmazať
+```
+
+`new Pes()` sa vykoná v troch krokoch (čítame sprava doľava):
+1. `new Pes()` vytvorí objekt `Pes` na heape (zavolá konštruktor),
+2. vráti jeho **adresu**,
+3. `Zviera* u2` je nový „papierik“ na stacku a adresa sa doň zapíše.
+
+![Typ premennej vs. typ objektu](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/polymorfizmus-02-typ-premennej-objektu.svg)
+
+- Papierik `u2` má typ `Zviera*`, ale objekt za ním je `Pes`. Typ premennej a typ objektu sa líšia.
+
+Skutočný výpis programu, ktorý si adresy vypíše (pri každom spustení sa adresy líšia):
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Zviera {
+public:
+    virtual void zvuk() { cout << "..." << endl; }
+    virtual ~Zviera() {}
+};
+
+class Pes : public Zviera {
+public:
+    void zvuk() override { cout << "Haf" << endl; }
+};
+
+int main() {
+    Pes p;                                  // objekt na STACKU
+    Zviera* u1 = &p;                        // & = "adresa objektu p"
+    Zviera* u2 = new Pes();                 // objekt na HEAPE, u2 si pamätá jeho adresu
+
+    cout << "adresa objektu p (stack):        " << &p << endl;
+    cout << "u1 obsahuje:                     " << u1 << endl;      // rovnaká ako &p
+    cout << "u2 obsahuje (adresa na heape):   " << u2 << endl;
+    cout << "kde lezi papierik u2 (stack):    " << &u2 << endl;
+
+    u1->zvuk();                             // Haf
+    u2->zvuk();                             // Haf
+    delete u2;
+}
+```
+
+Príklad výstupu (adresy sú len ilustračné):
+
+```
+adresa objektu p (stack):        0x7ff7bbf36b90
+u1 obsahuje:                     0x7ff7bbf36b90
+u2 obsahuje (adresa na heape):   0x7fee2bf06180
+kde lezi papierik u2 (stack):    0x7ff7bbf36b80
+Haf
+Haf
+```
+
+- `u1` obsahuje presne adresu objektu `p`: **ukazovateľ nedrží objekt, ale jeho adresu**.
+- `u2` (papierik) leží na stacku, ale objekt, na ktorý ukazuje, leží inde, na heape.
+
+## Krok 5: statická väzba (bez `virtual`)
+- Metóda `zvuk()` je v predkovi **obyčajná** (bez `virtual`).
+- Rovnakého psa si pozrieme štyrmi spôsobmi:
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Zviera {
+public:
+    void zvuk() {                       // BEZ virtual
+        cout << "..." << endl;
+    }
+};
+
+class Pes : public Zviera {
+public:
+    void zvuk() {
+        cout << "Haf" << endl;
+    }
+};
+
+int main() {
+    Pes p;
+
+    Pes p2 = p;
+    p2.zvuk();                          // Haf   (typ premennej Pes)
+
+    Zviera& r = p;
+    r.zvuk();                           // ...   (typ premennej Zviera)
+
+    Zviera* u = new Pes();
+    u->zvuk();                          // ...   (typ premennej Zviera*)
+    delete u;
+
+    Zviera z = p;
+    z.zvuk();                           // ...
+}
+```
+
+| Riadok | Typ premennej | Typ objektu | Výsledok |
+|---|---|---|---|
+| `Pes p2 = p;` | `Pes` | `Pes` | `Haf` |
+| `Zviera& r = p;` | `Zviera` | `Pes` | `...` |
+| `Zviera* u = new Pes();` | `Zviera` | `Pes` | `...` |
+| `Zviera z = p;` | `Zviera` | `Zviera` | `...` |
+
+- V druhom a treťom riadku je objekt **pes** a predsa vypíše `...`.
+- Prekladač sa pozrie **len na typ premennej** (`Zviera`) a už **pri preklade** napevno zapíše „zavolaj `Zviera::zvuk`“.
+- Tomu sa hovorí **statická (skorá) väzba**: výber sa urobil pri preklade.
+
+## Krok 6: dynamická väzba (`virtual`)
+- Do predka pridáme jediné slovo, `virtual`:
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Zviera {
+public:
+    virtual void zvuk() {               // S virtual
+        cout << "..." << endl;
+    }
+
+    virtual ~Zviera() {}                // virtuálny destruktor (vysvetlíme nižšie)
+};
+
+class Pes : public Zviera {
+public:
+    void zvuk() override {              // override = "toto prekrývam z predka"
+        cout << "Haf" << endl;
+    }
+};
+
+int main() {
+    Pes p;
+
+    Pes p2 = p;
+    p2.zvuk();                          // Haf
+
+    Zviera& r = p;
+    r.zvuk();                           // Haf   (virtual: pozrie sa na objekt)
+
+    Zviera* u = new Pes();
+    u->zvuk();                          // Haf   (virtual: pozrie sa na objekt)
+    delete u;
+
+    Zviera z = p;
+    z.zvuk();                           // ...   (kópia po hodnote, pozri Orezanie)
+}
+```
+
+| Riadok | Typ premennej | Typ objektu | Výsledok |
+|---|---|---|---|
+| `Pes p2 = p;` | `Pes` | `Pes` | `Haf` |
+| `Zviera& r = p;` | `Zviera` | `Pes` | **`Haf`** |
+| `Zviera* u = new Pes();` | `Zviera` | `Pes` | **`Haf`** |
+| `Zviera z = p;` | `Zviera` | `Zviera` | `...` |
+
+![Statická a dynamická väzba](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/polymorfizmus-03-staticka-dynamicka.svg)
+
+- `virtual` povie programu: „pri volaní cez ukazovateľ alebo referenciu sa nepozeraj na typ premennej, ale **za behu zisti, aký objekt tam naozaj je**.“
+- Tomu sa hovorí **dynamická (neskorá) väzba** a práve toto je polymorfizmus.
+- Analógia: bez `virtual` doručovateľ doručí list podľa **štítku na obálke** (`Zviera`), s `virtual` otvorí dvere a pozrie sa, **kto tam naozaj býva** (`Pes`).
+
+## Krok 7: funkcia bez `if`
+- Teraz funguje pôvodný nápad z kroku 1, bez kontroly druhu:
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Zviera {
+public:
+    virtual void zvuk() {
+        cout << "..." << endl;
+    }
+
+    virtual ~Zviera() {}
+};
+
+class Pes : public Zviera {
+public:
+    void zvuk() override {
+        cout << "Haf" << endl;
+    }
+};
+
+class Macka : public Zviera {
+public:
+    void zvuk() override {
+        cout << "Mnau" << endl;
+    }
+};
+
+void ozviSa(Zviera& z) {                // nevie, aké zviera dostane
+    z.zvuk();
+}
+
+int main() {
+    Pes p;
+    Macka m;
+    ozviSa(p);                          // Haf
+    ozviSa(m);                          // Mnau
+}
+```
+
+- Funkcia `ozviSa` je napísaná **raz**.
+- Nový druh (`Kohut`) je nová trieda s vlastným `zvuk()`. Funkciu `ozviSa` nemusíme meniť.
+
+## Krok 8: zoznam rôznych zvierat
+- Sila polymorfizmu sa ukáže pri **zozname rôznych druhov pokope**: pole ukazovateľov na predka.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Zviera {
+public:
+    virtual void zvuk() {
+        cout << "..." << endl;
+    }
+
+    virtual ~Zviera() {                 // virtuálny destruktor
+        cout << "~Zviera" << endl;
+    }
+};
+
+class Pes : public Zviera {
+public:
+    void zvuk() override {
+        cout << "Haf" << endl;
+    }
+
+    ~Pes() {
+        cout << "~Pes" << endl;
+    }
+};
+
+class Macka : public Zviera {
+public:
+    void zvuk() override {
+        cout << "Mnau" << endl;
+    }
+
+    ~Macka() {
+        cout << "~Macka" << endl;
+    }
+};
+
+class Ryba : public Zviera {            // zvuk() neprekrýva
+public:
+    ~Ryba() {
+        cout << "~Ryba" << endl;
+    }
+};
+
+int main() {
+    Zviera* zvierata[3];                // pole ukazovateľov na PREDKA
+    zvierata[0] = new Pes();            // ukazovateľ na predka smie ukazovať na potomka
+    zvierata[1] = new Macka();
+    zvierata[2] = new Ryba();
+
+    for (int i = 0; i < 3; i++) {
+        zvierata[i]->zvuk();            // jedno volanie, tri rôzne správania
+    }
+
+    for (int i = 0; i < 3; i++) {
+        delete zvierata[i];             // uvoľníme pamäť objektov na heape
+    }
+}
+```
+
+Výstup programu:
+
+```
+Haf
+Mnau
+...
+~Pes
+~Zviera
+~Macka
+~Zviera
+~Ryba
+~Zviera
+```
+
+| `i` | Na čo ukazuje | Čo sa zavolá | Výstup |
+|---|---|---|---|
+| 0 | objekt `Pes` | `Pes::zvuk()` | `Haf` |
+| 1 | objekt `Macka` | `Macka::zvuk()` | `Mnau` |
+| 2 | objekt `Ryba` | `Zviera::zvuk()` (`Ryba` vlastnú verziu nemá) | `...` |
+
+- Riadok `zvierata[i]->zvuk();` je stále ten istý a robí tri rôzne veci.
+- Slučka nevie, ktoré zviera je ktoré, a nemusí. Pri novom druhu sa nemení.
+
+## Ako je polymorfizmus implementovaný
+- Bez `virtual` rozhodne prekladač pri preklade podľa typu premennej a za behu sa už nič nerozhoduje.
+- S `virtual` pribudne každému objektu **skrytý ukazovateľ** (nevidno ho v kóde).
+- Dá sa to dokázať veľkosťou objektu:
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class BezVirtual { public: void f() {} };
+class SVirtual   { public: virtual void f() {} };
+class Zviera      { public: virtual void zvuk() {} int vek; };
+class Pes : public Zviera { public: int dlzkaSrsti; int vaha; };
+
+int main() {
+    cout << "sizeof(BezVirtual)  = " << sizeof(BezVirtual) << endl;    // 1
+    cout << "sizeof(SVirtual)    = " << sizeof(SVirtual) << endl;      // 8   (skrytý ukazovateľ)
+    cout << "sizeof(Zviera)      = " << sizeof(Zviera) << endl;        // 16
+    cout << "sizeof(Pes)         = " << sizeof(Pes) << endl;           // 24
+    cout << "sizeof(Zviera*)     = " << sizeof(Zviera*) << endl;       // 8
+    cout << "sizeof(Pes*)        = " << sizeof(Pes*) << endl;          // 8
+}
+```
+
+(Hodnoty platia pre bežný 64-bitový systém.)
+
+- `BezVirtual` (1 B) vs. `SVirtual` (8 B): pribudlo 8 bajtov, to je skrytý ukazovateľ.
+- `Zviera` = skrytý ukazovateľ (8) + `int vek` (4) + zarovnanie (4) = 16 B.
+- Skrytý ukazovateľ ukazuje na **tabuľku** triedy (virtuálna tabuľka, vtable). Tabuľku má **každá trieda jednu**, nie každý objekt. Je v nej zoznam „metóda → kód“.
+
+![Pamäť: pole ukazovateľov, objekty a tabuľky virtuálnych metód](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/polymorfizmus-05-pamat.svg)
+
+Volanie `zvierata[i]->zvuk()` za behu:
+1. Choď na adresu z ukazovateľa `zvierata[i]`. Tam leží objekt.
+2. Prečítaj v objekte skrytý ukazovateľ. Ukazuje na tabuľku triedy objektu.
+3. V tabuľke nájdi riadok `zvuk`. (V tabuľke `Ryba` je `Zviera::zvuk`.)
+4. Skoč na ten kód.
+
+![Sekvenčný diagram — ako sa za behu vyberie správna metóda](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/polymorfizmus-06-sekvencny-diagram-volania.svg)
+
+- Volanie je v kóde vždy rovnaké, líši sa **objekt**, na ktorý ukazovateľ ukazuje, a teda aj tabuľka, ktorú nájde.
+- Skrytý ukazovateľ a tabuľka sú spôsob, akým to robia prakticky všetky prekladače. Jazyk C++ ich formálne nepredpisuje.
+- Reťaz pri volaní: **ukazovateľ → objekt na heape → skrytý ukazovateľ → tabuľka triedy → správny kód.**
+
+## Prečo ukazovatele, a nie obyčajné pole objektov
+- Mohlo by nás napadnúť `Zviera zvierata[3];` bez hviezdičiek. Problém je vo **veľkosti**:
+  - `sizeof(Zviera) = 16`, ale `sizeof(Pes) = 24` (pes má dva atribúty navyše).
+- Pole `Zviera zvierata[3]` má miesto na tri objekty **po 16 bajtov**. Pes sa do 16 nevojde.
+- C++ by ho preto **orezalo** na časť `Zviera`, čím by sa stratilo všetko, čo mal pes navyše, vrátane jeho skrytého ukazovateľa na tabuľku psa.
+- Ukazovatele sú vždy rovnako veľké (8 B), takže do jedného poľa sa zmestia „papieriky“ na objekty **akejkoľvek veľkosti**.
+- Preto sa polymorfizmus robí cez ukazovatele alebo referencie, nie cez premenné po hodnote.
+
+### Orezanie objektu (slicing)
+- `Zviera z = p;` vytvorí **novú kópiu**, ale len z časti `Zviera`. Pes sa „orezal“ na obyčajné zviera a `virtual` už nepomôže.
+
+![Orezanie objektu pri kópii po hodnote](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/polymorfizmus-08-orezanie.svg)
+
+- Preto funkcia preberá objekt cez referenciu alebo ukazovateľ:
+
+```cpp
+void ozviSa(Zviera& z) { z.zvuk(); }     // správne: polymorfizmus funguje
+void ozviSa(Zviera z)  { z.zvuk(); }     // NESPRÁVNE: kópia po hodnote, objekt sa orezá
+```
+
+## Virtuálny destruktor
+- Objekty vytvorené cez `new` mažeme cez `delete`. Ten **zavolá destruktor** a **vráti pamäť** heapu.
+- Ak mažeme cez ukazovateľ na predka, destruktor predka musí byť `virtual`. Inak sa zavolá len destruktor predka a potomok sa neupracie:
+
+| | Výstup pri `delete` v slučke z kroku 8 |
+|---|---|
+| `virtual ~Zviera()` | `~Pes` `~Zviera` `~Macka` `~Zviera` `~Ryba` `~Zviera` |
+| `~Zviera()` bez `virtual` | `~Zviera` `~Zviera` `~Zviera` (potomkovia sa neupratali) |
+
+- Prekladač na to upozorní: `delete called on non-final 'Zviera' that has virtual functions but non-virtual destructor`.
+- Pravidlo: **ak má trieda aspoň jednu `virtual` metódu, daj jej aj `virtual` destruktor.**
+- Ak `delete` zabudneme, pamäť ostane obsadená až do konca programu (**únik pamäte**, memory leak).
+
+## Rovnaká hlavička v každom potomkovi
+- Každá trieda dediaca zo `Zviera` má metódu `zvuk()` s **rovnakou hlavičkou**, ale **vlastným telom**. Vďaka tomu ju môžeme volať jedným zápisom cez `Zviera*`.
+- Cez ukazovateľ na predka je však vidieť **len to, čo je deklarované v predkovi**:
+
+```cpp
+class Pes : public Zviera {
+public:
+    void zvuk() override { cout << "Haf" << endl; }
+    void aportuj() { cout << "Aportujem" << endl; }    // len v Pes
+};
+
+Zviera* u = new Pes();
+u->zvuk();          // OK: zvuk() je v Zviera
+u->aportuj();       // CHYBA PRI PREKLADE: Zviera nemá metódu aportuj
+```
+
+- Preto do predka dávame **spoločné** metódy, ktoré chceme volať cez všetkých potomkov. Špecifické veci ostávajú v potomkoch.
+
+## Prekrytie metódy (override): čo musí sedieť
+- Prekrytie znamená: predok má **virtuálnu** metódu a potomok napíše **vlastnú verziu s rovnakou hlavičkou**. Mení sa len telo.
+- Hlavička = **názov + typy parametrov** (+ `const` pri metódach). Tomu sa hovorí **podpis** (signatúra).
+
+| | Pri prekrytí |
+|---|---|
+| názov metódy | musí byť rovnaký |
+| počet a typy parametrov | musia byť rovnaké |
+| `const` za zátvorkou | musí byť rovnaké |
+| návratový typ | rovnaký (výnimka: kovariantný, nižšie) |
+| telo metódy | **iné** (o to ide) |
+| názvy parametrov | môžu byť iné |
+| `public`/`private` | môže byť iné |
+| `virtual` v potomkovi | nepovinné, metóda ostáva virtuálna |
+
+- **Iné parametre nie sú prekrytie**, je to iná metóda, ktorá navyše **skryje** metódu predka rovnakého mena:
+
+```cpp
+class A { public: virtual void f(int x) { cout << "A"; } };
+class B : public A { public: void f(int x, int y) { cout << "B"; } };   // NIE prekrytie
+// cez referenciu na predka sa stále volá A::f(int)
+// b.f(1) na objekte B nejde: too few arguments, nová f skryla f predka
+```
+
+- **Iný návratový typ je chyba:**
+
+```cpp
+class A { public: virtual void f() { } };
+class B : public A { public: int f() { return 1; } };    // CHYBA PRI PREKLADE
+// virtual function 'f' has a different return type ('int') than the function it overrides
+```
+
+- **Výnimka: kovariantný návratový typ.** Predok vracia ukazovateľ (alebo referenciu) na svoju triedu, potomok smie vrátiť ukazovateľ na **svoju** triedu:
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class A {
+public:
+    virtual A* dalsi() {
+        cout << "A" << endl;
+        return this;
+    }
+
+    virtual ~A() {}
+};
+
+class B : public A {
+public:
+    B* dalsi() override {               // kovariantný návratový typ: B* namiesto A*
+        cout << "B" << endl;
+        return this;
+    }
+};
+
+int main() {
+    B b;
+    A& r = b;
+    r.dalsi();                          // B
+}
+```
+
+- **Iné `const` nie je prekrytie:** `void f() const` v predkovi a `void f()` v potomkovi sú dve rôzne metódy.
+
+### `override` ako poistka
+- Za hlavičku potomka píšeme `override`. Znamená: „toto **chcem** prekryť.“ Ak hlavička nesedí, prekladač hneď zlyhá, namiesto toho, aby potichu vznikla nová metóda.
+
+```cpp
+void f(int x, int y) override { ... }    // CHYBA: non-virtual member function marked 'override' hides virtual member function
+void f() override { ... }                // ak predok nemá virtual: only virtual member functions can be marked 'override'
+```
+
+### Pojmy
+| Situácia | Pojem |
+|---|---|
+| virtuálna metóda, rovnaká hlavička v potomkovi | **prekrytie** (override) |
+| rovnaký názov, iné parametre | **preťaženie** (overload) |
+| rovnaký názov v potomkovi, predok bez `virtual` | **skrytie** (hiding) |
+
+- Prekrytie (aj s C# príkladmi) je rozobrané aj v kapitole *Dedičnosť – zmena správania* nižšie v poznámkach.
+
+## Abstraktná trieda a polymorfizmus: bankový systém
+- Toto je časť skúšky: rôzne druhy účtov v jednej `Banke`.
+- `Ucet` je abstraktný (čistá virtuálna `moznoVybrat`), `Banka` drží ukazovatele na `Ucet`.
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Ucet {                                    // ABSTRAKTNÁ trieda
+protected:
+    int zostatok;
+
+public:
+    Ucet(int z) {
+        zostatok = z;
+    }
+
+    virtual bool moznoVybrat(int suma) = 0;     // čistá virtuálna: ČO, nie AKO
+
+    bool vyber(int suma) {                      // hotová metóda, používa moznoVybrat potomka
+        if (moznoVybrat(suma)) {
+            zostatok = zostatok - suma;
+            return true;
+        }
+        return false;
+    }
+
+    int getZostatok() const {
+        return zostatok;
+    }
+
+    virtual ~Ucet() {}                          // virtuálny destruktor
+};
+
+class StandartnyUcet : public Ucet {
+public:
+    StandartnyUcet(int z) : Ucet(z) {}
+
+    bool moznoVybrat(int suma) override {       // AKO: nesmie ísť do mínusu
+        return suma > 0 && suma <= zostatok;
+    }
+};
+
+class UverUcet : public Ucet {
+private:
+    int limit;
+
+public:
+    UverUcet(int z, int l) : Ucet(z) {
+        limit = l;
+    }
+
+    bool moznoVybrat(int suma) override {       // AKO: smie ísť do mínusu do limitu
+        return suma > 0 && suma <= zostatok + limit;
+    }
+};
+
+class Banka {
+private:
+    vector<Ucet*> ucty;                         // rôzne druhy účtov v jednom zozname
+
+public:
+    void pridajUcet(Ucet* u) {
+        ucty.push_back(u);
+    }
+
+    void spracujVybery(int suma) {
+        for (Ucet* u : ucty) {
+            bool ok = u->vyber(suma);           // rovnaké volanie, každý účet má svoje pravidlá
+            cout << (ok ? "vyber prebehol" : "vyber zamietnuty")
+                 << ", zostatok " << u->getZostatok() << endl;
+        }
+    }
+
+    ~Banka() {
+        for (Ucet* u : ucty) {
+            delete u;                           // virtuálny destruktor zavolá správny
+        }
+    }
+};
+
+int main() {
+    Banka banka;
+    banka.pridajUcet(new StandartnyUcet(100));
+    banka.pridajUcet(new UverUcet(100, 200));
+    banka.pridajUcet(new StandartnyUcet(500));
+
+    banka.spracujVybery(150);
+    // vyber zamietnuty, zostatok 100
+    // vyber prebehol, zostatok -50
+    // vyber prebehol, zostatok 350
+}
+```
+
+![Banka s rôznymi druhmi účtov](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/polymorfizmus-07-banka.svg)
+
+- Slučka v `spracujVybery` nevie, s ktorým druhom účtu pracuje, a nemusí. Každý účet si pravidlo `moznoVybrat` vybaví sám.
+- Pridanie nového druhu účtu (`SporiaciUcet`) nevyžaduje zmenu v `Banke`.
+- V diagrame kosoštvorec pri `Banka` s násobnosťou `0..*` značí, že `Banka` drží viac účtov.
+
+## Tri podmienky polymorfizmu
+Aby polymorfizmus fungoval, musia platiť **všetky tri**:
+1. **Dedičnosť**: potomok je predok (`Pes` je `Zviera`).
+2. **`virtual` metóda v predkovi**, ktorú potomok prekryje (odporúča sa `override`).
+3. **Volanie cez ukazovateľ alebo referenciu na predka** (`Zviera*`, `Zviera&`).
+
+Ak chýba čo len jedno, dostaneme `...` namiesto `Haf`.
+
+## Najčastejšie chyby
+- **Zabudnuté `virtual`** v predkovi: volá sa verzia predka (statická väzba).
+- **Volanie cez objekt po hodnote** (`Zviera z = p;`, `void f(Zviera z)`): objekt sa orezá.
+- **Iná hlavička v potomkovi** (iné parametre, iné `const`): nevznikne prekrytie. Poistka: `override`.
+- **Zabudnutý virtuálny destruktor**, keď sa maže cez ukazovateľ na predka.
+- **Zabudnuté `delete`**: únik pamäte.
+- **Volanie metódy, ktorú predok nemá**, cez ukazovateľ na predka (`u->aportuj()`).
+
+## Úlohy na cvičenie
+- Rozšírte príklad so zvieratami o triedu `Kohut` (`Kykyryki`) bez zmeny funkcie `ozviSa`. Čo všetko ste museli napísať?
+- Odstráňte v príklade `virtual` z metódy `zvuk()` a porovnajte výstup s pôvodným. Vysvetlite rozdiel pomocou statickej a dynamickej väzby.
+- Odstráňte `virtual` z destruktora `~Zviera()` a spustite program. Aký je rozdiel vo výstupe?
+- Doplňte hierarchiu účtov o `SporiaciUcet` (max. výber 500 naraz) a pridajte ho do `Banky` bez zmeny triedy `Banka`.
+- Vytvorte `Tvar` s čistou virtuálnou `obsah()` a potomkov `Kruh`, `Obdlznik`. Uložte ich do `vector<Tvar*>` a vypíšte súčet obsahov.
+- Vysvetlite pomocou diagramu, čo sa deje v pamäti pri volaní `zvierata[1]->zvuk()`.
+
+## Kontrolné otázky
+- Čo je polymorfizmus? Uveďte príklad v C++.
+- Aký je rozdiel medzi typom premennej a typom objektu?
+- Aký je rozdiel medzi statickou a dynamickou väzbou? Kedy sa použije ktorá?
+- Aké tri podmienky musia byť splnené, aby polymorfizmus fungoval?
+- Prečo sa polymorfizmus robí cez ukazovatele a referencie a nie cez premenné po hodnote?
+- Čo je skrytý ukazovateľ a tabuľka virtuálnych metód?
+- Prečo má mať trieda s `virtual` metódami aj `virtual` destruktor?
+- Čo musí sedieť pri prekrytí metódy? Čo je kovariantný návratový typ?
+- Čo robí kľúčové slovo `override`?
+- Aký je rozdiel medzi prekrytím, preťažením a skrytím?
+
+### Vzorová odpoveď: princíp polymorfizmu
+> Polymorfizmus znamená, že jedno volanie metódy sa správa rôzne podľa toho, aký objekt za ním v skutočnosti je. V C++ ho dosiahneme dedičnosťou, `virtual` metódou v predkovi, ktorú potomok prekryje, a volaním cez ukazovateľ alebo referenciu na predka. Verziu metódy vyberie program až za behu podľa skutočného objektu (dynamická väzba), nie prekladač podľa typu premennej (statická väzba). Vďaka tomu môžeme pracovať s rôznymi potomkami cez spoločného predka (napr. `vector<Ucet*>`) a pridanie nového potomka nevyžaduje zmenu existujúceho kódu.
 
 ---
 

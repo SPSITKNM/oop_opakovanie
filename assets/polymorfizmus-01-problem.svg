@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="302" viewBox="0 0 780 302" role="img" aria-label="Bez polymorfizmu a s polymorfizmom">
+  <style>
+    :root{ --stroke:#334155; --text:#1e293b; --node:#ffffff; --band:#eef2f7; --accent:#7c3aed; --muted:#64748b; --cls:#f4f1fb; --pub:#15803d; --priv:#b91c1c; --prot:#b45309; --note:#fffbeb; --obj:#eef6ff; }
+    @media (prefers-color-scheme: dark){
+      :root{ --stroke:#cbd5e1; --text:#e2e8f0; --node:#1e293b; --band:#1e2739; --accent:#a78bfa; --muted:#94a3b8; --cls:#1c1930; --pub:#4ade80; --priv:#f87171; --prot:#fbbf24; --note:#2a2412; --obj:#152238; }
+    }
+    text{fill:var(--text); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+    .cls{fill:var(--cls); stroke:var(--stroke); stroke-width:1.5;}
+    .obj{fill:var(--obj); stroke:var(--stroke); stroke-width:1.5;}
+    .sep{stroke:var(--stroke); stroke-width:1.2;}
+    .name{font-size:13px; font-weight:700; text-anchor:middle;}
+    .oname{font-size:12.5px; font-weight:700; text-anchor:middle; text-decoration:underline;}
+    .stereo{font-size:10.5px; fill:var(--muted); text-anchor:middle;}
+    .mem{font-size:11.5px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; white-space:pre;}
+    .tag{font-size:9.5px; fill:var(--muted); text-anchor:end; font-style:italic;}
+    .pub{fill:var(--pub); font-weight:700;} .priv{fill:var(--priv); font-weight:700;} .prot{fill:var(--prot); font-weight:700;}
+    .lbl{font-size:11px;} .lblc{font-size:11px; text-anchor:middle;}
+    .mut{font-size:10.5px; fill:var(--muted);} .mutc{font-size:10.5px; fill:var(--muted); text-anchor:middle;}
+    .ttl{font-size:12.5px; font-weight:700; fill:var(--accent);} .ttlc{font-size:12.5px; font-weight:700; fill:var(--accent); text-anchor:middle;}
+    .code{font-size:11px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+    .okt{fill:var(--pub); font-weight:700;} .badt{fill:var(--priv); font-weight:700;}
+    .ok{stroke:var(--pub); stroke-width:1.6; fill:none; marker-end:url(#mok);}
+    .bad{stroke:var(--priv); stroke-width:1.6; fill:none; stroke-dasharray:5 4;}
+    .edge{stroke:var(--stroke); stroke-width:1.4; fill:none; marker-end:url(#mopen);}
+    .dep{stroke:var(--stroke); stroke-width:1.3; fill:none; stroke-dasharray:5 4; marker-end:url(#mopen);}
+    .gen{stroke:var(--stroke); stroke-width:1.5; fill:none; marker-end:url(#mtri);}
+    .genl{stroke:var(--stroke); stroke-width:1.5; fill:none;}
+    .real{stroke:var(--stroke); stroke-width:1.5; fill:none; stroke-dasharray:6 4; marker-end:url(#mtri);}
+    .reall{stroke:var(--stroke); stroke-width:1.5; fill:none; stroke-dasharray:6 4;}
+    .node{fill:var(--node); stroke:var(--stroke); stroke-width:1.4;}
+    .note{fill:var(--note); stroke:var(--muted); stroke-width:1; stroke-dasharray:4 3;}
+    .hl{fill:var(--accent); opacity:.16;}
+    .brk{stroke:var(--muted); stroke-width:1.3; fill:none;}
+    .grid{stroke:var(--stroke); stroke-width:1; fill:none;}
+    .hdr{fill:var(--band); stroke:var(--stroke); stroke-width:1;}
+  </style>
+  <defs>
+    <marker id="mopen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10" fill="none" stroke="var(--stroke)" stroke-width="1.4"/>
+    </marker>
+    <marker id="mtri" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="13" markerHeight="13" orient="auto">
+      <path d="M1,1 L11,6 L1,11 z" fill="var(--node)" stroke="var(--stroke)" stroke-width="1.4"/>
+    </marker>
+    <marker id="mok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--pub)"/>
+    </marker>
+  </defs>
+
+  <text class="ttl" x="30" y="28">BEZ polymorfizmu: rozhoduje funkcia</text>
+  <text class="ttl" x="420" y="28">S polymorfizmom: rozhoduje objekt</text>
+  <rect class="node" x="30" y="120" width="130" height="40" rx="8"/>
+  <text class="lblc" x="95.0" y="144.0">ozviSa(z)</text>
+  <rect class="node" x="212" y="56" width="180" height="40" rx="6"/>
+  <text class="code" x="222" y="73" text-anchor="start">if druh == "pes"</text>
+  <text class="mutc" x="302" y="89" text-anchor="middle">Haf</text>
+  <path class="edge" d="M160,140 L210,76"/>
+  <rect class="node" x="212" y="122" width="180" height="40" rx="6"/>
+  <text class="code" x="222" y="139" text-anchor="start">else if druh == "macka"</text>
+  <text class="mutc" x="302" y="155" text-anchor="middle">Mnau</text>
+  <path class="edge" d="M160,140 L210,142"/>
+  <rect class="node" x="212" y="188" width="180" height="40" rx="6"/>
+  <text class="code" x="222" y="205" text-anchor="start">else if druh == "kohut"</text>
+  <text class="mutc" x="302" y="221" text-anchor="middle">Kykyryki</text>
+  <path class="edge" d="M160,140 L210,208"/>
+  <text class="lbl" x="30" y="200">Nové zviera = treba upraviť funkciu.</text>
+  <text class="mut" x="30" y="218">Takých funkcií môže byť v programe veľa.</text>
+  <line class="grid" x1="400" y1="16" x2="400" y2="240" stroke-dasharray="4 4"/>
+  <rect class="node" x="420" y="120" width="110" height="40" rx="8"/>
+  <text class="lblc" x="475.0" y="144.0">ozviSa(z)</text>
+  <rect class="node" x="570" y="120" width="90" height="40" rx="6"/>
+  <text class="code" x="615" y="144" text-anchor="middle">z.zvuk()</text>
+  <path class="edge" d="M530,140 L568,140"/>
+  <rect class="cls" x="690" y="56" width="80" height="40" rx="6"/>
+  <text class="lblc" x="730" y="73" text-anchor="middle" style="font-weight:700">Pes</text>
+  <text class="mutc" x="730" y="88" text-anchor="middle">Haf</text>
+  <path class="dep" d="M660,140 L688,76"/>
+  <rect class="cls" x="690" y="122" width="80" height="40" rx="6"/>
+  <text class="lblc" x="730" y="139" text-anchor="middle" style="font-weight:700">Macka</text>
+  <text class="mutc" x="730" y="154" text-anchor="middle">Mnau</text>
+  <path class="dep" d="M660,140 L688,142"/>
+  <rect class="cls" x="690" y="188" width="80" height="40" rx="6"/>
+  <text class="lblc" x="730" y="205" text-anchor="middle" style="font-weight:700">Kohut</text>
+  <text class="mutc" x="730" y="220" text-anchor="middle">Kykyryki</text>
+  <path class="dep" d="M660,140 L688,208"/>
+  <text class="lbl" x="420" y="200">Každý objekt vie, ako sa ozve.</text>
+  <text class="mut" x="420" y="218">Nové zviera = nová trieda, ozviSa sa nemení.</text>
+  <rect class="note" x="30" y="254" width="720" height="28" rx="3"/>
+  <text class="lbl" x="40" y="274">Polymorfizmus: jedno volanie (z.zvuk()), rôzne správanie podľa toho, aký objekt za ním naozaj je.</text>
+</svg>
