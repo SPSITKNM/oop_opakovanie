@@ -132,6 +132,12 @@ jan.znamky.push_back(999);   // neplatná známka, prekladač nenamieta
 - Presne toto rieši objektovo orientovaný prístup: dáta a funkcie, ktoré s nimi smú pracovať, patria do jednej triedy a dáta sa dajú skryť (`private`).
 - Metódy triedy sú stále len funkcie, ktoré majú prístup k dátam „svojho“ objektu.
 
+### Procedurálne vs. objektovo v diagrame
+![Procedurálne vs. objektové — struct a funkcie vs. trieda](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/proc-vs-oop.svg)
+- Vľavo: `struct Student` drží len dáta a funkcie stoja mimo neho (pozri príklad vyššie).
+- Vpravo: tie isté dáta a funkcie v jednej triede, dáta sú `private`, funkcie sa stali metódami.
+- Tento prechod rozoberá kapitola Enkapsulácia nižšie.
+
 ## Modulárne programovanie
 - Návrh zhora-nadol.
 - Rozdelenie programu na nezávislé, zameniteľné moduly, ktoré zabezpečujú čiastkovú funkcionalitu.
@@ -459,6 +465,7 @@ class Program
 
 ## Osnova hodiny
 - Čo je enkapsulácia a prečo ju potrebujeme.
+- Triedny diagram (UML): ako ho čítať.
 - Trieda a objekt (inštancia).
 - Konštruktor.
 - Gettery a settery.
@@ -475,6 +482,24 @@ class Program
   - verejná časť = **rozhranie** (čo objekt vie),
   - skrytá časť = **implementácia** (ako to robí).
 - V triede platí: `public` metódy sú rozhranie, `private` atribúty sú implementácia.
+
+## Triedny diagram: ako ho čítať
+- Každý krok kapitoly je aj nakreslený ako **UML triedny diagram**. Diagram ukazuje štruktúru triedy na jeden pohľad, ešte pred čítaním kódu.
+- Trieda je obdĺžnik s tromi priehradkami: **názov**, **atribúty** (dáta), **metódy** (správanie).
+
+![Ako čítať triedny diagram — priehradky a viditeľnosť](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/encap-01-notacia.svg)
+
+| Značka | Viditeľnosť | C++ |
+|---|---|---|
+| `+` | verejný člen | `public` |
+| `-` | súkromný člen | `private` |
+| `#` | chránený člen | `protected` |
+
+- Atribút sa píše `viditeľnosť názov: typ`, napr. `- zostatok: int`. V C++ je to `int zostatok;` v sekcii `private`. Typ je v diagrame **za** názvom, v kóde **pred** ním.
+- Metóda sa píše `viditeľnosť názov(parametre): návratový typ`, napr. `+ vloz(suma: int): void`.
+- Konštruktor nemá návratový typ: `+ Ucet(z: int)`.
+- Objekt sa kreslí ako obdĺžnik s **podčiarknutým** názvom `a : Ucet` (meno objektu : trieda).
+- Prerušovaná šípka s otvoreným hrotom v tejto kapitole znamená „inštancia triedy“ alebo „volá“.
 
 ## Krok 1: objekt bez ochrany
 - Začneme triedou, v ktorej sú dáta `public`.
@@ -497,6 +522,9 @@ int main() {
 }
 ```
 
+![Trieda Ucet s public atribútom — bez ochrany](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/encap-02-bez-ochrany.svg)
+
+- V diagrame je pri `zostatok` značka `+`, teda `public`: kto chce, ten ho zmení.
 - Prekladač nenamieta, ale účet má záporný zostatok, ktorý nikto nechcel.
 - Toto je presne slabé miesto procedurálneho štýlu (pozri sekciu Procedurálne programovanie): dáta sú voľne dostupné a nikto ich nestráži.
 
@@ -513,6 +541,10 @@ a.zostatok = 100;
 b.zostatok = 500;       // každý objekt má vlastnú kópiu dát
 ```
 
+
+![Trieda Ucet a jej objekty a, b](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/encap-04-trieda-objekty.svg)
+
+- Vľavo je **trieda** (predpis), vpravo **objekty** (inštancie). Názov objektu je podčiarknutý: `a : Ucet`.
 - Z jednej triedy vznikne toľko objektov, koľko chceme, a každý má vlastné dáta.
 - Takto zapísaný objekt je na **stacku** a zanikne na konci bloku `{ }`, v ktorom vznikol.
 
@@ -572,15 +604,10 @@ int main() {
 }
 ```
 
-```
-zvonka                       trieda Ucet
-──────                       ─────────────────────────
-a.vloz(50)          ───────► public:   vloz()
-a.getZostatok()     ───────► public:   getZostatok()
-                             ─────────────────────────
-a.zostatok          ───X     private:  zostatok        (zamknuté)
-```
+![Enkapsulácia — zvonka len cez public metódy](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/encap-03-brana.svg)
 
+- Diagram ukazuje tú istú triedu `Ucet`: `-` = zamknuté dáta, `+` = brána.
+- Zelené šípky sú povolené volania z `main()`. Prerušovaná červená je pokus o priamy prístup, ktorý prekladač odmietne.
 - K `zostatok` sa dostaneme **len cez metódy**.
 - Pravidlá (`suma > 0`) sú na **jednom mieste**, nie rozhádzané po programe.
 
@@ -721,6 +748,11 @@ int main() {
 }
 ```
 
+![Viac konštruktorov v triede Ucet](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/encap-05-konstruktory.svg)
+
+- Zápis `Ucet a;` volá konštruktor bez parametrov, `Ucet b(100);` konštruktor s jedným `int`.
+- V diagrame sú konštruktory obe `+ Ucet(...)` a nemajú návratový typ.
+
 ### Destruktor (stručne)
 - Destruktor je opak konštruktora: zavolá sa **sám pri zániku objektu**.
 - Zapisuje sa `~Ucet()`, bez parametrov a bez návratového typu.
@@ -762,6 +794,11 @@ int main() {
     cout << a.getZostatok() << endl;    // 100
 }
 ```
+
+![Gettery a settery — triedy Ucet a Osoba](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/encap-06-getter-setter.svg)
+
+- V diagrame je pri metódach popis `getter` / `setter` len ako pomôcka, v UML sa nepíše.
+- Trieda `Osoba` nemá `setMeno`, preto je meno zvonka len na čítanie.
 
 | Atribút | Getter | Setter |
 |---|---|---|
@@ -939,6 +976,11 @@ int main() {
 }
 ```
 
+![Kompletný príklad — trieda Ucet](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/encap-07-kompletny-ucet.svg)
+
+- Diagram sa dá čítať ako zhrnutie kódu: všetko s `-` je skryté, všetko s `+` je rozhranie.
+- Atribút `majitel` nemá setter, zostatok sa mení len cez `vloz` a `vyber`.
+
 ## Rozhranie a implementácia
 - **Rozhranie** = `public` časť: čo objekt vie (`vloz`, `vyber`, `getZostatok`).
 - **Implementácia** = `private` časť: ako to robí (v čom a ako ukladá dáta).
@@ -975,6 +1017,9 @@ int main() {
 }
 ```
 
+![Rozhranie a implementácia — zmena vnútra bez zmeny okolia](https://cdn.jsdelivr.net/gh/SPSITKNM/oop_opakovanie@main/assets/encap-08-rozhranie-implementacia.svg)
+
+- Zvýraznená časť (`+` metódy) je rozhranie, v oboch verziách rovnaké. Zmenil sa len `-` atribút.
 - Keby bol `zostatok` `public`, každé miesto v programe, ktoré s ním pracuje, by sme museli prepísať.
 
 ## Najčastejšie chyby
@@ -988,10 +1033,12 @@ int main() {
 ## Úlohy na cvičenie
 - Prepíšte procedurálny príklad `Student` (`struct` + funkcie) na triedu so `private` atribútmi, konštruktorom, getterom mena a metódami `pridajZnamku` a `priemer`. Známka smie byť len 1 až 5.
 - Vytvorte triedu `Osoba` s atribútmi `meno` a `vek`. Vek nastavte cez setter, ktorý povolí len hodnoty 0 až 150. Meno nech je len na čítanie.
+- Nakreslite triedny diagram triedy `Osoba` (atribúty, konštruktor, gettery, setter) so správnou viditeľnosťou a potom ho implementujte v C++.
 - Doplňte triedu `Ucet` o metódu `prevedNa(Ucet& cielovy, int suma)`, ktorá presunie peniaze na iný účet len ak je na zdrojovom dosť prostriedkov.
 
 ## Kontrolné otázky
 - Vysvetlite princíp enkapsulácie. Uveďte príklad v C++.
+- Nakreslite triedny diagram triedy `Ucet` a vysvetlite značky `+`, `-` a `#`.
 - Aký je rozdiel medzi `private`, `protected` a `public`?
 - Čo je konštruktor a aké pravidlá musí spĺňať jeho zápis?
 - Kedy sa volá predvolený konštruktor a kedy ho C++ negeneruje?
